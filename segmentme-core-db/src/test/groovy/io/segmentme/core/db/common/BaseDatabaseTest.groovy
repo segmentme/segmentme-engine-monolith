@@ -13,7 +13,7 @@ import spock.lang.Specification
 @DataMongoTest
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-abstract class BaseDataJpa extends Specification {
+abstract class BaseDatabaseTest extends Specification {
 
     @Autowired
     protected MongoTemplate mongoTemplate

@@ -5,7 +5,7 @@ import io.segmentme.core.db.models.TestModel
 import io.segmentme.core.db.repository.TestModelRepository
 import org.springframework.beans.factory.annotation.Autowired
 
-class Test extends BaseDataJpa {
+class Test extends BaseDatabaseTest {
 
     @Autowired
     private TestModelRepository testModelRepository
