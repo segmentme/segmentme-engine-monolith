@@ -36,6 +36,7 @@ subprojects {
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
+
         testImplementation('org.springframework.boot:spring-boot-starter-test') {
             exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
         }
@@ -44,6 +45,8 @@ subprojects {
         testImplementation "org.spockframework:spock-spring:2.0-M3-groovy-3.0"
         testImplementation "cglib:cglib-nodep:3.3.0"
         testImplementation 'org.codehaus.groovy:groovy:3.0.5'
+        testCompileOnly 'org.projectlombok:lombok'
+        testAnnotationProcessor 'org.projectlombok:lombok'
     }
 
     test {
