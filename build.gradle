@@ -6,7 +6,7 @@ plugins {
 
 
 allprojects {
-
+    sourceCompatibility = '14'
     repositories {
         mavenCentral()
     }
@@ -21,7 +21,7 @@ subprojects {
 
     group = 'io.segmentme'
     version = '0.0.1-SNAPSHOT'
-    sourceCompatibility = '14'
+
 
     configurations {
         compileOnly {
