@@ -4,10 +4,12 @@ plugins {
     id 'java'
 }
 
+bootJar {
+    enabled = false
+}
 
 allprojects {
-    sourceCompatibility = '14'
-    targetCompatibility = '14'
+
     repositories {
         mavenCentral()
         jcenter()
@@ -22,7 +24,8 @@ subprojects {
 
     group = 'io.segmentme'
     version = '0.0.1-SNAPSHOT'
-
+    sourceCompatibility = '14'
+    targetCompatibility = '14'
 
     configurations {
         compileOnly {

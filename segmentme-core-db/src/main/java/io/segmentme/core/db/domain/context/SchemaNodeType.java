@@ -3,6 +3,6 @@ package io.segmentme.core.db.domain.context;
 import lombok.Getter;
 
 @Getter
-public enum ScehamNodeType {
+public enum SchemaNodeType {
     OBJECT, ARRAY, STRING, DATE, NUMBER;
 }

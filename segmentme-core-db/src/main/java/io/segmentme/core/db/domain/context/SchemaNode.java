@@ -8,11 +8,9 @@ import java.util.List;
 public class SchemaNode {
     private String name;
 
-    private boolean root;
+    private SchemaNodeType type;
 
-    private ScehamNodeType type;
-
-    private ScehamNodeType subType;
+    private SchemaNodeType subType;
 
     private List<SchemaNode> subNodes;
 }
