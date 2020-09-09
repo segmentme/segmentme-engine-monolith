@@ -5,6 +5,6 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BooleanAnalysisRule extends AbstractAnalysisRule<Boolean> {
+public class BooleanAnalysisRule extends SimpleAnalysisRule<Boolean> {
 }
 
