@@ -3,10 +3,17 @@ package io.segmentme.core.db.domain.condition;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.segmentme.core.db.domain.context.DbObject;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.lang.annotation.Documented;
 
 
 @Data
+@Document("condition")
+@EqualsAndHashCode(callSuper = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes(value = {
         @Type(name = "IN", value = ArrayCondition.class),
@@ -21,7 +28,9 @@ import lombok.Data;
         @Type(name = "CONTAINS_ANY", value = ArrayCondition.class),
         @Type(name = "CONTAINS_ONLY", value = ArrayCondition.class)
 })
-public abstract class AbstractCondition<T> {
+public abstract class AbstractCondition<T>  extends DbObject {
+
+    private String name;
 
     private String criteria;
 
