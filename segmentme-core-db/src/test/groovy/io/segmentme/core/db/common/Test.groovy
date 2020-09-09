@@ -1,22 +1,22 @@
 package io.segmentme.core.db.common
 
-
-import io.segmentme.core.db.models.TestModel
-import io.segmentme.core.db.repository.TestModelRepository
+import io.segmentme.core.db.domain.rule.AggregationType
+import io.segmentme.core.db.domain.rule.BooleanAnalysisRule
+import io.segmentme.core.db.repository.AnalysisRuleRepository
 import org.springframework.beans.factory.annotation.Autowired
 
 class Test extends BaseDatabaseTest {
 
     @Autowired
-    private TestModelRepository testModelRepository
+    private AnalysisRuleRepository analysisRuleRepository
 
     def 'testMongoConnection'() {
         given:
-        def modelToSave = new TestModel().setName("Model")
+        def modelToSave = new BooleanAnalysisRule().setAggregation(AggregationType.AND)
         when:
-        def savedModel = testModelRepository.save(modelToSave)
+        def savedModel = analysisRuleRepository.save(modelToSave)
         then:
-        def existedModel = testModelRepository.findById(savedModel.getId())
+        def existedModel = analysisRuleRepository.findById(savedModel.getId())
         existedModel != null
     }
 }
