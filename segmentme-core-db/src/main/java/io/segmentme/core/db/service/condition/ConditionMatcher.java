@@ -1,7 +1,7 @@
 package io.segmentme.core.db.service.condition;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
-import io.segmentme.core.db.domain.context.AnalysisContext;
+import io.segmentme.core.db.domain.context.AnalysisContextSchema;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class ConditionMatcher {
         conditionServices = services.stream().collect(Collectors.toMap(Matcher::getType, it -> it));
     }
 
-    public boolean match(AbstractCondition<?> condition, AnalysisContext context) {
+    public boolean match(AbstractCondition<?> condition, AnalysisContextSchema context) {
         Matcher<AbstractCondition<?>> matcher = findMatcher(condition.getType());
         return matcher.match(condition, context) == condition.isMatchResult();
     }

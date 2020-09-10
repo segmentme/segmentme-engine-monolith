@@ -2,7 +2,7 @@ package io.segmentme.core.db.service.condition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
-import io.segmentme.core.db.domain.context.AnalysisContext;
+import io.segmentme.core.db.domain.context.AnalysisContextSchema;
 import lombok.SneakyThrows;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +19,11 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition<?>> implemen
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    protected Comparable<Object> getProperty(String propertyName, AnalysisContext context) {
+    protected Comparable<Object> getProperty(String propertyName, AnalysisContextSchema context) {
         return (Comparable<Object>) PropertyUtils.getProperty(context, propertyName);
     }
 
-    public abstract boolean match(T condition, AnalysisContext context);
+    public abstract boolean match(T condition, AnalysisContextSchema context);
 
     public abstract AbstractCondition.ConditionType getType();
 }

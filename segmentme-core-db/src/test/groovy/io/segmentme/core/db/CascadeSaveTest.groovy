@@ -7,14 +7,14 @@ import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
 import io.segmentme.core.db.domain.rule.BooleanAnalysisRule
 import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule
 import io.segmentme.core.db.repository.AbstractConditionRepository
-import io.segmentme.core.db.repository.AnalysisRuleRepository
+import io.segmentme.core.db.repository.SimpleAnalysisRuleRepository
 import io.segmentme.core.db.repository.PreconditionAnalysisRuleRepository
 import org.springframework.beans.factory.annotation.Autowired
 
 class CascadeSaveTest extends BaseDatabaseTest {
 
     @Autowired
-    private AnalysisRuleRepository analysisRuleRepository
+    private SimpleAnalysisRuleRepository analysisRuleRepository
     @Autowired
     private PreconditionAnalysisRuleRepository preconditionAnalysisRuleRepository
     @Autowired
@@ -25,6 +25,9 @@ class CascadeSaveTest extends BaseDatabaseTest {
         def date = prepareDate()
         when:
         preconditionAnalysisRuleRepository.save(date)
+        def find = preconditionAnalysisRuleRepository.findAll().first()
+        find.value = false
+        preconditionAnalysisRuleRepository.save(find)
         then:
         def analysisRules = analysisRuleRepository.findAll()
         def preconditionAnalysisRules = preconditionAnalysisRuleRepository.findAll()
