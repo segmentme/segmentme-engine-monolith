@@ -23,11 +23,11 @@ abstract class AbstractAnalysisRuleService<A extends AbstractAnalysisRule<?>> {
 
     abstract AbstractAnalysisRule.RuleType getRuleType();
 
-    public AnalysisResult analyze(AnalysisContextSchema context, A rule) {
-        return new AnalysisResult(rule.getId(), getNames(rule), this.getRuleValueIfSatisfy(context, rule));
+    AnalysisResult analyze(AnalysisContextSchema context, A rule) {
+        return AnalysisResult.of(rule.getId(), getNames(rule), this.getRuleValueIfSatisfy(context, rule));
     }
 
-    public List<AnalysisResult> analyze(AnalysisContextSchema context, List<A> rules) {
+    List<AnalysisResult> analyze(AnalysisContextSchema context, List<A> rules) {
 
         if (CollectionUtils.isEmpty(rules)) {
             return Collections.emptyList();
@@ -36,7 +36,7 @@ abstract class AbstractAnalysisRuleService<A extends AbstractAnalysisRule<?>> {
         return rules.stream().map(it -> analyze(context, it)).collect(Collectors.toList());
     }
 
-    final protected boolean isMatch(A rule, AnalysisContextSchema context) {
+    final boolean isMatch(A rule, AnalysisContextSchema context) {
         if (CollectionUtils.isEmpty(rule.getConditions())) {
             return true;
         }

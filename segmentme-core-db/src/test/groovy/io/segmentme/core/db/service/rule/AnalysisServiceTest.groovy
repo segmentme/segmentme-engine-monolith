@@ -90,7 +90,7 @@ class AnalysisServiceTest extends BaseDatabaseTest {
         return new PreconditionAnalysisRule()
                 .setAnalysisRules(Arrays.asList(analysisRule, analysisRule2))
                 .setConditions(Arrays.asList(new ArrayCondition()
-                        .setValue(Arrays.asList("VALUE"))
+                        .setValue(Arrays.asList("VALUE_2"))
                         .setCriteria("rootNode.name")
                         .setType(AbstractCondition.ConditionType.IN)
                         .setDescription("VALUE_2")

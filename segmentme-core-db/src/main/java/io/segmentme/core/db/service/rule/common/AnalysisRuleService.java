@@ -2,6 +2,7 @@ package io.segmentme.core.db.service.rule.common;
 
 import io.segmentme.core.db.domain.context.AnalysisContextSchema;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
+import io.segmentme.core.db.domain.rule.SimpleAnalysisRule;
 import io.segmentme.core.db.dto.AnalysisResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -27,7 +28,7 @@ public class AnalysisRuleService {
         return findService(type).analyze(context, (List<AbstractAnalysisRule<?>>) rules);
     }
 
-    public AnalysisResult analyze(AbstractAnalysisRule<?> rule, AnalysisContextSchema context) {
+    public AnalysisResult analyze(SimpleAnalysisRule<?> rule, AnalysisContextSchema context) {
         return findService(rule.getRuleType()).analyze(context, rule);
     }
 

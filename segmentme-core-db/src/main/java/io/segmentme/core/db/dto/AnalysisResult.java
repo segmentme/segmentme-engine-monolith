@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 public class AnalysisResult {
 
     private String ruleId;
