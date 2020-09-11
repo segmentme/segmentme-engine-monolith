@@ -6,8 +6,6 @@ import io.segmentme.core.db.dto.AnalysisResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -26,47 +24,26 @@ class PreconditionAnalysisRuleService extends AbstractAnalysisRuleService<Precon
     private final AnalysisRuleService analysisRuleService;
 
     @Override
-    AnalysisResult analyze(AnalysisContextSchema context, PreconditionAnalysisRule rule) {
-        throw new IllegalArgumentException("Not supported method");
-    }
+    List<AnalysisResult> analyze(AnalysisContextSchema context, PreconditionAnalysisRule rule) {
+        var isMatched = this.getRuleValueIfSatisfy(context, rule);
 
-    @Override
-    public List<AnalysisResult> analyze(AnalysisContextSchema context, List<PreconditionAnalysisRule> rules) {
-
-        if (CollectionUtils.isEmpty(rules)) {
-            return Collections.emptyList();
+        if (!isMatched) {
+            return convert(rule, null);
         }
 
-        return collectValues(context, rules);
-    }
-
-    private List<AnalysisResult> collectValues(AnalysisContextSchema context, List<PreconditionAnalysisRule> rules) {
-
-        var processedPreconditions = rules.stream().collect(Collectors.groupingBy(it -> this.getRuleValueIfSatisfy(context, it)));
-
-        var notMatchedRules = processedPreconditions.getOrDefault(false, List.of())
+        return Optional.of(rule.getAnalysisRules())
                 .stream()
-                .map(PreconditionAnalysisRule::getAnalysisRules)
-                .flatMap(Collection::stream)
-                .map(it -> of(it, null))
-                .collect(Collectors.toList());
-
-        var matchedRules = processedPreconditions.getOrDefault(true, List.of())
-                .stream()
-                .map(PreconditionAnalysisRule::getAnalysisRules)
                 .map(it -> analyzeRules(context, it))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-
-        notMatchedRules.addAll(matchedRules);
-        return notMatchedRules;
     }
 
-    public List<AnalysisResult> analyzeRules(AnalysisContextSchema context, List<? extends SimpleAnalysisRule<?>> analysisRules) {
+    public List<AnalysisResult> analyzeRules(AnalysisContextSchema context, List<? extends AbstractAnalysisRule<?>> analysisRules) {
         return Optional.ofNullable(analysisRules)
                 .stream()
-                .flatMap(Collection::stream)
+                .flatMap(Collection::parallelStream)
                 .map(it -> analysisRuleService.analyze(it, context))
+                .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
@@ -80,11 +57,24 @@ class PreconditionAnalysisRuleService extends AbstractAnalysisRuleService<Precon
         return isMatch(rule, context) ? getValue(rule) : false;
     }
 
-    private AnalysisResult of(SimpleAnalysisRule<?> rule, Object value) {
+    private List<AnalysisResult> convert(final AbstractAnalysisRule<?> rule, Object value) {
+        if (rule.getRuleType() == AbstractAnalysisRule.RuleType.PRECONDITION) {
+            return Optional.ofNullable(((PreconditionAnalysisRule) rule).getAnalysisRules())
+                    .stream()
+                    .flatMap(Collection::parallelStream)
+                    .map(it -> convert(it, null))
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+        }
+
         if (rule.getRuleType() == AbstractAnalysisRule.RuleType.BOOLEAN) {
             value = Boolean.TRUE.equals(value);
         }
 
-        return AnalysisResult.of(rule.getId(), rule.getFlags(), value);
+        if (rule instanceof SimpleAnalysisRule) {
+            return List.of(AnalysisResult.of(rule.getId(), ((SimpleAnalysisRule<?>) rule).getFlags(), value));
+        }
+
+        throw new IllegalArgumentException("Unknown rule type " + rule.getRuleType());
     }
 }

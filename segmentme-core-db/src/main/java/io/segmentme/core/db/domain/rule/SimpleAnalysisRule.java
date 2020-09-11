@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Document(collection = "analysisRule")
 public abstract class SimpleAnalysisRule<T> extends AbstractAnalysisRule<T> {
 
     private List<String> flags;

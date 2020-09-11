@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,17 +22,8 @@ abstract class AbstractAnalysisRuleService<A extends AbstractAnalysisRule<?>> {
 
     abstract AbstractAnalysisRule.RuleType getRuleType();
 
-    AnalysisResult analyze(AnalysisContextSchema context, A rule) {
-        return AnalysisResult.of(rule.getId(), getNames(rule), this.getRuleValueIfSatisfy(context, rule));
-    }
-
-    List<AnalysisResult> analyze(AnalysisContextSchema context, List<A> rules) {
-
-        if (CollectionUtils.isEmpty(rules)) {
-            return Collections.emptyList();
-        }
-
-        return rules.stream().map(it -> analyze(context, it)).collect(Collectors.toList());
+    List<AnalysisResult> analyze(AnalysisContextSchema context, A rule) {
+        return List.of(AnalysisResult.of(rule.getId(), getNames(rule), this.getRuleValueIfSatisfy(context, rule)));
     }
 
     final boolean isMatch(A rule, AnalysisContextSchema context) {
