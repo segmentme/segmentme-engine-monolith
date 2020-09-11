@@ -7,6 +7,7 @@ import io.segmentme.core.db.domain.context.SchemaNodeType;
 import lombok.Data;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static io.segmentme.core.db.domain.context.AnalysisContextSchema.InlineType;
 import static org.apache.commons.lang3.time.DateFormatUtils.*;
 
 @UtilityClass
@@ -35,39 +37,41 @@ public class AnalysisContextSchemaResolver {
             DateTimeFormatter.ofPattern(SMTP_DATETIME_FORMAT.getPattern())
     );
 
+    public static final String PATH_SPLITERATOR = ".";
+
     public AnalysisContextSchema resolve(JsonNode jsonNode) {
         AnalysisContextSchema contextSchema = new AnalysisContextSchema();
-        Map<String, SchemaNodeType> paths = new HashMap<>();
+        Map<String, InlineType> paths = new HashMap<>();
 
         SchemaNode root = new SchemaNode().setName("root").setType(SchemaNodeType.OBJECT);
         contextSchema.setInlinePath(paths);
 
         Stream<Map.Entry<String, JsonNode>> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(jsonNode.fields(), 0), false);
 
-        root.setSubNodes(stream.map(it -> convertToSchemaNode("", it.getKey(), it.getValue(), paths)).collect(Collectors.toList()));
+        root.setSubNodes(stream.map(it -> convertToSchemaNode(StringUtils.EMPTY, it.getKey(), it.getValue(), paths)).collect(Collectors.toList()));
 
         contextSchema.setRootNode(root);
         return contextSchema;
     }
 
-    private SchemaNode convertToSchemaNode(String parent, String name, JsonNode json, Map<String, SchemaNodeType> paths) {
+    private SchemaNode convertToSchemaNode(String parent, String name, JsonNode json, Map<String, InlineType> paths) {
         SchemaNode schemaNode = new SchemaNode();
         schemaNode.setType(resolveNodeType(json));
         schemaNode.setName(name);
 
         String path = parent + name;
-        paths.put(path, schemaNode.getType());
+
 
         if (schemaNode.getType() == SchemaNodeType.OBJECT) {
             Stream<Map.Entry<String, JsonNode>> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(json.fields(), 0), false);
-            schemaNode.setSubNodes(stream.map(it -> convertToSchemaNode(path + ".", it.getKey(), it.getValue(), paths)).collect(Collectors.toList()));
+            schemaNode.setSubNodes(stream.map(it -> convertToSchemaNode(path + PATH_SPLITERATOR, it.getKey(), it.getValue(), paths)).collect(Collectors.toList()));
         } else if (schemaNode.getType() == SchemaNodeType.ARRAY) {
             ArrayNodeDescriptor arrayNodeDescriptor = resolveArrayElements(path, json.elements());
             schemaNode.setSubNodes(arrayNodeDescriptor.getNodes());
             schemaNode.setSubType(arrayNodeDescriptor.getArraySubType());
             paths.putAll(arrayNodeDescriptor.getPaths());
         }
-
+        paths.put(path, InlineType.of(schemaNode.getType(), schemaNode.getSubType()));
         return schemaNode;
     }
 
@@ -92,7 +96,7 @@ public class AnalysisContextSchemaResolver {
     private static class ArrayNodeDescriptor {
         private List<SchemaNode> nodes;
         private SchemaNodeType arraySubType;
-        Map<String, SchemaNodeType> paths = new HashMap<>();
+        Map<String, InlineType> paths = new HashMap<>();
     }
 
     private SchemaNodeType resolveNodeType(JsonNode json) {
@@ -101,8 +105,7 @@ public class AnalysisContextSchemaResolver {
             case BOOLEAN -> SchemaNodeType.BOOLEAN;
             case MISSING, NULL, BINARY -> null;
             case NUMBER -> SchemaNodeType.NUMBER;
-            case OBJECT -> SchemaNodeType.OBJECT;
-            case POJO -> SchemaNodeType.OBJECT;
+            case OBJECT, POJO -> SchemaNodeType.OBJECT;
             case STRING -> checkForDateType(json);
         };
     }
