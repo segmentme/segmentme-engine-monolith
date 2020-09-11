@@ -23,12 +23,7 @@ public class AnalysisRuleService {
         analysisRuleService = services.stream().collect(Collectors.toMap(AbstractAnalysisRuleService::getRuleType, it -> it));
     }
 
-    @SuppressWarnings("unchecked")
-    public List<AnalysisResult> analyze(List<? extends AbstractAnalysisRule<?>> rules, AnalysisContextSchema context, AbstractAnalysisRule.RuleType type) {
-        return findService(type).analyze(context, (List<AbstractAnalysisRule<?>>) rules);
-    }
-
-    public AnalysisResult analyze(SimpleAnalysisRule<?> rule, AnalysisContextSchema context) {
+    public List<AnalysisResult> analyze(AbstractAnalysisRule<?> rule, AnalysisContextSchema context) {
         return findService(rule.getRuleType()).analyze(context, rule);
     }
 
