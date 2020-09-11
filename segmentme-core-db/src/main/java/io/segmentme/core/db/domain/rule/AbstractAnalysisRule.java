@@ -18,7 +18,8 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "ruleType", visible = true)
 @JsonSubTypes(value = {
         @Type(name = "BOOLEAN", value = BooleanAnalysisRule.class),
-        @Type(name = "PRECONDITION", value = PreconditionAnalysisRule.class)
+        @Type(name = "PRECONDITION", value = PreconditionAnalysisRule.class),
+        @Type(name = "JSON", value = JsonAnalysisRule.class)
 })
 public abstract class AbstractAnalysisRule<T> extends DbObject {
 
