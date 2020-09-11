@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -15,10 +16,15 @@ import java.util.Optional;
 public class AnalysisContextSchemaServiceImpl implements AnalysisContextSchemaService {
 
     private AnalysisContextSchemaRepository repository;
+    private AnalysisContextSchemaValidationService validationService;
 
     @Override
     public AnalysisContextSchema save(AnalysisContextSchema analysisContextSchema) throws AnalysisContextValidationException {
+        List<AnalysisContextSchemaValidationService.SchemaValidationEntry> validationResult = validationService.validate(analysisContextSchema);
 
+        if (validationResult.stream().anyMatch(it -> it.getSeverity() == AnalysisContextSchemaValidationService.ContextValidationEntrySeverity.CRITICAL)) {
+            throw new AnalysisContextValidationException().setSchemaValidationResult(validationResult);
+        }
         return repository.save(analysisContextSchema);
     }
 

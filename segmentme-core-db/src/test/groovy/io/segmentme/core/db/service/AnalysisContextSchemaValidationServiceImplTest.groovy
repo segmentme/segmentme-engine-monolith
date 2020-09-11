@@ -6,8 +6,6 @@ import static io.segmentme.core.db.service.AnalysisContextSchemaValidationServic
 import static io.segmentme.core.db.service.AnalysisContextSchemaValidationService.ContextValidationEntrySeverity.MID
 
 class AnalysisContextSchemaValidationServiceImplTest extends Specification {
-//    def "Validate"() {
-//    }
 
     def "Of path #path and #code is #expectedSeverity"() {
         expect:

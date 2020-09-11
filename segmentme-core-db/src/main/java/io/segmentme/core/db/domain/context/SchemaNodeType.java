@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public enum SchemaNodeType {
-    OBJECT, ARRAY, STRING, DATE, NUMBER;
+    OBJECT, ARRAY, STRING, DATE, NUMBER, BOOLEAN;
 }
