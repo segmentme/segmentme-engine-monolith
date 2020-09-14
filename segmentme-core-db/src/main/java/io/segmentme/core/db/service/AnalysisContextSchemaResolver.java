@@ -5,14 +5,13 @@ import io.segmentme.core.db.domain.context.AnalysisContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
 import lombok.Data;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -20,27 +19,16 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static io.segmentme.core.db.domain.context.AnalysisContextSchema.InlineType;
-import static org.apache.commons.lang3.time.DateFormatUtils.*;
 
-@UtilityClass
 @Slf4j
+@RequiredArgsConstructor
+@Service
 public class AnalysisContextSchemaResolver {
 
-    private static final List<DateTimeFormatter> DATE_TIME_FORMATTERS = Arrays.asList(
-            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM),
-            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT),
-            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG),
-            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL),
-            DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.getPattern()),
-            DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern()),
-            DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern() + "'Z'"),
-            DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATE_FORMAT.getPattern()),
-            DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATE_FORMAT.getPattern() + "'Z'"),
-            DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_TIME_TIME_ZONE_FORMAT.getPattern()),
-            DateTimeFormatter.ofPattern(SMTP_DATETIME_FORMAT.getPattern())
-    );
+    private final UserConfigurationService userConfigurationService;
 
     public static final String PATH_SPLITERATOR = ".";
+
     public static final String ROOT = "root";
 
     public AnalysisContextSchema resolve(JsonNode jsonNode) {
@@ -65,16 +53,17 @@ public class AnalysisContextSchemaResolver {
     }
 
 
-    public Map<String, InlineType> resolveInlinePath(String path, SchemaNode rootNode) {
+    public Map<String, InlineType> resolveInlinePath(String path, SchemaNode node) {
         val inlinePath = new HashMap<String, InlineType>();
 
         String pathPrefix = StringUtils.isBlank(path) ? StringUtils.EMPTY : path + PATH_SPLITERATOR;
 
         if (!StringUtils.isBlank(path)) {
-            inlinePath.put(path, InlineType.of(rootNode.getType(), rootNode.getSubType()));
+            inlinePath.put(path, InlineType.of(node.getType(), node.getSubType()));
+            node.setPath(path);
         }
 
-        Optional.ofNullable(rootNode.getSubNodes())
+        Optional.ofNullable(node.getSubNodes())
                 .ifPresent(subNodes -> subNodes.stream().map(it -> resolveInlinePath(pathPrefix + it.getName(), it)).forEach(inlinePath::putAll));
 
         return inlinePath;
@@ -144,18 +133,12 @@ public class AnalysisContextSchemaResolver {
         };
     }
 
-    private static SchemaNodeType checkForDateType(JsonNode json) {
+    private SchemaNodeType checkForDateType(JsonNode json) {
         String text = json.asText();
-        if (text.length() > 50) {
+        if (text.length() > 50 || text.length() < 4) {
             return SchemaNodeType.STRING;
         }
-        return DATE_TIME_FORMATTERS.stream().map(it -> {
-            try {
-                return it.parse(text);
-            } catch (Throwable ex) {
-                log.debug("Unable to parse {} to format {}", text, it);
-                return null;
-            }
-        }).filter(Objects::nonNull).findAny().map(it -> SchemaNodeType.DATE).orElseGet(() -> SchemaNodeType.STRING);
+        return DateResolver.resolve(json.textValue(), userConfigurationService.getDateFormats())
+                .map(it -> SchemaNodeType.DATE).orElseGet(() -> SchemaNodeType.STRING);
     }
 }

@@ -11,6 +11,7 @@ class AnalysisContextSchemaResolverTest extends Specification {
 
 
     static ResourceHolder resourceHolder = new ResourceHolder();
+    public static final AnalysisContextSchemaResolver resolver = new AnalysisContextSchemaResolver(new UserConfigurationServiceImpl())
 
 
     def setupSpec() {
@@ -19,7 +20,7 @@ class AnalysisContextSchemaResolverTest extends Specification {
 
     def "Test node counts should match 20"() {
         given:
-        def schema = AnalysisContextSchemaResolver.resolve(resourceHolder.getValidJsonPayloadConfiguration())
+        def schema = resolver.resolve(resourceHolder.getValidJsonPayloadConfiguration())
         expect:
         schema.getInlinePath().size() == 20
     }
@@ -27,7 +28,7 @@ class AnalysisContextSchemaResolverTest extends Specification {
 
     def "Valid JSON Check node #nodeName is  #type"() {
         given:
-        def schema = AnalysisContextSchemaResolver.resolve((resourceHolder.getValidJsonPayloadConfiguration()))
+        def schema = resolver.resolve((resourceHolder.getValidJsonPayloadConfiguration()))
         expect:
         schema.getInlinePath().get(nodeName) == type
         where:
@@ -56,7 +57,7 @@ class AnalysisContextSchemaResolverTest extends Specification {
 
     def "Invalid JSON Check node #nodeName is  #type"() {
         given:
-        def schema = AnalysisContextSchemaResolver.resolve((resourceHolder.getInvalidJsonPayloadConfiguration()))
+        def schema = resolver.resolve((resourceHolder.getInvalidJsonPayloadConfiguration()))
         expect:
         schema.getInlinePath().get(nodeName) == type
         where:

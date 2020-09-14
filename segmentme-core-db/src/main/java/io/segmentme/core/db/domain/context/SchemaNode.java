@@ -12,5 +12,7 @@ public class SchemaNode {
 
     private SchemaNodeType subType;
 
+    private String path;
+
     private List<SchemaNode> subNodes;
 }
