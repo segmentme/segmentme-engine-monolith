@@ -80,7 +80,7 @@ class AnalysisServiceTest extends BaseDatabaseTest {
                 .setAggregation(AbstractAnalysisRule.AggregationType.AND)
                 .setConditions(Arrays.asList(conditions[3]))
                 .setRuleType(AbstractAnalysisRule.RuleType.JSON)
-                .setValue(mapper.convertValue(Map.of("key", "TestValue"), JsonNode.class).toPrettyString())
+                .setValue(mapper.convertValue(Map.of("key", "TestValue"), JsonNode.class))
 
         analysisRuleRepository.saveAll(Arrays.asList(booleanAnalysisRule, booleanAnalysisRule2, booleanAnalysisRule3, jsonAnalysisRule3))
         def analysisRules = analysisRuleRepository.findAll()
