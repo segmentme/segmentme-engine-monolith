@@ -7,11 +7,14 @@ import io.segmentme.core.db.domain.context.SchemaNodeType;
 import lombok.Data;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -38,57 +41,83 @@ public class AnalysisContextSchemaResolver {
     );
 
     public static final String PATH_SPLITERATOR = ".";
+    public static final String ROOT = "root";
 
     public AnalysisContextSchema resolve(JsonNode jsonNode) {
+        return resolve(resolveSchemaNode(jsonNode));
+    }
+
+    public AnalysisContextSchema resolve(SchemaNode node) {
         AnalysisContextSchema contextSchema = new AnalysisContextSchema();
-        Map<String, InlineType> paths = new HashMap<>();
-
-        SchemaNode root = new SchemaNode().setName("root").setType(SchemaNodeType.OBJECT);
-        contextSchema.setInlinePath(paths);
-
-        Stream<Map.Entry<String, JsonNode>> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(jsonNode.fields(), 0), false);
-
-        root.setSubNodes(stream.map(it -> convertToSchemaNode(StringUtils.EMPTY, it.getKey(), it.getValue(), paths)).collect(Collectors.toList()));
-
-        contextSchema.setRootNode(root);
+        contextSchema.setRootNode(node);
+        contextSchema.setInlinePath(resolveInlinePath(contextSchema.getRootNode()));
         return contextSchema;
     }
 
-    private SchemaNode convertToSchemaNode(String parent, String name, JsonNode json, Map<String, InlineType> paths) {
+    private SchemaNode resolveSchemaNode(JsonNode jsonNode) {
+        SchemaNode root = new SchemaNode().setName(ROOT).setType(SchemaNodeType.OBJECT);
+        root.setSubNodes(transformToSchemaNodes(jsonNode.fields(), it -> true));
+        return root;
+    }
+
+    private Map<String, InlineType> resolveInlinePath(SchemaNode rootNode) {
+        return resolveInlinePath(StringUtils.EMPTY, rootNode);
+    }
+
+
+    public Map<String, InlineType> resolveInlinePath(String path, SchemaNode rootNode) {
+        val inlinePath = new HashMap<String, InlineType>();
+
+        String pathPrefix = StringUtils.isBlank(path) ? StringUtils.EMPTY : path + PATH_SPLITERATOR;
+
+        if (!StringUtils.isBlank(path)) {
+            inlinePath.put(path, InlineType.of(rootNode.getType(), rootNode.getSubType()));
+        }
+
+        Optional.ofNullable(rootNode.getSubNodes())
+                .ifPresent(subNodes -> subNodes.stream().map(it -> resolveInlinePath(pathPrefix + it.getName(), it)).forEach(inlinePath::putAll));
+
+        return inlinePath;
+    }
+
+
+    private List<SchemaNode> transformToSchemaNodes(Iterator<Map.Entry<String, JsonNode>> nodes, Predicate<Map.Entry<String, JsonNode>> fiterNodes) {
+        Stream<Map.Entry<String, JsonNode>> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(nodes, 0), false);
+        return stream.filter(fiterNodes).map(it -> convertToSchemaNode(it.getKey(), it.getValue())).collect(Collectors.toList());
+
+    }
+
+    private SchemaNode convertToSchemaNode(String name, JsonNode json) {
         SchemaNode schemaNode = new SchemaNode();
         schemaNode.setType(resolveNodeType(json));
         schemaNode.setName(name);
 
-        String path = parent + name;
-
-
         if (schemaNode.getType() == SchemaNodeType.OBJECT) {
-            Stream<Map.Entry<String, JsonNode>> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(json.fields(), 0), false);
-            schemaNode.setSubNodes(stream.map(it -> convertToSchemaNode(path + PATH_SPLITERATOR, it.getKey(), it.getValue(), paths)).collect(Collectors.toList()));
+            schemaNode.setSubNodes(transformToSchemaNodes(json.fields(), it -> true));
         } else if (schemaNode.getType() == SchemaNodeType.ARRAY) {
-            ArrayNodeDescriptor arrayNodeDescriptor = resolveArrayElements(path, json.elements());
+            ArrayNodeDescriptor arrayNodeDescriptor = buildArrayDescriptor(schemaNode.getName(), json.elements());
             schemaNode.setSubNodes(arrayNodeDescriptor.getNodes());
             schemaNode.setSubType(arrayNodeDescriptor.getArraySubType());
-            paths.putAll(arrayNodeDescriptor.getPaths());
         }
-        paths.put(path, InlineType.of(schemaNode.getType(), schemaNode.getSubType()));
         return schemaNode;
     }
 
-    private ArrayNodeDescriptor resolveArrayElements(String parent, Iterator<JsonNode> json) {
+    private ArrayNodeDescriptor buildArrayDescriptor(String parent, Iterator<JsonNode> json) {
         ArrayNodeDescriptor arrayNodeDescriptor = new ArrayNodeDescriptor();
         List<SchemaNode> nodes = new ArrayList<>();
-        arrayNodeDescriptor.setNodes(nodes);
+        List<String> updatedProperties = new ArrayList<>();
         json.forEachRemaining(arrayItem -> {
             SchemaNodeType type = resolveNodeType(arrayItem);
             arrayNodeDescriptor.setArraySubType(type);
             if (type == SchemaNodeType.OBJECT) {
-                Stream<Map.Entry<String, JsonNode>> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(arrayItem.fields(), 0), false);
-                nodes.addAll(stream.filter(it -> !arrayNodeDescriptor.getPaths().containsKey(parent + "." + it.getKey())).map(it -> convertToSchemaNode(parent + ".", it.getKey(), it.getValue(), arrayNodeDescriptor.getPaths())).collect(Collectors.toList()));
+                List<SchemaNode> objectNodes = transformToSchemaNodes(arrayItem.fields(), it -> !updatedProperties.contains(parent + PATH_SPLITERATOR + it.getKey())).stream().peek(it -> updatedProperties.add(parent + PATH_SPLITERATOR + it.getName())).collect(Collectors.toList());
+                nodes.addAll(objectNodes);
             }
-
         });
 
+        if (!CollectionUtils.isEmpty(nodes)) {
+            arrayNodeDescriptor.setNodes(nodes);
+        }
         return arrayNodeDescriptor;
     }
 

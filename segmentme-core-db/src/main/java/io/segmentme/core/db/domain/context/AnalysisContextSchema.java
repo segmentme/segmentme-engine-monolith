@@ -1,5 +1,6 @@
 package io.segmentme.core.db.domain.context;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,12 +16,13 @@ public class AnalysisContextSchema extends DbObject {
     private Map<String, InlineType> inlinePath;
 
     @Data
+    @AllArgsConstructor
     public static class InlineType {
         private SchemaNodeType rootType;
         private SchemaNodeType subType;
 
-        public static final InlineType of(SchemaNodeType rootType, SchemaNodeType subType) {
-            return new InlineType().setRootType(rootType).setSubType(subType);
+        public static InlineType of(SchemaNodeType rootType, SchemaNodeType subType) {
+            return new InlineType(rootType, subType);
         }
     }
 }
