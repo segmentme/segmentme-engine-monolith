@@ -108,7 +108,12 @@ public class AnalysisContextSchemaResolver {
         List<String> updatedProperties = new ArrayList<>();
         json.forEachRemaining(arrayItem -> {
             SchemaNodeType type = resolveNodeType(arrayItem);
-            arrayNodeDescriptor.setArraySubType(type);
+            if (arrayNodeDescriptor.getArraySubType() == null) {
+                arrayNodeDescriptor.setArraySubType(type);
+            } else if (arrayNodeDescriptor.getArraySubType() != type) {
+                arrayNodeDescriptor.setArraySubType(SchemaNodeType.UNDEFINED);
+            }
+
             if (type == SchemaNodeType.OBJECT) {
                 List<SchemaNode> objectNodes = transformToSchemaNodes(arrayItem.fields(), it -> !updatedProperties.contains(parent + PATH_SPLITERATOR + it.getKey())).stream().peek(it -> updatedProperties.add(parent + PATH_SPLITERATOR + it.getName())).collect(Collectors.toList());
                 nodes.addAll(objectNodes);

@@ -74,7 +74,7 @@ public class AnalysisContextSchemaValidationServiceImpl implements AnalysisConte
             entries.add(of(parentPath, NODE_NAME_NOT_DEFINED));
         }
         if (node.getType() == SchemaNodeType.ARRAY) {
-            if (node.getSubType() == null) {
+            if (node.getSubType() == null || node.getSubType() == SchemaNodeType.UNDEFINED) {
                 entries.add(of(parentPath, NODE_SUBTYPE_NOT_DEFINED));
             }
         } else {

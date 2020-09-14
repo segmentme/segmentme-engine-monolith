@@ -1,0 +1,39 @@
+{
+  "user": {
+    "numbersArray": [
+      12,
+      23,
+      22.4
+    ],
+    "email": "vladislavkondratenko@coherentsolutions.com",
+    "name": "Vladislav",
+    "details": {
+      "gender": "",
+      "address": {
+        "addressLine1": "Dasdsadas",
+        "state": "NU"
+      },
+      "birthDate": "2006-10-22",
+      "phone": "213123"
+    }
+  },
+  "stringArray": [
+    "11",
+    "44"
+  ],
+  "objectArrays": [
+    {
+      "id": "02af8297654248b5a3d17b0f173fa581",
+      "agreementNumber": 123,
+      "isActive": true
+    },
+    {
+      "id": "02af8297654248b5a3d17b0f173fa581",
+      "isActive": true,
+      "dateTime": "2010-01-01T12:00:00Z"
+    }
+  ],
+  "status": "ACTIVE",
+  "fullAge": 12,
+  "weight": 199999999.123232
+}

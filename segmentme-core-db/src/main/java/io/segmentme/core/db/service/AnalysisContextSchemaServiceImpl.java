@@ -15,8 +15,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AnalysisContextSchemaServiceImpl implements AnalysisContextSchemaService {
 
-    private AnalysisContextSchemaRepository repository;
-    private AnalysisContextSchemaValidationService validationService;
+    private final AnalysisContextSchemaRepository repository;
+    private final AnalysisContextSchemaValidationService validationService;
 
     @Override
     public AnalysisContextSchema save(AnalysisContextSchema analysisContextSchema) throws AnalysisContextValidationException {
