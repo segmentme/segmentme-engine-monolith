@@ -1,5 +1,7 @@
 package io.segmentme.core.db.service.rule
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.segmentme.core.db.common.BaseDatabaseTest
 import io.segmentme.core.db.domain.condition.AbstractCondition
 import io.segmentme.core.db.domain.condition.ArrayCondition
@@ -7,6 +9,7 @@ import io.segmentme.core.db.domain.context.AnalysisContextSchema
 import io.segmentme.core.db.domain.context.SchemaNode
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
 import io.segmentme.core.db.domain.rule.BooleanAnalysisRule
+import io.segmentme.core.db.domain.rule.JsonAnalysisRule
 import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule
 import io.segmentme.core.db.dto.AnalysisResult
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository
@@ -20,7 +23,9 @@ class AnalysisServiceTest extends BaseDatabaseTest {
     @Autowired
     private AbstractConditionRepository abstractConditionRepository
     @Autowired
-    private AnalysisService analysisRuleService;
+    private AnalysisService analysisRuleService
+    @Autowired
+    private ObjectMapper mapper
 
     def 'cascade save: Success'() {
         setup:
@@ -29,47 +34,55 @@ class AnalysisServiceTest extends BaseDatabaseTest {
         def result = analysisRuleService.analyze(new AnalysisContextSchema().setRootNode(new SchemaNode().setName("VALUE")))
         then:
         result != null
-        result.size() == 3
-        !isMatched("TEST_FLAG_1", result)
-        isMatched("TEST_FLAG_2", result)
-        !isMatched("TEST_FLAG_3", result)
+        result.size() == 4
+        !this.<Boolean>resultValue("TEST_FLAG_1", result)
+        this.<Boolean>resultValue("TEST_FLAG_2", result)
+        !this.<Boolean>resultValue("TEST_FLAG_3", result)
+        this.<JsonNode>resultValue("TEST_FLAG_4", result) != null
     }
 
 
-    private Boolean isMatched(String flagName, List<AnalysisResult> results){
+    private <T> T resultValue(String flagName, List<AnalysisResult> results) {
         return results.stream()
                 .filter(it -> it.getNames().contains(flagName))
                 .findFirst()
                 .map(it -> it.getValue())
-                .map(it -> Boolean.TRUE.equals(it))
-                .orElse(null)
+                .orElse(null) as T
     }
 
     private void prepareDate() {
 
         def conditions = createConditions()
-        def analysisRule = new BooleanAnalysisRule()
+        def booleanAnalysisRule = new BooleanAnalysisRule()
                 .setFlags(Arrays.asList("TEST_FLAG_1"))
                 .setAggregation(AbstractAnalysisRule.AggregationType.AND)
                 .setConditions(Arrays.asList(conditions[0]))
                 .setRuleType(AbstractAnalysisRule.RuleType.BOOLEAN)
                 .setValue(true)
 
-        def analysisRule2 = new BooleanAnalysisRule()
+        def booleanAnalysisRule2 = new BooleanAnalysisRule()
                 .setFlags(Arrays.asList("TEST_FLAG_2"))
                 .setAggregation(AbstractAnalysisRule.AggregationType.AND)
                 .setConditions(Arrays.asList(conditions[1]))
                 .setRuleType(AbstractAnalysisRule.RuleType.BOOLEAN)
                 .setValue(true)
 
-        def analysisRule3 = new BooleanAnalysisRule()
+        def booleanAnalysisRule3 = new BooleanAnalysisRule()
                 .setFlags(Arrays.asList("TEST_FLAG_3"))
                 .setAggregation(AbstractAnalysisRule.AggregationType.AND)
                 .setConditions(Arrays.asList(conditions[2]))
                 .setRuleType(AbstractAnalysisRule.RuleType.BOOLEAN)
                 .setValue(true)
 
-        analysisRuleRepository.saveAll(Arrays.asList(analysisRule, analysisRule2, analysisRule3))
+
+        def jsonAnalysisRule3 = new JsonAnalysisRule()
+                .setFlags(Arrays.asList("TEST_FLAG_4"))
+                .setAggregation(AbstractAnalysisRule.AggregationType.AND)
+                .setConditions(Arrays.asList(conditions[3]))
+                .setRuleType(AbstractAnalysisRule.RuleType.JSON)
+                .setValue(mapper.convertValue(Map.of("key", "TestValue"), JsonNode.class))
+
+        analysisRuleRepository.saveAll(Arrays.asList(booleanAnalysisRule, booleanAnalysisRule2, booleanAnalysisRule3, jsonAnalysisRule3))
         def analysisRules = analysisRuleRepository.findAll()
 
 
@@ -82,7 +95,7 @@ class AnalysisServiceTest extends BaseDatabaseTest {
 
 
         analysisRuleRepository.save(precondition)
-        precondition = (PreconditionAnalysisRule)analysisRuleRepository.findAll()[3]
+        precondition = (PreconditionAnalysisRule) analysisRuleRepository.findAll()[4]
 
         def rules = precondition.getAnalysisRules()
 
@@ -119,6 +132,12 @@ class AnalysisServiceTest extends BaseDatabaseTest {
                         .setCriteria("rootNode.name")
                         .setType(AbstractCondition.ConditionType.IN)
                         .setDescription("VALUE_2")
+                        .setMatchResult(true)
+                        .setName("TEST_NAME"),
+                new ArrayCondition()
+                        .setValue(Arrays.asList("VALUE"))
+                        .setCriteria("rootNode.name")
+                        .setType(AbstractCondition.ConditionType.IN)
                         .setMatchResult(true)
                         .setName("TEST_NAME"))
         abstractConditionRepository.saveAll(conditions)
