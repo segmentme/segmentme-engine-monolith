@@ -5,6 +5,7 @@ import io.segmentme.core.db.domain.context.SchemaNode
 import io.segmentme.core.db.domain.context.SchemaNodeType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import spock.lang.Ignore
 import spock.lang.Specification
 
 @SpringBootTest
@@ -13,6 +14,7 @@ class AnalysisContextRepositoryTest extends Specification {
     @Autowired
     private AnalysisContextSchemaRepository analysisContextRepository
 
+    @Ignore
     def 'saveContext'() {
         given:
         def analysisContext = new ContextSchema()

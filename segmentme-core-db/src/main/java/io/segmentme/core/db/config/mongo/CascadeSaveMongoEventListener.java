@@ -3,9 +3,10 @@ package io.segmentme.core.db.config.mongo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.event.*;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
-//@Component
+@Component
 @RequiredArgsConstructor
 public class CascadeSaveMongoEventListener extends AbstractMongoEventListener<Object> {
 
@@ -19,6 +20,7 @@ public class CascadeSaveMongoEventListener extends AbstractMongoEventListener<Ob
 
     @Override
     public void onAfterSave(AfterSaveEvent<Object> event) {
-        super.onAfterSave(event);
+        final Object source = event.getSource();
+        ReflectionUtils.doWithFields(source.getClass(), new BackReferenceCallback(source, mongoOperations));
     }
 }

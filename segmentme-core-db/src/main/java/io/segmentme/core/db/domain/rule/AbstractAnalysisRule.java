@@ -3,6 +3,8 @@ package io.segmentme.core.db.domain.rule;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.segmentme.core.db.config.mongo.BackReferenceId;
+import io.segmentme.core.db.config.mongo.CascadeSave;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.context.DbObject;
 import lombok.Data;
@@ -27,9 +29,11 @@ public abstract class AbstractAnalysisRule<T> extends DbObject {
 
     private AggregationType aggregation;
 
+    @BackReferenceId("analysisRules")
     private String preconditionId;
 
     @DBRef
+    @CascadeSave
     private List<AbstractCondition<?>> conditions;
 
     public T value;
