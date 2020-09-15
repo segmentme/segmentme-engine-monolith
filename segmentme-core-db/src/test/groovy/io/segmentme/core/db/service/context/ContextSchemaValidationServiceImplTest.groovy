@@ -1,6 +1,7 @@
 package io.segmentme.core.db.service.context
 
 import io.segmentme.core.db.configuration.test.ResourceHolder
+import io.segmentme.core.db.service.UserConfigurationServiceImpl
 import io.segmentme.core.db.service.context.ContextSchemaResolver
 import io.segmentme.core.db.service.context.ContextSchemaValidationServiceImpl
 import spock.lang.Specification
@@ -12,7 +13,7 @@ import static io.segmentme.core.db.service.context.ContextSchemaValidationServic
 class ContextSchemaValidationServiceImplTest extends Specification {
 
     static ResourceHolder resourceHolder = new ResourceHolder();
-
+    def contextSchemaResolver = new ContextSchemaResolver(new UserConfigurationServiceImpl())
 
     def setupSpec() {
         resourceHolder.init();
@@ -37,7 +38,8 @@ class ContextSchemaValidationServiceImplTest extends Specification {
     def "Test valid json should not contains issues"() {
         given:
         def validationService = new ContextSchemaValidationServiceImpl()
-        def schema = ContextSchemaResolver.resolve(resourceHolder.getValidJsonPayloadConfiguration())
+
+        def schema = contextSchemaResolver.resolve(resourceHolder.getValidJsonPayloadConfiguration())
         when:
         def validationResult = validationService.validate(schema);
         then:
@@ -47,7 +49,7 @@ class ContextSchemaValidationServiceImplTest extends Specification {
     def "Test invalid json should  contains critical issues"() {
         given:
         def validationService = new ContextSchemaValidationServiceImpl()
-        def schema = ContextSchemaResolver.resolve(resourceHolder.getInvalidJsonPayloadConfiguration())
+        def schema = contextSchemaResolver.resolve(resourceHolder.getInvalidJsonPayloadConfiguration())
         when:
         def validationResult = validationService.validate(schema);
         then:

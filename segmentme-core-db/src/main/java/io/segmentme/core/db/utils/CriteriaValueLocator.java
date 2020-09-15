@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @UtilityClass
 @Slf4j
 public class CriteriaValueLocator {
-    private final Pattern ARRAY_INDEX_PATTERN = Pattern.compile("(.*)\\[(\\d+)\\]", Pattern.MULTILINE);
-    private final String ARRAY_INDEX_CLEANER = "\\[[0-9]+\\]";
+    private final Pattern ARRAY_INDEX_PATTERN = Pattern.compile("(.*)\\[(\\d+)]", Pattern.MULTILINE);
+    private final String ARRAY_INDEX_CLEANER = "\\[[0-9]+]";
 
     public Object getCriteriaValue(String path, ContextHolder context) {
         String clearPath = path.replaceAll(ARRAY_INDEX_CLEANER, StringUtils.EMPTY);
