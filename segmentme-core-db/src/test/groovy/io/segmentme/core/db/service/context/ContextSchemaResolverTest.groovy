@@ -24,7 +24,7 @@ class ContextSchemaResolverTest extends Specification {
         given:
         def schema = resolver.resolve(resourceHolder.getValidJsonPayloadConfiguration())
         expect:
-        schema.getInlinePath().size() == 23
+        schema.getInlinePath().size() == 24
     }
 
 
@@ -51,6 +51,7 @@ class ContextSchemaResolverTest extends Specification {
         "objectArrays.id"                     || of(SchemaNodeType.STRING, null)
         "objectArrays.agreementNumber"        || of(SchemaNodeType.NUMBER, null)
         "objectArrays.subObjects"             || of(SchemaNodeType.ARRAY, SchemaNodeType.OBJECT)
+        "objectArrays.subObjects.array"       || of(SchemaNodeType.ARRAY, SchemaNodeType.STRING)
         "objectArrays.subObjects.subObjectId" || of(SchemaNodeType.STRING, null)
         "objectArrays.numbersArray"           || of(SchemaNodeType.ARRAY, SchemaNodeType.NUMBER)
         "objectArrays.isActive"               || of(SchemaNodeType.BOOLEAN, null)
