@@ -1,9 +1,9 @@
 package io.segmentme.core.db.service.rule;
 
-import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import io.segmentme.core.db.dto.AnalysisResult;
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository;
+import io.segmentme.core.db.service.ContextHolder;
 import io.segmentme.core.db.service.rule.common.AnalysisRuleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class AnalysisService {
 
     private final AbstractAnalysisRuleRepository analysisRuleRepository;
 
-    public List<AnalysisResult> analyze(ContextSchema context) {
+    public List<AnalysisResult> analyze(ContextHolder context) {
 
         //TODO need to find rules in db by params... user_id or other key
         List<AbstractAnalysisRule<?>> group = analysisRuleRepository.findByPreconditionIdIsNull();
