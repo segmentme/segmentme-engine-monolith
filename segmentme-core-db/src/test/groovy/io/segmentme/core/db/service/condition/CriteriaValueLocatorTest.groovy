@@ -29,7 +29,6 @@ class CriteriaValueLocatorTest extends Specification {
         def result = new ContextPreprocessorServiceImpl(new UserConfigurationServiceImpl()).prepareContext(json, schema)
         expect:
         def value = CriteriaValueLocator.getCriteriaValue(criteria, result)
-        value != null
         if (expectedValue instanceof Collection) {
             assert (value as Collection) == expectedValue
         } else {
@@ -61,5 +60,7 @@ class CriteriaValueLocatorTest extends Specification {
         "objectArrays[0].subObjects.subObjectId"    || ["id1", "id2"]
         "objectArrays[0].subObjects.subObjectId[1]" || ["id2"]
         "objectArrays[1].subObjects.subObjectId[0]" || ["id3"]
+        "unknownvalue"                              || null
+        "objectArrays[3].subObjects.subObjectId[0]" || null
     }
 }

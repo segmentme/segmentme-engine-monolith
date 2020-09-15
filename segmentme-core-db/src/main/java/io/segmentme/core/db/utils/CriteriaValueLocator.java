@@ -3,6 +3,7 @@ package io.segmentme.core.db.utils;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.service.ContextHolder;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @UtilityClass
+@Slf4j
 public class CriteriaValueLocator {
     private final Pattern ARRAY_INDEX_PATTERN = Pattern.compile("(.*)\\[(\\d+)\\]", Pattern.MULTILINE);
     private final String ARRAY_INDEX_CLEANER = "\\[[0-9]+\\]";
@@ -23,8 +25,12 @@ public class CriteriaValueLocator {
         Object o = context.getValues().get(clearPath);
 
         if (o instanceof List) {
-            return collectionValue((List<?>) o, path, clearPath, context.getSchema());
-
+            try {
+                return collectionValue((List<?>) o, path, clearPath, context.getSchema());
+            } catch (Throwable ex) {
+                log.warn("Unable to get value for criteria {} ", path);
+                return null;
+            }
         }
         return o;
     }
