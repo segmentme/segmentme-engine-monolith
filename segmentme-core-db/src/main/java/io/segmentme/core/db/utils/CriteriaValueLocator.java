@@ -44,7 +44,9 @@ public class CriteriaValueLocator {
         boolean hasUnderlineCollections = collection.stream().anyMatch(it -> it instanceof Collection);
 
         if (!hasUnderlineCollections) {
-            return Optional.ofNullable(currentPosition).map(it -> Collections.singletonList((Object) collection.get(currentPosition.getValue()))).orElse((List<Object>) collection);
+            return Optional.ofNullable(currentPosition)
+                    .map(it -> Collections.singletonList((Object) collection.get(currentPosition.getValue())))
+                    .orElse((List<Object>) collection);
         }
 
         if (currentPosition == null) {
@@ -53,7 +55,7 @@ public class CriteriaValueLocator {
                     .flatMap(Collection::stream).collect(Collectors.toList());
         }
 
-        return collectionValue(((List<?>) collection.get(currentPosition.getRight())), path, clearPath.substring(currentPosition.left.length()), schema);
+        return collectionValue(((List<?>) collection.get(currentPosition.getRight())), path, clearPath.substring(clearPath.indexOf(".")+1), schema);
 
     }
 

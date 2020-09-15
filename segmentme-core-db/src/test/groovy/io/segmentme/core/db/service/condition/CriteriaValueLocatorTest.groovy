@@ -60,6 +60,8 @@ class CriteriaValueLocatorTest extends Specification {
         "objectArrays[0].subObjects.subObjectId"    || ["id1", "id2"]
         "objectArrays[0].subObjects.subObjectId[1]" || ["id2"]
         "objectArrays[1].subObjects.subObjectId[0]" || ["id3"]
+        "objectArrays[0].subObjects.array[0]"       || ["a1"]
+        "objectArrays[0].subObjects[0].array"       || ["a1", "a2", "a3"]
         "unknownvalue"                              || null
         "objectArrays[3].subObjects.subObjectId[0]" || null
     }
