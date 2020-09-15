@@ -20,9 +20,9 @@ public class UserConfigurationServiceImpl implements UserConfigurationService {
             DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL),
             DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.getPattern()),
             DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern()),
-            DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern()).withZone(ZoneId.systemDefault()),
+            DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern()+"'Z'").withZone(ZoneId.systemDefault()),
             DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATE_FORMAT.getPattern()),
-            DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATE_FORMAT.getPattern()).withZone(ZoneId.systemDefault()),
+            DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATE_FORMAT.getPattern()+"'Z'").withZone(ZoneId.systemDefault()),
             DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_TIME_TIME_ZONE_FORMAT.getPattern()),
             DateTimeFormatter.ofPattern(SMTP_DATETIME_FORMAT.getPattern())
     );

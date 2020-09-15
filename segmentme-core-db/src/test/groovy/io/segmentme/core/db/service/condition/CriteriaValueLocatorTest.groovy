@@ -1,0 +1,56 @@
+package io.segmentme.core.db.service.condition
+
+import io.segmentme.core.db.configuration.test.ResourceHolder
+import io.segmentme.core.db.service.UserConfigurationServiceImpl
+import io.segmentme.core.db.service.context.ContextPreprocessorServiceImpl
+import io.segmentme.core.db.service.context.ContextSchemaResolver
+import spock.lang.Specification
+
+import java.time.*
+import java.time.format.DateTimeFormatter
+
+import static org.apache.commons.lang3.time.DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT
+
+class CriteriaValueLocatorTest extends Specification {
+
+    static ResourceHolder resourceHolder = new ResourceHolder();
+
+    static schema = null
+
+    def setupSpec() {
+        resourceHolder.init();
+        schema = new ContextSchemaResolver(new UserConfigurationServiceImpl()).resolve(resourceHolder.getValidJsonPayloadConfiguration())
+    }
+
+    def "Context criteria #criteria should be #expectedValue"() {
+        given:
+        def json = resourceHolder.getValidJsonPayloadConfiguration()
+        def result = new ContextPreprocessorServiceImpl(new UserConfigurationServiceImpl()).prepareContext(json, schema)
+        expect:
+        def value = CriteriaValueLocator.getCriteriaValue(criteria, result)
+        value != null
+        if (expectedValue instanceof Collection) {
+            assert (value as Collection) == expectedValue
+        } else {
+            assert value == expectedValue
+        }
+        where:
+        criteria                              || expectedValue
+        "user.email"                          || "vladislavkondratenko@coherentsolutions.com"
+        "user.name"                           || "Vladislav"
+        "user.details.gender"                 || ""
+        "user.details.address.addressLine1"   || "Dasdsadas"
+        "user.details.address.state"          || "NU"
+        "user.details.birthDate"              || Instant.from(ZonedDateTime.of(LocalDate.parse("2006-10-22"), LocalTime.MIDNIGHT, ZoneId.systemDefault()))
+        "user.details.phone"                  || "213123"
+        "user.status"                         || "ACTIVE"
+        "user.fullAge"                        || 12
+        "user.weight"                         || 199999999.123232
+        "stringArray"                         || ["11", "44"]
+        "objectArrays.id"                     || ["123", "431"]
+        "objectArrays.agreementNumber"        || [123]
+        "objectArrays.isActive"               || [true, false]
+        "objectArrays.dateTime"               || [Instant.from(DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern() + "'Z'").withZone(ZoneId.systemDefault()).parse("2010-01-01T12:00:13Z"))]
+        "objectArrays.subObjects.subObjectId" || ["id1", "id2", "id3"]
+    }
+}

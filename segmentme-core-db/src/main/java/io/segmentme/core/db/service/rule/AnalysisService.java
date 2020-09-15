@@ -1,6 +1,6 @@
 package io.segmentme.core.db.service.rule;
 
-import io.segmentme.core.db.domain.context.AnalysisContextSchema;
+import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import io.segmentme.core.db.dto.AnalysisResult;
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository;
@@ -22,7 +22,7 @@ public class AnalysisService {
 
     private final AbstractAnalysisRuleRepository analysisRuleRepository;
 
-    public List<AnalysisResult> analyze(AnalysisContextSchema context) {
+    public List<AnalysisResult> analyze(ContextSchema context) {
 
         //TODO need to find rules in db by params... user_id or other key
         List<AbstractAnalysisRule<?>> group = analysisRuleRepository.findByPreconditionIdIsNull();

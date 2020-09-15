@@ -1,6 +1,6 @@
-package io.segmentme.core.db.service;
+package io.segmentme.core.db.service.context;
 
-import io.segmentme.core.db.domain.context.AnalysisContextSchema;
+import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
 import lombok.RequiredArgsConstructor;
@@ -19,17 +19,17 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AnalysisContextSchemaValidationServiceImpl implements AnalysisContextSchemaValidationService {
+public class ContextSchemaValidationServiceImpl implements ContextSchemaValidationService {
 
 
     public static final String ROOT = "root";
 
     @Override
-    public List<SchemaValidationEntry> validate(AnalysisContextSchema analysisContextSchema) {
+    public List<SchemaValidationEntry> validate(ContextSchema contextSchema) {
 
         List<SchemaValidationEntry> entries = new ArrayList<>();
 
-        SchemaNode rootNode = analysisContextSchema.getRootNode();
+        SchemaNode rootNode = contextSchema.getRootNode();
         if (rootNode == null) {
             entries.add(of(ROOT, CONTEXT_SCHEMA_SHOULD_CONTAINS_AT_LEAST_ONE_ELEMENT));
             return entries;

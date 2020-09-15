@@ -1,9 +1,11 @@
-package io.segmentme.core.db.service;
+package io.segmentme.core.db.service.context;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.segmentme.core.db.domain.context.AnalysisContextSchema;
+import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
+import io.segmentme.core.db.service.UserConfigurationService;
+import io.segmentme.core.db.utils.DateResolver;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +20,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static io.segmentme.core.db.domain.context.AnalysisContextSchema.InlineType;
+import static io.segmentme.core.db.domain.context.ContextSchema.InlineType;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class AnalysisContextSchemaResolver {
+public class ContextSchemaResolver {
 
     private final UserConfigurationService userConfigurationService;
 
@@ -31,12 +33,12 @@ public class AnalysisContextSchemaResolver {
 
     public static final String ROOT = "root";
 
-    public AnalysisContextSchema resolve(JsonNode jsonNode) {
+    public ContextSchema resolve(JsonNode jsonNode) {
         return resolve(resolveSchemaNode(jsonNode));
     }
 
-    public AnalysisContextSchema resolve(SchemaNode node) {
-        AnalysisContextSchema contextSchema = new AnalysisContextSchema();
+    public ContextSchema resolve(SchemaNode node) {
+        ContextSchema contextSchema = new ContextSchema();
         contextSchema.setRootNode(node);
         contextSchema.setInlinePath(resolveInlinePath(contextSchema.getRootNode()));
         return contextSchema;

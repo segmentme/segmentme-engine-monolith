@@ -1,16 +1,16 @@
-package io.segmentme.core.db.service;
+package io.segmentme.core.db.service.context;
 
-import io.segmentme.core.db.domain.context.AnalysisContextSchema;
+import io.segmentme.core.db.domain.context.ContextSchema;
 import lombok.Data;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.segmentme.core.db.service.AnalysisContextSchemaValidationService.ContextValidationEntrySeverity.CRITICAL;
-import static io.segmentme.core.db.service.AnalysisContextSchemaValidationService.ContextValidationEntrySeverity.MID;
+import static io.segmentme.core.db.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.CRITICAL;
+import static io.segmentme.core.db.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.MID;
 
-public interface AnalysisContextSchemaValidationService {
+public interface ContextSchemaValidationService {
 
     String CONTEXT_SCHEMA_SHOULD_CONTAINS_AT_LEAST_ONE_ELEMENT = "context.should.contain.at.least.one.element";
     String ROOT_NODE_SHOULD_BE_OBJECT = "root.should.be.an.object";
@@ -21,13 +21,13 @@ public interface AnalysisContextSchemaValidationService {
     String NODE_SUBTYPE_SHOULD_NOT_BE_DEFINED = "node.subtype.should.not.be.defined";
 
 
-    List<SchemaValidationEntry> validate(AnalysisContextSchema schema);
+    List<SchemaValidationEntry> validate(ContextSchema schema);
 
     @Data
     final class SchemaValidationEntry {
         private String code;
         private String path;
-        private AnalysisContextSchemaValidationServiceImpl.ContextValidationEntrySeverity severity;
+        private ContextSchemaValidationServiceImpl.ContextValidationEntrySeverity severity;
 
 
     }

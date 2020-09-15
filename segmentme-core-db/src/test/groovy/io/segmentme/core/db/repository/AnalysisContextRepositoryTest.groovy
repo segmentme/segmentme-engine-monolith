@@ -1,6 +1,6 @@
 package io.segmentme.core.db.repository
 
-import io.segmentme.core.db.domain.context.AnalysisContextSchema
+import io.segmentme.core.db.domain.context.ContextSchema
 import io.segmentme.core.db.domain.context.SchemaNode
 import io.segmentme.core.db.domain.context.SchemaNodeType
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +15,7 @@ class AnalysisContextRepositoryTest extends Specification {
 
     def 'saveContext'() {
         given:
-        def analysisContext = new AnalysisContextSchema()
+        def analysisContext = new ContextSchema()
                 .setRootNode(new SchemaNode().setName("node").setRoot(true).setSubType(SchemaNodeType.STRING))
         Map<String, SchemaNodeType> schemaNodeMap = new HashMap<>();
         schemaNodeMap.put("node", SchemaNodeType.STRING)

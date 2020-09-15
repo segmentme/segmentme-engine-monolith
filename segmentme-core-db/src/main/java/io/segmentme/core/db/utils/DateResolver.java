@@ -1,4 +1,4 @@
-package io.segmentme.core.db.service;
+package io.segmentme.core.db.utils;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @UtilityClass
 public class DateResolver {
 
-    Optional<Instant> resolve(String candidate, List<DateTimeFormatter> formats) {
+    public Optional<Instant> resolve(String candidate, List<DateTimeFormatter> formats) {
         return formats.stream().map(it -> {
             try {
                 TemporalAccessor parse = it.parse(candidate);
@@ -29,9 +29,9 @@ public class DateResolver {
                 .findAny()
                 .map(it -> {
                     if (!it.isSupported(ChronoField.SECOND_OF_DAY)) {
-                        return Instant.from(ZonedDateTime.of(LocalDate.from(it), LocalTime.MIDNIGHT, ZoneId.systemDefault()));
+                        return ZonedDateTime.of(LocalDate.from(it), LocalTime.MIDNIGHT, ZoneId.systemDefault());
                     }
-                    return Instant.from(it);
-                });
+                    return it;
+                }).map(Instant::from);
     }
 }

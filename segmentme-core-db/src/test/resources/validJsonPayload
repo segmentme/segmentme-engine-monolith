@@ -7,6 +7,9 @@
     ],
     "email": "vladislavkondratenko@coherentsolutions.com",
     "name": "Vladislav",
+    "status": "ACTIVE",
+    "fullAge": 12,
+    "weight": 199999999.123232,
     "details": {
       "gender": "",
       "address": {
@@ -23,17 +26,37 @@
   ],
   "objectArrays": [
     {
-      "id": "02af8297654248b5a3d17b0f173fa581",
+      "id": "123",
       "agreementNumber": 123,
-      "isActive": true
+      "isActive": true,
+      "numbersArray": [
+        1,
+        2,
+        3
+      ],
+      "subObjects": [
+        {
+          "subObjectId": "id1"
+        },
+        {
+          "subObjectId": "id2"
+        }
+      ]
     },
     {
-      "id": "02af8297654248b5a3d17b0f173fa581",
-      "isActive": true,
-      "dateTime": "2010-01-01T12:00:13Z"
+      "id": "431",
+      "isActive": false,
+      "dateTime": "2010-01-01T12:00:13Z",
+      "numbersArray": [
+        12,
+        23,
+        22.4
+      ],
+      "subObjects": [
+        {
+          "subObjectId": "id3"
+        }
+      ]
     }
-  ],
-  "status": "ACTIVE",
-  "fullAge": 12,
-  "weight": 199999999.123232
+  ]
 }

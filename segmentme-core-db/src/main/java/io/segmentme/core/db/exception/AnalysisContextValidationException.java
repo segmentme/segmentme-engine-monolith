@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
-import static io.segmentme.core.db.service.AnalysisContextSchemaValidationService.SchemaValidationEntry;
+import static io.segmentme.core.db.service.context.ContextSchemaValidationService.SchemaValidationEntry;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

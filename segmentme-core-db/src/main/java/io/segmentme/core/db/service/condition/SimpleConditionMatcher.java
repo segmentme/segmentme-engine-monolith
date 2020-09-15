@@ -1,7 +1,7 @@
 package io.segmentme.core.db.service.condition;
 
 import io.segmentme.core.db.domain.condition.SimpleCondition;
-import io.segmentme.core.db.domain.context.AnalysisContextSchema;
+import io.segmentme.core.db.domain.context.ContextSchema;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -9,7 +9,7 @@ abstract class SimpleConditionMatcher<T extends SimpleCondition<?>> extends Abst
 
     protected abstract boolean match(T condition, Comparable<Object> value);
 
-    public boolean match(T condition, AnalysisContextSchema context) {
+    public boolean match(T condition, ContextSchema context) {
         Comparable<Object> propertyValue = null;
 
         try {

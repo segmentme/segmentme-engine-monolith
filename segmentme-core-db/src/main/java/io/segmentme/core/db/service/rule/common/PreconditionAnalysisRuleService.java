@@ -1,7 +1,9 @@
 package io.segmentme.core.db.service.rule.common;
 
-import io.segmentme.core.db.domain.context.AnalysisContextSchema;
-import io.segmentme.core.db.domain.rule.*;
+import io.segmentme.core.db.domain.context.ContextSchema;
+import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
+import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule;
+import io.segmentme.core.db.domain.rule.SimpleAnalysisRule;
 import io.segmentme.core.db.dto.AnalysisResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -24,7 +28,7 @@ class PreconditionAnalysisRuleService extends AbstractAnalysisRuleService<Precon
     private final AnalysisRuleService analysisRuleService;
 
     @Override
-    List<AnalysisResult> analyze(AnalysisContextSchema context, PreconditionAnalysisRule rule) {
+    List<AnalysisResult> analyze(ContextSchema context, PreconditionAnalysisRule rule) {
         var isMatched = this.getRuleValueIfSatisfy(context, rule);
 
         if (!isMatched) {
@@ -38,7 +42,7 @@ class PreconditionAnalysisRuleService extends AbstractAnalysisRuleService<Precon
                 .collect(Collectors.toList());
     }
 
-    public List<AnalysisResult> analyzeRules(AnalysisContextSchema context, List<? extends AbstractAnalysisRule<?>> analysisRules) {
+    public List<AnalysisResult> analyzeRules(ContextSchema context, List<? extends AbstractAnalysisRule<?>> analysisRules) {
         return Optional.ofNullable(analysisRules)
                 .stream()
                 .flatMap(Collection::parallelStream)
@@ -53,7 +57,7 @@ class PreconditionAnalysisRuleService extends AbstractAnalysisRuleService<Precon
     }
 
     @Override
-    public Boolean getRuleValueIfSatisfy(AnalysisContextSchema context, PreconditionAnalysisRule rule) {
+    public Boolean getRuleValueIfSatisfy(ContextSchema context, PreconditionAnalysisRule rule) {
         return isMatch(rule, context) ? getValue(rule) : false;
     }
 

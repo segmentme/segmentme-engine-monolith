@@ -1,9 +1,12 @@
-package io.segmentme.core.db.service;
+package io.segmentme.core.db.service.context;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.segmentme.core.db.domain.context.AnalysisContextSchema;
+import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
+import io.segmentme.core.db.service.ContextHolder;
+import io.segmentme.core.db.service.UserConfigurationServiceImpl;
+import io.segmentme.core.db.utils.DateResolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.stereotype.Service;
@@ -18,9 +21,10 @@ public class ContextPreprocessorServiceImpl implements ContextPreprocessorServic
     private final UserConfigurationServiceImpl userConfigurationService;
 
     @Override
-    public AnalysisContext prepareContext(JsonNode rawContext, AnalysisContextSchema schema) {
-        AnalysisContext context = new AnalysisContext();
+    public ContextHolder prepareContext(JsonNode rawContext, ContextSchema schema) {
+        ContextHolder context = new ContextHolder();
         context.setValues(new HashMap<>());
+        context.setSchema(schema);
         rawContext.fields().forEachRemaining(it -> buildValuesMap(it.getKey(), it.getValue(), schema.getRootNode().getSubNodes(), context.getValues()));
         return context;
     }
@@ -53,23 +57,25 @@ public class ContextPreprocessorServiceImpl implements ContextPreprocessorServic
         arrayItems.forEach(element -> {
             switch (subType) {
                 case STRING, NUMBER, BOOLEAN, DATE -> {
-                    List<Object> collectedValues = objects.getOrDefault(schemaNode.getPath(), new ArrayList<>());
-                    collectedValues.add(getSingularValue(element, subType));
-                    objects.putIfAbsent(schemaNode.getPath(), collectedValues);
+                    putValue(objects, schemaNode.getPath(), getSingularValue(element, subType));
                 }
                 case OBJECT -> {
                     Map<String, Object> objectOverview = new HashMap<>();
                     element.fields().forEachRemaining(it -> buildValuesMap(it.getKey(), it.getValue(), schemaNode.getSubNodes(), objectOverview));
 
                     objectOverview.forEach((key, value) -> {
-                        List<Object> collectedValues = objects.getOrDefault(key, new ArrayList<>());
-                        collectedValues.add(value);
-                        objects.putIfAbsent(key, collectedValues);
+                        putValue(objects, key, value);
                     });
                 }
             }
         });
         values.putAll(objects);
+    }
+
+    private void putValue(Map<String, List<Object>> objects, String key, Object value) {
+        List<Object> collectedValues = objects.getOrDefault(key, new ArrayList<>());
+        collectedValues.add(value);
+        objects.putIfAbsent(key, collectedValues);
     }
 
     public Comparable<?> getSingularValue(JsonNode value, SchemaNodeType type) {

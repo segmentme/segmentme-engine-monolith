@@ -1,11 +1,9 @@
 package io.segmentme.core.db.service.rule.common;
 
-import io.segmentme.core.db.domain.context.AnalysisContextSchema;
+import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
-import io.segmentme.core.db.domain.rule.SimpleAnalysisRule;
 import io.segmentme.core.db.dto.AnalysisResult;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +21,7 @@ public class AnalysisRuleService {
         analysisRuleService = services.stream().collect(Collectors.toMap(AbstractAnalysisRuleService::getRuleType, it -> it));
     }
 
-    public List<AnalysisResult> analyze(AbstractAnalysisRule<?> rule, AnalysisContextSchema context) {
+    public List<AnalysisResult> analyze(AbstractAnalysisRule<?> rule, ContextSchema context) {
         return findService(rule.getRuleType()).analyze(context, rule);
     }
 

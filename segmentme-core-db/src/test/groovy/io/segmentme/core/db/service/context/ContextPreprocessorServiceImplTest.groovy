@@ -1,6 +1,9 @@
-package io.segmentme.core.db.service
+package io.segmentme.core.db.service.context
 
 import io.segmentme.core.db.configuration.test.ResourceHolder
+import io.segmentme.core.db.service.UserConfigurationServiceImpl
+import io.segmentme.core.db.service.context.ContextPreprocessorServiceImpl
+import io.segmentme.core.db.service.context.ContextSchemaResolver
 import spock.lang.Specification
 
 class ContextPreprocessorServiceImplTest extends Specification {
@@ -11,7 +14,7 @@ class ContextPreprocessorServiceImplTest extends Specification {
 
     def setupSpec() {
         resourceHolder.init();
-        schema = new AnalysisContextSchemaResolver(new UserConfigurationServiceImpl()).resolve(resourceHolder.getValidJsonPayloadConfiguration())
+        schema = new ContextSchemaResolver(new UserConfigurationServiceImpl()).resolve(resourceHolder.getValidJsonPayloadConfiguration())
     }
 
     def "PrepareContext"() {

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.segmentme.core.db.common.BaseDatabaseTest
 import io.segmentme.core.db.domain.condition.AbstractCondition
 import io.segmentme.core.db.domain.condition.ArrayCondition
-import io.segmentme.core.db.domain.context.AnalysisContextSchema
+import io.segmentme.core.db.domain.context.ContextSchema
 import io.segmentme.core.db.domain.context.SchemaNode
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
 import io.segmentme.core.db.domain.rule.BooleanAnalysisRule
@@ -31,7 +31,7 @@ class AnalysisServiceTest extends BaseDatabaseTest {
         setup:
         prepareDate()
         when:
-        def result = analysisRuleService.analyze(new AnalysisContextSchema().setRootNode(new SchemaNode().setName("VALUE")))
+        def result = analysisRuleService.analyze(new ContextSchema().setRootNode(new SchemaNode().setName("VALUE")))
         then:
         result != null
         result.size() == 4

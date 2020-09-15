@@ -1,13 +1,15 @@
-package io.segmentme.core.db.service
+package io.segmentme.core.db.service.context
 
 import io.segmentme.core.db.configuration.test.ResourceHolder
+import io.segmentme.core.db.service.context.ContextSchemaResolver
+import io.segmentme.core.db.service.context.ContextSchemaValidationServiceImpl
 import spock.lang.Specification
 
-import static io.segmentme.core.db.service.AnalysisContextSchemaValidationService.*
-import static io.segmentme.core.db.service.AnalysisContextSchemaValidationService.ContextValidationEntrySeverity.CRITICAL
-import static io.segmentme.core.db.service.AnalysisContextSchemaValidationService.ContextValidationEntrySeverity.MID
+import static io.segmentme.core.db.service.context.ContextSchemaValidationService.*
+import static io.segmentme.core.db.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.CRITICAL
+import static io.segmentme.core.db.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.MID
 
-class AnalysisContextSchemaValidationServiceImplTest extends Specification {
+class ContextSchemaValidationServiceImplTest extends Specification {
 
     static ResourceHolder resourceHolder = new ResourceHolder();
 
@@ -18,7 +20,7 @@ class AnalysisContextSchemaValidationServiceImplTest extends Specification {
 
     def "Of path #path and #code is #expectedSeverity"() {
         expect:
-        AnalysisContextSchemaValidationServiceImpl.of(path, code).getSeverity() == expectedSeverity
+        ContextSchemaValidationServiceImpl.of(path, code).getSeverity() == expectedSeverity
 
         where:
         path    | code                                                || expectedSeverity
@@ -34,8 +36,8 @@ class AnalysisContextSchemaValidationServiceImplTest extends Specification {
 
     def "Test valid json should not contains issues"() {
         given:
-        def validationService = new AnalysisContextSchemaValidationServiceImpl()
-        def schema = AnalysisContextSchemaResolver.resolve(resourceHolder.getValidJsonPayloadConfiguration())
+        def validationService = new ContextSchemaValidationServiceImpl()
+        def schema = ContextSchemaResolver.resolve(resourceHolder.getValidJsonPayloadConfiguration())
         when:
         def validationResult = validationService.validate(schema);
         then:
@@ -44,8 +46,8 @@ class AnalysisContextSchemaValidationServiceImplTest extends Specification {
 
     def "Test invalid json should  contains critical issues"() {
         given:
-        def validationService = new AnalysisContextSchemaValidationServiceImpl()
-        def schema = AnalysisContextSchemaResolver.resolve(resourceHolder.getInvalidJsonPayloadConfiguration())
+        def validationService = new ContextSchemaValidationServiceImpl()
+        def schema = ContextSchemaResolver.resolve(resourceHolder.getInvalidJsonPayloadConfiguration())
         when:
         def validationResult = validationService.validate(schema);
         then:

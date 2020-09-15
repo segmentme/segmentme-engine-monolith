@@ -2,9 +2,12 @@ package io.segmentme.core.db.service.condition;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.GroupCondition;
-import io.segmentme.core.db.domain.context.AnalysisContextSchema;
+import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +24,7 @@ public class GroupConditionMatcher extends AbstractConditionMatcher<GroupConditi
     private final ConditionMatcher conditionMatcher;
 
     @Override
-    public boolean match(GroupCondition conditions, AnalysisContextSchema context) {
+    public boolean match(GroupCondition conditions, ContextSchema context) {
         return conditions.getAggregation() == AbstractAnalysisRule.AggregationType.OR
                 ? conditions.getConditions().stream().anyMatch(condition -> conditionMatcher.match(condition, context))
                 : conditions.getConditions().stream().allMatch(condition -> conditionMatcher.match(condition, context));
