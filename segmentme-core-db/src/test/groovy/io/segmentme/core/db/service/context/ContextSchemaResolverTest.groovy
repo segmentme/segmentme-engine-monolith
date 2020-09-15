@@ -55,9 +55,9 @@ class ContextSchemaResolverTest extends Specification {
         "objectArrays.numbersArray"           || of(SchemaNodeType.ARRAY, SchemaNodeType.NUMBER)
         "objectArrays.isActive"               || of(SchemaNodeType.BOOLEAN, null)
         "objectArrays.dateTime"               || of(SchemaNodeType.DATE, null)
-        "status"                              || of(SchemaNodeType.STRING, null)
-        "fullAge"                             || of(SchemaNodeType.NUMBER, null)
-        "weight"                              || of(SchemaNodeType.NUMBER, null)
+        "user.status"                         || of(SchemaNodeType.STRING, null)
+        "user.fullAge"                        || of(SchemaNodeType.NUMBER, null)
+        "user.weight"                         || of(SchemaNodeType.NUMBER, null)
     }
 
     def "Invalid JSON Check node #nodeName is  #type"() {
