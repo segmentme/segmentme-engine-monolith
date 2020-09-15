@@ -4,6 +4,7 @@ import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.GroupCondition;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
+import io.segmentme.core.db.service.ContextHolder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class GroupConditionMatcher extends AbstractConditionMatcher<GroupConditi
     private final ConditionMatcher conditionMatcher;
 
     @Override
-    public boolean match(GroupCondition conditions, ContextSchema context) {
+    public boolean match(GroupCondition conditions, ContextHolder context) {
         return conditions.getAggregation() == AbstractAnalysisRule.AggregationType.OR
                 ? conditions.getConditions().stream().anyMatch(condition -> conditionMatcher.match(condition, context))
                 : conditions.getConditions().stream().allMatch(condition -> conditionMatcher.match(condition, context));

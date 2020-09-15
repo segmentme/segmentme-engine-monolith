@@ -1,0 +1,145 @@
+[
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "EMAIL_IN"
+    ],
+    "conditions": [
+      {
+        "type": "IN",
+        "criteria": "user.email",
+        "value": ["test@email.com"],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "EMAIL_NOT_IN"
+    ],
+    "conditions": [
+      {
+        "type": "IN",
+        "criteria": "user.email",
+        "value": ["test@email.com"],
+        "nullValid": false,
+        "matchResult": false
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "AGE_GT"
+    ],
+    "conditions": [
+      {
+        "type": "GT",
+        "criteria": "user.age",
+        "value": 38,
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "AGE_GTE"
+    ],
+    "conditions": [
+      {
+        "type": "GTE",
+        "criteria": "user.age",
+        "value": 40,
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "BIRTH_DATE_LT"
+    ],
+    "conditions": [
+      {
+        "type": "LT",
+        "criteria": "user.birthDate",
+        "value": "22-10-1982",
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "BIRTH_DATE_LTE"
+    ],
+    "conditions": [
+      {
+        "type": "LTE",
+        "criteria": "user.birthDate",
+        "value": "22-10-1980",
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "REGISTERED_DATE_IN_RANGE"
+    ],
+    "conditions": [
+      {
+        "type": "RANGE",
+        "criteria": "user.details.registeredDate",
+        "value": {
+          "min": "2000-06-03T00:00:00Z",
+          "max": "2000-06-07T00:00:00Z"
+        },
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "REGISTERED_DATE_NOT_IN_RANGE"
+    ],
+    "conditions": [
+      {
+        "type": "RANGE",
+        "criteria": "user.details.registeredDate",
+        "value": {
+          "min": "2000-06-03T00:00:00Z",
+          "max": "2000-06-07T00:00:00Z"
+        },
+        "nullValid": false,
+        "matchResult": false
+      }
+    ],
+    "value": true
+  }
+]
+

@@ -1,8 +1,8 @@
 package io.segmentme.core.db.service.rule.common;
 
-import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import io.segmentme.core.db.domain.rule.BooleanAnalysisRule;
+import io.segmentme.core.db.service.ContextHolder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ class BooleanAnalysisRuleService extends SimpleAnalysisRuleService<BooleanAnalys
     }
 
     @Override
-    public Boolean getRuleValueIfSatisfy(ContextSchema context, BooleanAnalysisRule rule) {
+    public Boolean getRuleValueIfSatisfy(ContextHolder context, BooleanAnalysisRule rule) {
         return isMatch(rule, context) ? getValue(rule) : false;
     }
 }
