@@ -17,7 +17,6 @@ import java.lang.annotation.Documented;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes(value = {
         @Type(name = "IN", value = ArrayCondition.class),
-        @Type(name = "NOT_IN", value = ArrayCondition.class),
         @Type(name = "RANGE", value = RangeCondition.class),
         @Type(name = "GT", value = SingleCondition.class),
         @Type(name = "GTE", value = SingleCondition.class),
@@ -41,6 +40,6 @@ public abstract class AbstractCondition<T>  extends DbObject {
     private boolean matchResult = true;
 
     public enum ConditionType {
-        IN, NOT_IN, RANGE, GT, GTE, LT, LTE, GROUP, CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY
+        IN, RANGE, GT, GTE, LT, LTE, GROUP, CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY
     }
 }
