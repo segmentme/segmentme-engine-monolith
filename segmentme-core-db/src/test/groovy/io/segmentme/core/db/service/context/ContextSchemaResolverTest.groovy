@@ -28,7 +28,7 @@ class ContextSchemaResolverTest extends Specification {
     }
 
 
-    def "Valid JSON Check node #nodeName is  #type"() {
+    def "Valid JSON Check that node #nodeName is  #type"() {
         given:
         def schema = resolver.resolve((resourceHolder.getValidJsonPayloadConfiguration()))
         expect:

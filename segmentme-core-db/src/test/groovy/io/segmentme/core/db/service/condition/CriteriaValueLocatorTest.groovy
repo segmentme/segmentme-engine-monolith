@@ -4,6 +4,7 @@ import io.segmentme.core.db.configuration.test.ResourceHolder
 import io.segmentme.core.db.service.UserConfigurationServiceImpl
 import io.segmentme.core.db.service.context.ContextPreprocessorServiceImpl
 import io.segmentme.core.db.service.context.ContextSchemaResolver
+import io.segmentme.core.db.utils.CriteriaValueLocator
 import spock.lang.Specification
 
 import java.time.*
@@ -22,7 +23,7 @@ class CriteriaValueLocatorTest extends Specification {
         schema = new ContextSchemaResolver(new UserConfigurationServiceImpl()).resolve(resourceHolder.getValidJsonPayloadConfiguration())
     }
 
-    def "Context criteria #criteria should be #expectedValue"() {
+    def "Context criteria  #criteria value should be #expectedValue"() {
         given:
         def json = resourceHolder.getValidJsonPayloadConfiguration()
         def result = new ContextPreprocessorServiceImpl(new UserConfigurationServiceImpl()).prepareContext(json, schema)

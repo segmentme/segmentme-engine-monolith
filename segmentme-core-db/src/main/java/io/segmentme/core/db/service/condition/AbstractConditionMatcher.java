@@ -3,6 +3,7 @@ package io.segmentme.core.db.service.condition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.service.ContextHolder;
+import io.segmentme.core.db.utils.CriteriaValueLocator;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 

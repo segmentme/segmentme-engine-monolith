@@ -1,4 +1,4 @@
-package io.segmentme.core.db.service.condition;
+package io.segmentme.core.db.utils;
 
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.service.ContextHolder;
@@ -7,10 +7,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,13 +37,8 @@ public class CriteriaValueLocator {
 
         boolean hasUnderlineCollections = collection.stream().anyMatch(it -> it instanceof Collection);
 
-
         if (!hasUnderlineCollections) {
-            if (currentPosition == null) {
-                return collection;
-            } else {
-                return Collections.singletonList(collection.get(currentPosition.getValue()));
-            }
+            return Optional.ofNullable(currentPosition).map(it -> Collections.singletonList((Object) collection.get(currentPosition.getValue()))).orElse((List<Object>) collection);
         }
 
         if (currentPosition == null) {
