@@ -38,6 +38,7 @@ class CriteriaValueLocatorTest extends Specification {
         criteria                                    || expectedValue
         "user.email"                                || "vladislavkondratenko@coherentsolutions.com"
         "user.name"                                 || "Vladislav"
+        "user.numbersArray"                         || [12, 23, 22.4]
         "user.details.gender"                       || ""
         "user.details.address.addressLine1"         || "Dasdsadas"
         "user.details.address.state"                || "NU"
@@ -48,6 +49,7 @@ class CriteriaValueLocatorTest extends Specification {
         "user.weight"                               || 199999999.123232
         "stringArray"                               || ["11", "44"]
         "objectArrays.id"                           || ["123", "431"]
+        "objectArrays[0].id"                        || ["123"]
         "objectArrays.agreementNumber"              || [123]
         "objectArrays.isActive"                     || [true, false]
         "objectArrays.dateTime"                     || [Instant.from(DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern() + "'Z'").withZone(ZoneId.systemDefault()).parse("2010-01-01T12:00:13Z"))]

@@ -20,7 +20,7 @@ class ContextSchemaResolverTest extends Specification {
         resourceHolder.init();
     }
 
-    def "Test node counts should match 20"() {
+    def "Test node counts should match expected size"() {
         given:
         def schema = resolver.resolve(resourceHolder.getValidJsonPayloadConfiguration())
         expect:
