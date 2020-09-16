@@ -1,2 +1,28 @@
-rootProject.name = 'segmentme'
-include 'segmentme-core-db'
+import groovy.model.ValueHolder
+
+pluginManagement {
+    def projectInfoHolder = new ValueHolder()
+    apply from: 'modules.gradle', to: projectInfoHolder
+    def projectInfo = projectInfoHolder.value
+
+    resolutionStrategy {
+        eachPlugin {
+            switch (requested.id.id) {
+                case 'org.springframework.boot':
+                    useVersion projectInfo.springVersion
+                    break
+            }
+        }
+    }
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        jcenter()
+    }
+}
+
+def projectInfoHolder = new ValueHolder()
+apply from: 'modules.gradle', to: projectInfoHolder
+def projectSettings = projectInfoHolder.value
+
+include projectSettings.settings*.name as String[]
