@@ -15,7 +15,7 @@ abstract class SimpleConditionMatcher<T extends SimpleCondition<?>> extends Abst
         try {
             propertyValue = getProperty(condition.getCriteria(), context);
         } catch (Exception ex) {
-            log.info("Unable to resolve property {} in context {} ,because {}", condition.getCriteria(), context, ex.getMessage());
+            log.warn("Unable to resolve property {} in context {} ,because {}", condition.getCriteria(), context, ex.getMessage());
         }
 
         if (propertyValue == null && condition.isNullValid()) {
