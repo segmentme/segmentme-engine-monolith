@@ -1,0 +1,14 @@
+def springVersion = '2.3.1.RELEASE'
+
+def settings = [
+        [name: 'database', isJava: true],
+        [name: 'service', isJava: true],
+        [name: 'web', isJava: true]
+]
+
+value = new Settings(settings: settings, springVersion: springVersion)
+
+class Settings {
+    def settings
+    def springVersion
+}
