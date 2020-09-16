@@ -439,7 +439,7 @@
         "conditions": [
           {
             "criteria": "roles[0].name",
-            "type": "CONTAINS_ONLY",
+            "type": "IN",
             "value": [
               "ADMIN"
             ],
@@ -448,7 +448,7 @@
           },
           {
             "criteria": "roles[0].isActive",
-            "type": "CONTAINS_ONLY",
+            "type": "IN",
             "value": [
               false
             ],

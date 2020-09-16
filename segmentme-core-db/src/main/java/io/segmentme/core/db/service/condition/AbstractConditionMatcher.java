@@ -5,8 +5,13 @@ import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.service.ContextHolder;
 import io.segmentme.core.db.utils.CriteriaValueLocator;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collection;
+
+@Slf4j
 abstract class AbstractConditionMatcher<T extends AbstractCondition<?>> implements Matcher<T> {
 
     @Autowired
@@ -18,12 +23,27 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition<?>> implemen
     }
 
     @SneakyThrows
-    @SuppressWarnings("unchecked")
     protected Comparable<Object> getProperty(String propertyName, ContextHolder context) {
-        return (Comparable<Object>) CriteriaValueLocator.getCriteriaValue(propertyName, context);
+        return castIfRequired(CriteriaValueLocator.getCriteriaValue(propertyName, context), propertyName);
     }
 
     public abstract boolean match(T condition, ContextHolder context);
 
     public abstract AbstractCondition.ConditionType getType();
+
+    @SuppressWarnings("unchecked")
+    private Comparable<Object> castIfRequired(Object propertyValue, String propertyName) {
+        if (!(propertyValue instanceof Collection<?>)) {
+            return (Comparable<Object>) propertyValue;
+        }
+
+        var collectionProperty = (Collection<Comparable<Object>>) propertyValue;
+
+        if (CollectionUtils.size(collectionProperty) > 1) {
+            log.warn("Property {} is a collections with size {}", propertyName, CollectionUtils.size(collectionProperty));
+            throw new RuntimeException("Property is a collection with a size greater than one");
+        }
+
+        return collectionProperty.stream().findFirst().orElseThrow(() -> new RuntimeException("Collection property is empty"));
+    }
 }
