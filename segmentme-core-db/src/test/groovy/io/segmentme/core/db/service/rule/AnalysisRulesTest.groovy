@@ -30,7 +30,7 @@ class AnalysisRulesTest extends BaseRuleTest {
     }
 
 
-    def "Value rule #flag - should be matchResult"() {
+    def "Value rule #flag - should be #matchResult"() {
         given:
         1 * analysisRuleRepository.findByPreconditionIdIsNull() >> getRule(flag)
         and:
