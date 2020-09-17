@@ -1,15 +1,15 @@
 package io.segmentme.core.service.exception;
 
+import io.segmentme.core.service.context.ContextSchemaValidationService;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
-import static io.segmentme.core.db.service.context.ContextSchemaValidationService.SchemaValidationEntry;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class AnalysisContextValidationException extends Exception {
-    private List<SchemaValidationEntry> schemaValidationResult;
+    private List<ContextSchemaValidationService.SchemaValidationEntry> schemaValidationResult;
 
 }
