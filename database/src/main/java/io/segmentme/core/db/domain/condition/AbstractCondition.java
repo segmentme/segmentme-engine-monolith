@@ -6,14 +6,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.segmentme.core.db.domain.context.DbObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.Instant;
 
 
 @Data
@@ -32,7 +26,7 @@ import java.time.Instant;
         @Type(name = "CONTAINS_ANY", value = ArrayCondition.class),
         @Type(name = "CONTAINS_ONLY", value = ArrayCondition.class)
 })
-public abstract class AbstractCondition<T>  extends DbObject {
+public abstract class AbstractCondition<T> extends DbObject {
 
     private String name;
 
@@ -43,18 +37,6 @@ public abstract class AbstractCondition<T>  extends DbObject {
     private ConditionType type;
 
     private boolean matchResult = true;
-
-    @CreatedBy
-    private String createdBy;
-
-    @LastModifiedBy
-    private String lastModifiedBy;
-
-    @CreatedDate
-    private Instant createdDate;
-
-    @LastModifiedDate
-    private Instant lastModifiedDate;
 
     @Indexed
     private String contextId;
