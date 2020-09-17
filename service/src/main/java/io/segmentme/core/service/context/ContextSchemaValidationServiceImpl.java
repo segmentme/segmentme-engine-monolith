@@ -1,4 +1,4 @@
-package io.segmentme.core.db.service.context;
+package io.segmentme.core.service.context;
 
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;

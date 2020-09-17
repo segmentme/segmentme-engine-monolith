@@ -1,11 +1,11 @@
-package io.segmentme.core.db.service.context;
+package io.segmentme.core.service.context;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
-import io.segmentme.core.db.service.UserConfigurationService;
-import io.segmentme.core.db.utils.DateResolver;
+import io.segmentme.core.service.utils.DateResolver;
+import io.segmentme.core.service.workspace.UserConfigurationService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

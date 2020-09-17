@@ -1,4 +1,4 @@
-package io.segmentme.core.db.service;
+package io.segmentme.core.service.workspace;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.segmentme.core.db.utils;
+package io.segmentme.core.service.analysis;
 
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.service.ContextHolder;

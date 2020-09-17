@@ -1,4 +1,4 @@
-package io.segmentme.core.db.utils;
+package io.segmentme.core.service.utils;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;

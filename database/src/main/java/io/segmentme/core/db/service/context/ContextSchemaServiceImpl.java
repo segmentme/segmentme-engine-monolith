@@ -1,35 +1,16 @@
 package io.segmentme.core.db.service.context;
 
 import io.segmentme.core.db.domain.context.ContextSchema;
-import io.segmentme.core.db.exception.AnalysisContextValidationException;
 import io.segmentme.core.db.repository.ContextSchemaRepository;
+import io.segmentme.core.db.service.AbstractDatabaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ContextSchemaServiceImpl implements ContextSchemaService {
+public class ContextSchemaServiceImpl extends AbstractDatabaseService<ContextSchema, ContextSchemaRepository> {
 
-    private final ContextSchemaRepository repository;
-    private final ContextSchemaValidationService validationService;
 
-    @Override
-    public ContextSchema save(ContextSchema contextSchema) throws AnalysisContextValidationException {
-        List<ContextSchemaValidationService.SchemaValidationEntry> validationResult = validationService.validate(contextSchema);
-
-        if (validationResult.stream().anyMatch(it -> it.getSeverity() == ContextSchemaValidationService.ContextValidationEntrySeverity.CRITICAL)) {
-            throw new AnalysisContextValidationException().setSchemaValidationResult(validationResult);
-        }
-        return repository.save(contextSchema);
-    }
-
-    @Override
-    public Optional<ContextSchema> findById(String id) {
-        return repository.findById(id);
-    }
 }

@@ -2,7 +2,6 @@ package io.segmentme.core.db.service.condition;
 
 import io.segmentme.core.db.domain.condition.ArrayCondition;
 import io.segmentme.core.db.service.ContextHolder;
-import io.segmentme.core.db.utils.CriteriaValueLocator;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;

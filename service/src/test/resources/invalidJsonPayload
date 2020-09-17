@@ -1,0 +1,16 @@
+{
+  "objectArrays": [
+    12,
+    "asda",
+    {
+      "id": "02af8297654248b5a3d17b0f173fa581",
+      "agreementNumber": 123,
+      "isActive": true
+    },
+    {
+      "id": "02af8297654248b5a3d17b0f173fa581",
+      "isActive": true,
+      "dateTime": "2010-01-01T12:00:00Z"
+    }
+  ]
+}

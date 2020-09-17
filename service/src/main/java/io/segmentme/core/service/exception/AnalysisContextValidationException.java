@@ -1,4 +1,4 @@
-package io.segmentme.core.db.exception;
+package io.segmentme.core.service.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

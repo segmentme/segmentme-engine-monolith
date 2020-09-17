@@ -1,5 +1,7 @@
 package io.segmentme.core.db.service.rule
 
+import ContextPreprocessorServiceImpl
+import ContextSchemaResolver
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.segmentme.core.db.common.BaseDatabaseTest
@@ -10,8 +12,6 @@ import io.segmentme.core.db.domain.rule.SimpleAnalysisRule
 import io.segmentme.core.db.dto.AnalysisResult
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository
 import io.segmentme.core.db.service.ContextHolder
-import io.segmentme.core.db.service.context.ContextPreprocessorServiceImpl
-import io.segmentme.core.db.service.context.ContextSchemaResolver
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value

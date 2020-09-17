@@ -1,4 +1,4 @@
-package io.segmentme.core.db.service.context;
+package io.segmentme.core.service.analysis;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.ContextSchema;
@@ -6,7 +6,7 @@ import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
 import io.segmentme.core.db.service.ContextHolder;
 import io.segmentme.core.db.service.UserConfigurationServiceImpl;
-import io.segmentme.core.db.utils.DateResolver;
+import io.segmentme.core.service.utils.DateResolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.stereotype.Service;
@@ -44,9 +44,9 @@ public class ContextPreprocessorServiceImpl implements ContextPreprocessorServic
 
     private void getKnownValues(JsonNode value, SchemaNodeType type, SchemaNode schemaNode, String path, Map<String, Object> values) {
         switch (type) {
-            case STRING, NUMBER, BOOLEAN, DATE -> values.put(path, getSingularValue(value, type));
-            case OBJECT -> value.fields().forEachRemaining(it -> buildValuesMap(it.getKey(), it.getValue(), schemaNode.getSubNodes(), values));
-            case ARRAY -> resolveArrayItems(schemaNode, value, values);
+            case SchemaNodeType.STRING, SchemaNodeType.NUMBER, SchemaNodeType.BOOLEAN, SchemaNodeType.DATE -> values.put(path, getSingularValue(value, type));
+            case SchemaNodeType.OBJECT -> value.fields().forEachRemaining(it -> buildValuesMap(it.getKey(), it.getValue(), schemaNode.getSubNodes(), values));
+            case SchemaNodeType.ARRAY -> resolveArrayItems(schemaNode, value, values);
         }
     }
 
@@ -56,10 +56,10 @@ public class ContextPreprocessorServiceImpl implements ContextPreprocessorServic
         Map<String, List<Object>> objects = new HashMap<>();
         arrayItems.forEach(element -> {
             switch (subType) {
-                case STRING, NUMBER, BOOLEAN, DATE -> {
+                case SchemaNodeType.STRING, SchemaNodeType.NUMBER, SchemaNodeType.BOOLEAN, SchemaNodeType.DATE -> {
                     putValue(objects, schemaNode.getPath(), getSingularValue(element, subType));
                 }
-                case OBJECT -> {
+                case SchemaNodeType.OBJECT -> {
                     Map<String, Object> objectOverview = new HashMap<>();
                     element.fields().forEachRemaining(it -> buildValuesMap(it.getKey(), it.getValue(), schemaNode.getSubNodes(), objectOverview));
 
@@ -80,11 +80,11 @@ public class ContextPreprocessorServiceImpl implements ContextPreprocessorServic
 
     public Comparable<?> getSingularValue(JsonNode value, SchemaNodeType type) {
         return switch (type) {
-            case OBJECT, UNDEFINED, ARRAY -> null;
-            case STRING -> value.asText();
-            case NUMBER -> value.numberValue().doubleValue();
-            case BOOLEAN -> value.booleanValue();
-            case DATE -> {
+            case SchemaNodeType.OBJECT, SchemaNodeType.UNDEFINED, SchemaNodeType.ARRAY -> null;
+            case SchemaNodeType.STRING -> value.asText();
+            case SchemaNodeType.NUMBER -> value.numberValue().doubleValue();
+            case SchemaNodeType.BOOLEAN -> value.booleanValue();
+            case SchemaNodeType.DATE -> {
                 Optional<Instant> resolve = DateResolver.resolve(value.asText(), userConfigurationService.getDateFormats());
                 if (resolve.isPresent()) {
                     yield resolve.get();

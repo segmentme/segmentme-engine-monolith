@@ -1,4 +1,4 @@
-package io.segmentme.core.db.service.context;
+package io.segmentme.core.service.context;
 
 import io.segmentme.core.db.domain.context.ContextSchema;
 import lombok.Data;
@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.segmentme.core.db.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.CRITICAL;
-import static io.segmentme.core.db.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.MID;
+import static io.segmentme.core.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.CRITICAL;
+import static io.segmentme.core.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.MID;
 
 public interface ContextSchemaValidationService {
 
