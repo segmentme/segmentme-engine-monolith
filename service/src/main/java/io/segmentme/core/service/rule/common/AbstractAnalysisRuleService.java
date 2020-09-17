@@ -1,10 +1,10 @@
-package io.segmentme.core.db.service.rule.common;
+package io.segmentme.core.service.rule.common;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import io.segmentme.core.db.dto.AnalysisResult;
 import io.segmentme.core.db.service.ContextHolder;
-import io.segmentme.core.db.service.condition.ConditionMatcher;
+import io.segmentme.core.service.condition.ConditionMatcher;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

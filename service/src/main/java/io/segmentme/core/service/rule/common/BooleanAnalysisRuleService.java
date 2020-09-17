@@ -1,4 +1,4 @@
-package io.segmentme.core.db.service.rule.common;
+package io.segmentme.core.service.rule.common;
 
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import io.segmentme.core.db.domain.rule.BooleanAnalysisRule;

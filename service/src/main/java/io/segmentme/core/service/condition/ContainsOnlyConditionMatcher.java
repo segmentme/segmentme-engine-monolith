@@ -1,4 +1,4 @@
-package io.segmentme.core.db.service.condition;
+package io.segmentme.core.service.condition;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import lombok.*;
@@ -13,12 +13,12 @@ import java.util.List;
 @Component
 @EqualsAndHashCode(callSuper = true)
 @RequiredArgsConstructor
-public class ContainsAnyConditionMatcher extends AbstractContainsConditionMatcher {
+public class ContainsOnlyConditionMatcher extends AbstractContainsConditionMatcher {
 
-    private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.CONTAINS_ANY;
+    private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.CONTAINS_ONLY;
 
     @Override
     boolean match(Collection<Comparable<Object>> propertyValue, List<Comparable<Object>> castedConditionValues) {
-        return propertyValue.stream().anyMatch(it -> castedConditionValues.stream().anyMatch(it::equals));
+        return propertyValue.containsAll(castedConditionValues) && propertyValue.size() == castedConditionValues.size();
     }
 }

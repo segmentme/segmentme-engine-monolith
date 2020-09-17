@@ -1,10 +1,10 @@
-package io.segmentme.core.db.service.rule;
+package io.segmentme.core.service.rule;
 
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import io.segmentme.core.db.dto.AnalysisResult;
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository;
 import io.segmentme.core.db.service.ContextHolder;
-import io.segmentme.core.db.service.rule.common.AnalysisRuleService;
+import io.segmentme.core.service.rule.common.AnalysisRuleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class AnalysisService {
     public List<AnalysisResult> analyze(ContextHolder context) {
 
         //TODO need to find rules in db by params... user_id or other key
-        List<AbstractAnalysisRule<?>> group = analysisRuleRepository.findByPreconditionIdIsNull();
+        List<AbstractAnalysisRule<?>> group = List.of();
 
         return group.stream().map(it -> analysisRuleService.analyze(it, context))
                 .flatMap(Collection::parallelStream)

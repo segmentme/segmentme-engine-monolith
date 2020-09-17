@@ -1,27 +1,32 @@
-package io.segmentme.core.db.service.rule
+package io.segmentme.core.service.rule
 
-import ContextPreprocessorServiceImpl
-import ContextSchemaResolver
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.segmentme.core.db.common.BaseDatabaseTest
-import io.segmentme.core.db.configuration.test.ResourceHolder
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
 import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule
 import io.segmentme.core.db.domain.rule.SimpleAnalysisRule
 import io.segmentme.core.db.dto.AnalysisResult
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository
 import io.segmentme.core.db.service.ContextHolder
+import io.segmentme.core.service.analysis.ContextPreprocessorServiceImpl
+import io.segmentme.core.service.configuration.test.ResourceHolder
+import io.segmentme.core.service.context.ContextSchemaResolver
+import io.segmentme.core.service.rule.AnalysisService
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.core.io.Resource
+import org.springframework.test.context.ActiveProfiles
+import spock.lang.Specification
 
 import java.util.stream.Collectors
 
+@SpringBootTest
+@ActiveProfiles("test")
 @Import(ResourceHolder.class)
-abstract class BaseRuleTest extends BaseDatabaseTest {
+abstract class BaseRuleTest extends Specification {
 
     @Value("classpath:rules/schema.json")
     protected Resource schema
@@ -49,11 +54,6 @@ abstract class BaseRuleTest extends BaseDatabaseTest {
     def setup() {
         def json = objectMapper.readValue(schema.getInputStream(), JsonNode.class)
         context = contextPreprocessorService.prepareContext(json, contextSchemaResolver.resolve(json))
-    }
-
-    def cleanup() {
-        mongoTemplate.dropCollection("analysisRule")
-        mongoTemplate.dropCollection("condition")
     }
 
     protected <T> T resultValue(String flagName, List<AnalysisResult> results) {

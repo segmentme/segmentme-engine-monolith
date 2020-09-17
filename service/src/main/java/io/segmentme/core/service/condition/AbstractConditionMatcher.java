@@ -1,9 +1,9 @@
-package io.segmentme.core.db.service.condition;
+package io.segmentme.core.service.condition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.service.ContextHolder;
-import io.segmentme.core.service.utils.CriteriaValueLocator;
+import io.segmentme.core.service.analysis.CriteriaValueLocator;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;

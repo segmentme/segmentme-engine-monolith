@@ -56,7 +56,7 @@ public class ContextSchemaResolver {
 
 
     public Map<String, InlineType> resolveInlinePath(String path, SchemaNode node) {
-        val inlinePath = new HashMap<String, InlineType>();
+        var inlinePath = new HashMap<String, InlineType>();
 
         String pathPrefix = StringUtils.isBlank(path) ? StringUtils.EMPTY : path + PATH_SPLITERATOR;
 

@@ -1,4 +1,6 @@
 dependencies {
     compile project(":database")
     implementation 'org.apache.commons:commons-lang3'
+    testCompile project(':database').sourceSets.test.output
+
 }
