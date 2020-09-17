@@ -1,6 +1,5 @@
 dependencies {
-    compile project(':database').sourceSets.main.output
-    implementation 'org.apache.commons:commons-lang3'
-    testCompile project(':database').sourceSets.test.output
+    implementation project(':database')
+    testImplementation project(':database')
 
 }

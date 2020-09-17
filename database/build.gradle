@@ -1,5 +1,5 @@
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-	implementation 'org.apache.commons:commons-lang3'
-	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+	compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	compile 'org.apache.commons:commons-lang3'
+	testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 }

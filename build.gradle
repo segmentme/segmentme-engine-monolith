@@ -31,7 +31,6 @@ def javaProjectConfiguration(Project project) {
     configure(project) {
         apply plugin: 'java'
         apply plugin: 'groovy'
-        apply plugin: 'org.springframework.boot'
         apply plugin: 'io.spring.dependency-management'
 
         group = 'io.segmentme'
