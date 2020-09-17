@@ -1,12 +1,12 @@
 package io.segmentme.core.service.service.context
 
-
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
 import io.segmentme.core.service.context.ContextSchemaValidationServiceImpl
 import io.segmentme.core.service.workspace.UserConfigurationServiceImpl
 import spock.lang.Specification
 
+import static io.segmentme.core.service.context.ContextSchemaValidationService.*
 import static io.segmentme.core.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.CRITICAL
 import static io.segmentme.core.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.MID
 

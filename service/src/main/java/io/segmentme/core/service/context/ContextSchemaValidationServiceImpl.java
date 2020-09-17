@@ -85,7 +85,7 @@ public class ContextSchemaValidationServiceImpl implements ContextSchemaValidati
     }
 
 
-    static SchemaValidationEntry of(String path, String code) {
+    public static SchemaValidationEntry of(String path, String code) {
         return new SchemaValidationEntry().setPath(path).setCode(code).setSeverity(ERRORS_SEVERITY.getOrDefault(code, ContextValidationEntrySeverity.MID));
     }
 
