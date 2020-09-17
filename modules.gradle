@@ -1,4 +1,4 @@
-def springVersion = '2.3.1.RELEASE'
+def springVersion = '2.3.3.RELEASE'
 
 def settings = [
         [name: 'database', isJava: true],

@@ -2,16 +2,11 @@ import groovy.model.ValueHolder
 
 plugins {
     id 'org.springframework.boot' version '2.3.3.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-    id 'java'
-}
-
-bootJar {
-    enabled = false
 }
 
 def projectSettings = new ValueHolder()
 apply from: 'modules.gradle', to: projectSettings
+
 
 subprojects {
     ext {
@@ -41,8 +36,8 @@ def javaProjectConfiguration(Project project) {
 
         group = 'io.segmentme'
         version = '0.0.1-SNAPSHOT'
-        sourceCompatibility = '14'
-        targetCompatibility = '14'
+        sourceCompatibility = JavaVersion.VERSION_14
+        targetCompatibility = JavaVersion.VERSION_14
 
         configureDependencyManagement(project)
     }

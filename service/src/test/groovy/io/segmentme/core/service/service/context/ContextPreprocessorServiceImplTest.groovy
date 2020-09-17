@@ -1,4 +1,4 @@
-package io.segmentme.core.service.service.analysis
+package io.segmentme.core.service.service.context
 
 
 import io.segmentme.core.service.analysis.ContextPreprocessorServiceImpl

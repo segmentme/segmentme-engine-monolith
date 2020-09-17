@@ -20,6 +20,9 @@ pluginManagement {
         jcenter()
     }
 }
+plugins {
+    id "com.gradle.enterprise" version "3.4.1"
+}
 
 def projectInfoHolder = new ValueHolder()
 apply from: 'modules.gradle', to: projectInfoHolder
