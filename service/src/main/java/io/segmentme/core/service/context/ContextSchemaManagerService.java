@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ContextSchemaServiceImpl  {
+public class ContextSchemaManagerService {
 
     private final ContextSchemaValidationService validationService;
 
