@@ -8,7 +8,9 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class BackReferenceCallback implements ReflectionUtils.FieldCallback {
@@ -40,6 +42,9 @@ public class BackReferenceCallback implements ReflectionUtils.FieldCallback {
     }
 
     private void update(Object fieldValue, String name) {
+        if (fieldValue == null) {
+            return;
+        }
         Arrays.stream(FieldUtils.getAllFields(fieldValue.getClass()))
                 .collect(Collectors.toList())
                 .stream()

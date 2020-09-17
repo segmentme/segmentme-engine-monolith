@@ -5,22 +5,20 @@ import io.segmentme.core.db.domain.context.SchemaNode
 import io.segmentme.core.db.domain.context.SchemaNodeType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import spock.lang.Ignore
 import spock.lang.Specification
 
 @SpringBootTest
 class AnalysisContextRepositoryTest extends Specification {
 
     @Autowired
-    private AnalysisContextSchemaRepository analysisContextRepository
+    private ContextSchemaRepository analysisContextRepository
 
-    @Ignore
     def 'saveContext'() {
         given:
         def analysisContext = new ContextSchema()
-                .setRootNode(new SchemaNode().setName("node").setRoot(true).setSubType(SchemaNodeType.STRING))
-        Map<String, SchemaNodeType> schemaNodeMap = new HashMap<>();
-        schemaNodeMap.put("node", SchemaNodeType.STRING)
+                .setRootNode(new SchemaNode().setName("node").setSubType(SchemaNodeType.STRING))
+        Map<String, ContextSchema.InlineType> schemaNodeMap = new HashMap<>();
+        schemaNodeMap.put("node", ContextSchema.InlineType.of(SchemaNodeType.STRING, null))
         analysisContext.setInlinePath(schemaNodeMap)
 
         when:

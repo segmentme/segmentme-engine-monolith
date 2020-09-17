@@ -2,7 +2,7 @@ package io.segmentme.core.db.service.context;
 
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.exception.AnalysisContextValidationException;
-import io.segmentme.core.db.repository.AnalysisContextSchemaRepository;
+import io.segmentme.core.db.repository.ContextSchemaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ContextSchemaServiceImpl implements ContextSchemaService {
 
-    private final AnalysisContextSchemaRepository repository;
+    private final ContextSchemaRepository repository;
     private final ContextSchemaValidationService validationService;
 
     @Override
