@@ -7,6 +7,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -20,6 +21,7 @@ public class ContextSchema extends DbObject {
 
     private Map<String, InlineType> inlinePath;
 
+    @Indexed
     private String integrationPointKey;
 
     @CreatedBy

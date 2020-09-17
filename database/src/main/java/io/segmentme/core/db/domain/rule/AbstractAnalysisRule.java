@@ -13,6 +13,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -37,6 +38,7 @@ public abstract class AbstractAnalysisRule<T> extends DbObject {
     @BackReferenceId("analysisRules")
     private String preconditionId;
 
+    @Indexed
     private String integrationPointKey;
 
     @DBRef

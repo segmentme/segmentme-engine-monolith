@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -55,6 +56,7 @@ public abstract class AbstractCondition<T>  extends DbObject {
     @LastModifiedDate
     private Instant lastModifiedDate;
 
+    @Indexed
     private String contextId;
 
     public enum ConditionType {
