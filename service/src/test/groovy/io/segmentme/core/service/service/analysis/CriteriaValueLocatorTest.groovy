@@ -2,6 +2,7 @@ package io.segmentme.core.service.service.analysis
 
 
 import io.segmentme.core.service.analysis.ContextPreprocessorServiceImpl
+import io.segmentme.core.service.analysis.CriteriaValueLocator
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
 import io.segmentme.core.service.workspace.UserConfigurationServiceImpl
