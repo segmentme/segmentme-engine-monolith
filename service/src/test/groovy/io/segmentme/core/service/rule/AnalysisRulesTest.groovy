@@ -1,9 +1,7 @@
 package io.segmentme.core.service.rule
 
 import io.segmentme.core.db.dto.AnalysisResult
-import spock.lang.Ignore
 
-@Ignore
 class AnalysisRulesTest extends BaseRuleTest {
 
     def "Boolean rule #flag - should be #isMatch"() {

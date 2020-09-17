@@ -25,7 +25,7 @@ public class AnalysisService {
     public List<AnalysisResult> analyze(ContextHolder context) {
 
         //TODO need to find rules in db by params... user_id or other key
-        List<AbstractAnalysisRule<?>> group = List.of();
+        List<AbstractAnalysisRule<?>> group = analysisRuleRepository.findByPreconditionIdIsNull();
 
         return group.stream().map(it -> analysisRuleService.analyze(it, context))
                 .flatMap(Collection::parallelStream)

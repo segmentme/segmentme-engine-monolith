@@ -1,0 +1,471 @@
+[
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "EMAIL_IN"
+    ],
+    "conditions": [
+      {
+        "type": "IN",
+        "criteria": "user.email",
+        "value": [
+          "test@email.com"
+        ],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "EMAIL_NOT_IN"
+    ],
+    "conditions": [
+      {
+        "type": "IN",
+        "criteria": "user.email",
+        "value": [
+          "test@email.com"
+        ],
+        "nullValid": false,
+        "matchResult": false
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "AGE_GT"
+    ],
+    "conditions": [
+      {
+        "type": "GT",
+        "criteria": "user.age",
+        "value": 38,
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "AGE_GTE"
+    ],
+    "conditions": [
+      {
+        "type": "GTE",
+        "criteria": "user.age",
+        "value": 40,
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "BIRTH_DATE_LT"
+    ],
+    "conditions": [
+      {
+        "type": "LT",
+        "criteria": "user.birthDate",
+        "value": "22-10-1982",
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "BIRTH_DATE_LTE"
+    ],
+    "conditions": [
+      {
+        "type": "LTE",
+        "criteria": "user.birthDate",
+        "value": "22-10-1980",
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "REGISTERED_DATE_IN_RANGE"
+    ],
+    "conditions": [
+      {
+        "type": "RANGE",
+        "criteria": "user.details.registeredDate",
+        "value": {
+          "min": "2000-06-03T00:00:00Z",
+          "max": "2000-06-07T00:00:00Z"
+        },
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "REGISTERED_DATE_NOT_IN_RANGE"
+    ],
+    "conditions": [
+      {
+        "type": "RANGE",
+        "criteria": "user.details.registeredDate",
+        "value": {
+          "min": "2000-06-03T00:00:00Z",
+          "max": "2000-06-07T00:00:00Z"
+        },
+        "nullValid": false,
+        "matchResult": false
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "POSTAL_CODE_CONTAINS_ANY"
+    ],
+    "conditions": [
+      {
+        "type": "CONTAINS_ANY",
+        "criteria": "user.details.address.postalCode",
+        "value": [
+          999999,
+          888888,
+          220015
+        ],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "FIRST_POSTAL_CODE_CONTAINS_ONLY"
+    ],
+    "conditions": [
+      {
+        "type": "CONTAINS_ANY",
+        "criteria": "user.details.address[0].postalCode",
+        "value": [
+          220015
+        ],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "NOT_FIRST_POSTAL_CODE_CONTAINS_ANY"
+    ],
+    "conditions": [
+      {
+        "type": "CONTAINS_ANY",
+        "criteria": "user.details.address[0].postalCode",
+        "value": [
+          44423
+        ],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "SECOND_PHONE_CONTAINS_ONLY"
+    ],
+    "conditions": [
+      {
+        "type": "CONTAINS_ONLY",
+        "criteria": "user.details.phones[1]",
+        "value": [
+          "(29)9999999"
+        ],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "BOOLEAN",
+    "aggregation": "AND",
+    "flags": [
+      "ADDRESS_MINSK_ROLE_ADMIN_AND_MONEY"
+    ],
+    "conditions": [
+      {
+        "type": "GROUP",
+        "aggregation": "AND",
+        "conditions": [
+          {
+            "criteria": "user.details.address.city",
+            "type": "CONTAINS_ANY",
+            "value": [
+              "Minsk"
+            ],
+            "nullValid": false,
+            "matchResult": true
+          },
+          {
+            "criteria": "roles.name",
+            "type": "CONTAINS_ANY",
+            "value": [
+              "ADMIN"
+            ],
+            "nullValid": false,
+            "matchResult": true
+          }
+        ]
+      },
+      {
+        "criteria": "wallet.money",
+        "type": "GT",
+        "value": 289,
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "PRECONDITION",
+    "aggregation": "AND",
+    "analysisRules": [
+      {
+        "ruleType": "BOOLEAN",
+        "aggregation": "AND",
+        "flags": [
+          "PRECONDITION_WITH_TWO_RULES"
+        ],
+        "conditions": [
+          {
+            "type": "LT",
+            "criteria": "user.birthDate",
+            "value": "22-10-1990",
+            "nullValid": false,
+            "matchResult": true
+          },
+          {
+            "type": "LT",
+            "criteria": "user.age",
+            "value": 55,
+            "nullValid": false,
+            "matchResult": true
+          }
+        ],
+        "value": true
+      }
+    ],
+    "conditions": [
+      {
+        "type": "CONTAINS_ANY",
+        "criteria": "user.details.address.postalCode",
+        "value": [
+          101000
+        ],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "JSON",
+    "aggregation": "AND",
+    "flags": [
+      "EMAIL_IN_JSON"
+    ],
+    "conditions": [
+      {
+        "type": "IN",
+        "criteria": "user.email",
+        "value": [
+          "test@email.com"
+        ],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": {
+      "key": "value",
+      "object": {
+        "propA": "A",
+        "propB": "B"
+      }
+    }
+  },
+  {
+    "ruleType": "JSON",
+    "aggregation": "AND",
+    "flags": [
+      "CITY_MOSCOW_EXIST"
+    ],
+    "conditions": [
+      {
+        "type": "CONTAINS_ANY",
+        "criteria": "user.details.address.city",
+        "value": [
+          "Moscow"
+        ],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": "STRING_VALUE"
+  },
+  {
+    "ruleType": "JSON",
+    "aggregation": "AND",
+    "flags": [
+      "UNKNOWN_FIELD_EXIST"
+    ],
+    "conditions": [
+      {
+        "type": "CONTAINS_ANY",
+        "criteria": "user.details.address.city.unknown",
+        "value": [
+          "NULL_VALID_TRUE"
+        ],
+        "nullValid": true,
+        "matchResult": true
+      }
+    ],
+    "value": "EXIST_UNKNOWN_VALUE"
+  },
+  {
+    "ruleType": "JSON",
+    "aggregation": "AND",
+    "flags": [
+      "UNKNOWN_FIELD_NOT_EXIST"
+    ],
+    "conditions": [
+      {
+        "type": "CONTAINS_ANY",
+        "criteria": "user.details.address.city.unknown",
+        "value": [
+          "NULL_VALID_TRUE"
+        ],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": "EXIST_UNKNOWN_VALUE"
+  },
+  {
+    "ruleType": "PRECONDITION",
+    "aggregation": "AND",
+    "analysisRules": [
+      {
+        "ruleType": "JSON",
+        "aggregation": "AND",
+        "flags": [
+          "PRECONDITION_RULE_JSON"
+        ],
+        "conditions": [
+          {
+            "type": "IN",
+            "criteria": "wallet.lastProductName",
+            "value": [
+              "PRODUCT_NAME"
+            ],
+            "nullValid": false,
+            "matchResult": false
+          }
+        ],
+        "value": [1, 2, 3, 4, 5]
+      }
+    ],
+    "conditions": [
+      {
+        "type": "RANGE",
+        "criteria": "wallet.spend",
+        "value": {
+          "min": 999,
+          "max": 1000.30
+        },
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": true
+  },
+  {
+    "ruleType": "JSON",
+    "aggregation": "AND",
+    "flags": [
+      "GROUP_RULE_JSON_RETURN_NUMBER"
+    ],
+    "conditions": [
+      {
+        "type": "GROUP",
+        "aggregation": "AND",
+        "conditions": [
+          {
+            "criteria": "roles[0].name",
+            "type": "IN",
+            "value": [
+              "ADMIN"
+            ],
+            "nullValid": false,
+            "matchResult": true
+          },
+          {
+            "criteria": "roles[0].isActive",
+            "type": "IN",
+            "value": [
+              false
+            ],
+            "nullValid": false,
+            "matchResult": true
+          }
+        ]
+      },
+      {
+        "criteria": "user.details.phones",
+        "type": "CONTAINS_ANY",
+        "value": ["(33)3333333"],
+        "nullValid": false,
+        "matchResult": true
+      }
+    ],
+    "value": 555
+  }
+]
+
