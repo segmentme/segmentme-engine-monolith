@@ -6,9 +6,10 @@ import io.segmentme.core.service.context.ContextSchemaValidationServiceImpl
 import io.segmentme.core.service.workspace.UserConfigurationServiceImpl
 import spock.lang.Specification
 
-import static io.segmentme.core.service.context.ContextSchemaValidationService.*
-import static io.segmentme.core.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.CRITICAL
-import static io.segmentme.core.service.context.ContextSchemaValidationService.ContextValidationEntrySeverity.MID
+import static io.segmentme.core.service.context.SeverityLevel.CRITICAL
+import static io.segmentme.core.service.context.SeverityLevel.MID
+import static io.segmentme.core.service.exception.error.ContextValidationErrors.*
+import static io.segmentme.core.service.exception.error.Errors.ERRORS_SEVERITY
 
 class ContextSchemaValidationServiceImplTest extends Specification {
 

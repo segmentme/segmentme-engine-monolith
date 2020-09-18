@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static io.segmentme.core.service.exception.error.ContextValidationErrors.*;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -86,7 +88,7 @@ public class ContextSchemaValidationServiceImpl implements ContextSchemaValidati
 
 
     public static SchemaValidationEntry of(String path, String code) {
-        return new SchemaValidationEntry().setPath(path).setCode(code).setSeverity(ERRORS_SEVERITY.getOrDefault(code, ContextValidationEntrySeverity.MID));
+        return new SchemaValidationEntry().setPath(path).setCode(code);
     }
 
 }
