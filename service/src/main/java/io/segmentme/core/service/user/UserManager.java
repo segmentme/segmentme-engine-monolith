@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UserManager {
     private final UserService userService;
+
     private final WorkspaceManager workspaceManager;
 
     public UserHolder createUser(UserHolder userToCreate) throws UserManagerException {

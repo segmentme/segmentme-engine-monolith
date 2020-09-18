@@ -16,7 +16,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class WorkspaceManager {
-    private static final List<String> DEFAULT_DATE_PATTERNS = Arrays.asList(
+    public static final List<String> DEFAULT_DATE_PATTERNS = Arrays.asList(
             DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.getPattern(),
             DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern(),
             DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern() + "'Z'",
@@ -42,11 +42,11 @@ public class WorkspaceManager {
         return WorkspaceHolderConverter.toHolder(workspaceService.create(workspace));
     }
 
-    private WorkspaceConfiguration generateDefaultWorkspaceConfiguration() {
+    WorkspaceConfiguration generateDefaultWorkspaceConfiguration() {
         return new WorkspaceConfiguration().setKnownDateFormats(DEFAULT_DATE_PATTERNS);
     }
 
-    private IntegrationPoint generateIntegrationPoint() {
+    IntegrationPoint generateIntegrationPoint() {
         return new IntegrationPoint().setKey(UUID.randomUUID().toString());
     }
 }

@@ -5,6 +5,8 @@ import io.segmentme.core.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 class UserHelper {
@@ -12,7 +14,7 @@ class UserHelper {
     private final UserRepository userRepository;
 
     public static User createUser() {
-        return new User().setEmail("ababa@aa.com").setName("name").setPassword("PWD");
+        return new User().setEmail(UUID.randomUUID().toString() + "@aa.com").setName("name").setPassword("PWD");
     }
 
     public User createAndSaveUser() {

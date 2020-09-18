@@ -4,3 +4,16 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-validation'
 	testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 }
+
+task jarTests(type: Jar, dependsOn: testClasses) {
+	archiveClassifier = 'tests'
+	from sourceSets.test.output
+}
+configurations {
+	tests {
+		extendsFrom testRuntime
+	}
+}
+artifacts {
+	tests jarTests
+}

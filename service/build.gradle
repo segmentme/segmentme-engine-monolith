@@ -1,5 +1,9 @@
 dependencies {
     implementation project(':database')
-    testImplementation project(':database')
+//    testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+//    testImplementation project(':database')
+//    testCompile project(path: ':database', configuration: 'testCompile')
 
+    testImplementation project(':database')
+    testImplementation project(path: ':database', configuration: 'tests')
 }
