@@ -14,14 +14,24 @@ class UserRepositoryTest extends Specification {
     @Autowired
     private UserRepository repository
 
-    def 'save user'() {
+    def 'save user '() {
         given:
         User user = createUser()
         when:
         def save = repository.save(user)
-
         then:
         def found = repository.findById(save.getId())
+        found.get() == save
+
+    }
+
+    def 'find user by email'() {
+        given:
+        User user = createUser()
+        when:
+        def save = repository.save(user)
+        then:
+        def found = repository.findByEmail(user.getEmail())
         found.get() == save
     }
 

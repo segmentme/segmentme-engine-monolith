@@ -8,11 +8,11 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserManagerException extends RuntimeException {
+public class WorkspaceManagerException extends RuntimeException {
     private String code;
     private SeverityLevel severity;
 
-    public UserManagerException setCode(String code) {
+    public WorkspaceManagerException setCode(String code) {
         this.code = code;
         this.severity = Errors.getSeverity(code);
         return this;

@@ -8,10 +8,15 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @EqualsAndHashCode(callSuper = true)
 @Service
 @Data
 @RequiredArgsConstructor
 public class UserService extends AbstractDatabaseService<User, UserRepository> {
 
+    public Optional<User> findByEmail(String email) {
+        return getRepository().findByEmail(email);
+    }
 }

@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document(collection = "user")
 public class User extends DbObject {
-    @Indexed
+    @Indexed(unique = true)
     private String email;
 
     private String name;
