@@ -1,4 +1,4 @@
-package io.segmentme.core.service.condition;
+package io.segmentme.core.service.condition.matcher;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.SingleCondition;
@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 
 @Getter
 @Service
-class GtConditionMatcher extends SimpleConditionMatcher<SingleCondition> {
+class GteConditionMatcher extends SimpleConditionMatcher<SingleCondition> {
 
-    private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.GT;
+    private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.GTE;
 
     @Override
     protected boolean match(SingleCondition condition, Comparable<Object> value) {
-        return value.compareTo(castJsonProperty(condition.getValue(), value)) > 0;
+        return value.compareTo(castJsonProperty(condition.getValue(), value)) >= 0;
     }
 }

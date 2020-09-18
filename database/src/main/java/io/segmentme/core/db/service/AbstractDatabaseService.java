@@ -15,8 +15,8 @@ public abstract class AbstractDatabaseService<E, R extends MongoRepository<E, St
         return repository.findById(id);
     }
 
-    public E create(E user) {
-        return repository.save(user);
+    public E create(E entity) {
+        return repository.save(entity);
     }
 
 }

@@ -1,4 +1,4 @@
-package io.segmentme.core.service.condition;
+package io.segmentme.core.service.condition.matcher;
 
 import io.segmentme.core.db.domain.condition.ArrayCondition;
 import io.segmentme.core.db.service.ContextHolder;

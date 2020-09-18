@@ -9,35 +9,18 @@ import io.segmentme.core.db.dto.AnalysisResult
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository
 import io.segmentme.core.db.service.ContextHolder
 import io.segmentme.core.service.analysis.ContextPreprocessorServiceImpl
+import io.segmentme.core.service.common.BaseTestWithContext
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
 import io.segmentme.core.service.rule.AnalysisService
-import lombok.extern.slf4j.Slf4j
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.SpringBootConfiguration
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Import
 import org.springframework.core.io.Resource
-import org.springframework.test.context.ActiveProfiles
-import spock.lang.Specification
 
 import java.util.stream.Collectors
 
-@Slf4j
-@SpringBootTest
-@ActiveProfiles("test")
-@Import([ResourceHolder.class, TestConfig.class])
-@AutoConfigureMockMvc
-@ComponentScan("io.segmentme.core")
-abstract class BaseRuleTest extends Specification {
-
-    @SpringBootConfiguration
-    public static class TestConfig {
-    }
+abstract class BaseRuleTest extends BaseTestWithContext {
 
     @Value("classpath:rules/schema.json")
     protected Resource schema
