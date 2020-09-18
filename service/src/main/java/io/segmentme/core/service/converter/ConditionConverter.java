@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class ConditionConverter {
 
-    public AbstractCondition<?> of(AbstractConditionDto<?> source) {
-        return convertToEntity(source);
+    public AbstractCondition<?> of(AbstractConditionDto<?> source, String contextId) {
+        return convertToEntity(source, contextId);
     }
 
     public AbstractConditionDto<?> of(AbstractCondition<?> source) {
@@ -28,21 +28,21 @@ public class ConditionConverter {
         };
     }
 
-    private AbstractCondition<?> convertToEntity(AbstractConditionDto<?> source) {
+    private AbstractCondition<?> convertToEntity(AbstractConditionDto<?> source, String contextId) {
         return switch (source.getType()) {
-            case CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY, IN -> convertToEnity(new ArrayCondition(), (ArrayConditionDto) source);
-            case LTE, LT, GTE, GT -> convertToEnity(new SingleCondition(), (SingleConditionDto) source);
-            case RANGE -> convertToEnity(new RangeCondition(), (RangeConditionDto) source);
-            case GROUP -> convertToGroupConditionEntity((GroupConditionDto) source);
+            case CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY, IN -> convertToEnity(new ArrayCondition(), (ArrayConditionDto) source, contextId);
+            case LTE, LT, GTE, GT -> convertToEnity(new SingleCondition(), (SingleConditionDto) source, contextId);
+            case RANGE -> convertToEnity(new RangeCondition(), (RangeConditionDto) source, contextId);
+            case GROUP -> convertToGroupConditionEntity((GroupConditionDto) source, contextId);
             default -> throw new IllegalArgumentException("Unknown condition type " + source.getType());
         };
     }
 
-    private AbstractCondition<?> convertToGroupConditionEntity(GroupConditionDto source) {
+    private AbstractCondition<?> convertToGroupConditionEntity(GroupConditionDto source, String contextId) {
         GroupCondition target = new GroupCondition();
-        List<AbstractCondition<?>> conditions = source.getConditions().stream().map(ConditionConverter::of).collect(Collectors.toList());
+        List<AbstractCondition<?>> conditions = source.getConditions().stream().map(it -> ConditionConverter.of(it, contextId)).collect(Collectors.toList());
         target.setAggregation(source.getAggregation()).setConditions(conditions);
-        return fillAbstractCondition(target, source);
+        return fillAbstractCondition(target, source, contextId);
     }
 
     private AbstractConditionDto<?> convertToGroupConditionDto(GroupCondition source) {
@@ -53,9 +53,9 @@ public class ConditionConverter {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static AbstractCondition<?> convertToEnity(SimpleCondition target, SimpleConditionDto source) {
+    private static AbstractCondition<?> convertToEnity(SimpleCondition target, SimpleConditionDto source, String contextId) {
         target.setValue(source.getValue()).setNullValid(source.isNullValid());
-        return fillAbstractCondition(target, source);
+        return fillAbstractCondition(target, source, contextId);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -73,12 +73,13 @@ public class ConditionConverter {
                 .setType(source.getType());
     }
 
-    private static AbstractCondition<?> fillAbstractCondition(AbstractCondition<?> target, AbstractConditionDto<?> source) {
+    private static AbstractCondition<?> fillAbstractCondition(AbstractCondition<?> target, AbstractConditionDto<?> source, String contextId) {
         target.setId(source.getId());
         return target.setMatchResult(source.isMatchResult())
                 .setCriteria(source.getCriteria())
                 .setDescription(source.getDescription())
                 .setName(source.getName())
-                .setType(source.getType());
+                .setType(source.getType())
+                .setContextId(contextId);
     }
 }

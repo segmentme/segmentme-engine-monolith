@@ -18,7 +18,7 @@ class ConditionManagerTest extends BaseTestWithContext {
         given:
         def source = fillCondition(new ArrayConditionDto(), values, type)
         expect:
-        def target = conditionManager.create(source)
+        def target = conditionManager.create(source, UUID.randomUUID().toString())
         target.id != null
         target.name == source.name
         target.type == source.type
@@ -43,7 +43,7 @@ class ConditionManagerTest extends BaseTestWithContext {
         given:
         def source = fillCondition(new GroupConditionDto(), values, type)
         expect:
-        def target = conditionManager.create(source)
+        def target = conditionManager.create(source, UUID.randomUUID().toString())
         target.id != null
         target.name == source.name
         target.type == source.type
@@ -72,5 +72,31 @@ class ConditionManagerTest extends BaseTestWithContext {
         AbstractCondition.ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN), fillCondition(new SingleConditionDto(), 500, AbstractCondition.ConditionType.LT)]
         AbstractCondition.ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN), fillCondition(new SingleConditionDto(), 500, AbstractCondition.ConditionType.LT)]
         AbstractCondition.ConditionType.GROUP | [fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN)], AbstractCondition.ConditionType.GROUP)]
+    }
+
+
+    def "create simple condition find by contextId"() {
+        given:
+        def contextId = UUID.randomUUID().toString()
+        def condition = fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN)
+        conditionManager.create(condition, contextId)
+        when:
+        def existedContexts = conditionManager.findByContextId(contextId)
+        then:
+        existedContexts.size() == 1
+        def existedContext = existedContexts[0]
+        existedContext.id != null
+    }
+
+
+    def "create group condition and find by contextId"() {
+        given:
+        def contextId = UUID.randomUUID().toString()
+        def condition = fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN)], AbstractCondition.ConditionType.GROUP)
+        conditionManager.create(condition, contextId)
+        when:
+        def existedContexts = conditionManager.findByContextId(contextId)
+        then:
+        existedContexts.size() == 2
     }
 }

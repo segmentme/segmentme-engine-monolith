@@ -19,6 +19,10 @@ class ConditionHelper {
         condition.description = UUID.randomUUID().toString()
         condition.criteria = "root.field.exist"
         condition.matchResult = true
+
+        if (condition instanceof AbstractCondition) {
+            condition.contextId == UUID.randomUUID().toString()
+        }
         return condition
     }
 }

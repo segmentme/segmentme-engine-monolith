@@ -17,7 +17,7 @@ class ConditionConverterTest extends Specification {
         given:
         def source = fillCondition(isDto ? new ArrayConditionDto() : new ArrayCondition(), values, type)
         expect:
-        def target = ConditionConverter.of(source)
+        def target = isDto ? ConditionConverter.of(source, UUID.randomUUID().toString()) : ConditionConverter.of(source)
         target.name == source.name
         target.type == source.type
         target.value == source.value
@@ -49,7 +49,7 @@ class ConditionConverterTest extends Specification {
         given:
         def source = fillCondition(isDto ? new SingleConditionDto() : new SingleCondition(), values, type)
         expect:
-        def target = ConditionConverter.of(source)
+        def target = isDto ? ConditionConverter.of(source, UUID.randomUUID().toString()) : ConditionConverter.of(source)
         target.name == source.name
         target.type == source.type
         target.value == source.value
@@ -73,7 +73,7 @@ class ConditionConverterTest extends Specification {
         given:
         def source = fillCondition(isDto ? new GroupConditionDto() : new GroupCondition(), values, type)
         expect:
-        def target = ConditionConverter.of(source)
+        def target = isDto ? ConditionConverter.of(source, UUID.randomUUID().toString()) : ConditionConverter.of(source)
         target.name == source.name
         target.type == source.type
         target.criteria == source.criteria
