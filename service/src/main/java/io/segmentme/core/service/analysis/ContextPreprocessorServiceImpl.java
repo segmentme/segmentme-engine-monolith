@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
-import io.segmentme.core.db.service.ContextHolder;
 import io.segmentme.core.service.utils.DateResolver;
 import io.segmentme.core.service.workspace.UserConfigurationServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +20,8 @@ public class ContextPreprocessorServiceImpl implements ContextPreprocessorServic
     private final UserConfigurationServiceImpl userConfigurationService;
 
     @Override
-    public ContextHolder prepareContext(JsonNode rawContext, ContextSchema schema) {
-        ContextHolder context = new ContextHolder();
+    public ContextValueHolder prepareContext(JsonNode rawContext, ContextSchema schema) {
+        ContextValueHolder context = new ContextValueHolder();
         context.setValues(new HashMap<>());
         context.setSchema(schema);
         rawContext.fields().forEachRemaining(it -> buildValuesMap(it.getKey(), it.getValue(), schema.getRootNode().getSubNodes(), context.getValues()));

@@ -1,0 +1,24 @@
+package io.segmentme.core.service.converter;
+
+import io.segmentme.core.db.domain.context.ContextSchema;
+import io.segmentme.core.service.dto.context.ContextSchemaHolder;
+
+public class ContextSchemaConverter {
+
+    public static ContextSchemaHolder toHolder(ContextSchema contextSchema) {
+        return new ContextSchemaHolder().setId(contextSchema.getId())
+                .setInlinePath(contextSchema.getInlinePath())
+                .setRootNode(contextSchema.getRootNode())
+                .setIntegrationPointKey(contextSchema.getIntegrationPointKey());
+    }
+
+    public static ContextSchema toEntity(ContextSchemaHolder contextSchema) {
+
+        return (ContextSchema) new ContextSchema()
+                .setInlinePath(contextSchema.getInlinePath())
+                .setRootNode(contextSchema.getRootNode())
+                .setIntegrationPointKey(contextSchema.getIntegrationPointKey())
+                .setId(contextSchema.getId());
+    }
+
+}

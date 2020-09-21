@@ -32,18 +32,18 @@ public class ContextSchemaValidationServiceImpl implements ContextSchemaValidati
         List<SchemaValidationEntry> entries = new ArrayList<>();
 
         SchemaNode rootNode = contextSchema.getRootNode();
-        if (rootNode == null) {
+        if (rootNode == null || CollectionUtils.isEmpty(rootNode.getSubNodes())) {
             entries.add(of(ROOT, CONTEXT_SCHEMA_SHOULD_CONTAINS_AT_LEAST_ONE_ELEMENT));
             return entries;
         }
 
         if (rootNode.getType() != SchemaNodeType.OBJECT) {
-            entries.add(of("root", ROOT_NODE_SHOULD_BE_OBJECT));
+            entries.add(of(ROOT, ROOT_NODE_SHOULD_BE_OBJECT));
             return entries;
         }
 
         if (rootNode.getSubType() != null) {
-            entries.add(of("root", ROOT_NODE_SHOULDNT_HAVE_SUBTUPES));
+            entries.add(of(ROOT, ROOT_NODE_SHOULDNT_HAVE_SUBTUPES));
             return entries;
         }
 

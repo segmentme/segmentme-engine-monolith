@@ -2,7 +2,7 @@ package io.segmentme.core.service.rule.common;
 
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import io.segmentme.core.db.dto.AnalysisResult;
-import io.segmentme.core.db.service.ContextHolder;
+import io.segmentme.core.service.analysis.ContextValueHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public class AnalysisRuleService {
         analysisRuleService = services.stream().collect(Collectors.toMap(AbstractAnalysisRuleService::getRuleType, it -> it));
     }
 
-    public List<AnalysisResult> analyze(AbstractAnalysisRule<?> rule, ContextHolder context) {
+    public List<AnalysisResult> analyze(AbstractAnalysisRule<?> rule, ContextValueHolder context) {
         return findService(rule.getRuleType()).analyze(context, rule);
     }
 

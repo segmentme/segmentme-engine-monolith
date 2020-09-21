@@ -7,12 +7,11 @@ import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule
 import io.segmentme.core.db.domain.rule.SimpleAnalysisRule
 import io.segmentme.core.db.dto.AnalysisResult
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository
-import io.segmentme.core.db.service.ContextHolder
 import io.segmentme.core.service.analysis.ContextPreprocessorServiceImpl
+import io.segmentme.core.service.analysis.ContextValueHolder
 import io.segmentme.core.service.common.BaseTestWithContext
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
-import io.segmentme.core.service.rule.AnalysisService
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -43,7 +42,7 @@ abstract class BaseRuleTest extends BaseTestWithContext {
     @SpringBean
     protected AbstractAnalysisRuleRepository analysisRuleRepository = Mock(AbstractAnalysisRuleRepository.class)
 
-    private ContextHolder context
+    private ContextValueHolder context
 
     def setup() {
         def json = objectMapper.readValue(schema.getInputStream(), JsonNode.class)

@@ -3,7 +3,7 @@ package io.segmentme.core.service.rule.common;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import io.segmentme.core.db.dto.AnalysisResult;
-import io.segmentme.core.db.service.ContextHolder;
+import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.condition.matcher.ConditionMatcher;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -22,11 +22,11 @@ abstract class AbstractAnalysisRuleService<A extends AbstractAnalysisRule<?>> {
 
     abstract AbstractAnalysisRule.RuleType getRuleType();
 
-    List<AnalysisResult> analyze(ContextHolder context, A rule) {
+    List<AnalysisResult> analyze(ContextValueHolder context, A rule) {
         return List.of(AnalysisResult.of(rule.getId(), getNames(rule), this.getRuleValueIfSatisfy(context, rule)));
     }
 
-    final boolean isMatch(A rule, ContextHolder context) {
+    final boolean isMatch(A rule, ContextValueHolder context) {
         if (CollectionUtils.isEmpty(rule.getConditions())) {
             return true;
         }
@@ -45,11 +45,11 @@ abstract class AbstractAnalysisRuleService<A extends AbstractAnalysisRule<?>> {
         return Collections.emptyList();
     }
 
-    Object getRuleValueIfSatisfy(ContextHolder context, A rule) {
+    Object getRuleValueIfSatisfy(ContextValueHolder context, A rule) {
         return isMatch(rule, context) ? rule.getValue() : null;
     }
 
-    private boolean match(AbstractCondition<?> condition, ContextHolder context) {
+    private boolean match(AbstractCondition<?> condition, ContextValueHolder context) {
         return conditionMatcher.match(condition, context);
     }
 }

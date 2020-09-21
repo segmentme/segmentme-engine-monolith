@@ -1,7 +1,6 @@
 package io.segmentme.core.service.analysis;
 
 import io.segmentme.core.db.domain.context.ContextSchema;
-import io.segmentme.core.db.service.ContextHolder;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -19,7 +18,7 @@ public class CriteriaValueLocator {
     private final Pattern ARRAY_INDEX_PATTERN = Pattern.compile("(.*)\\[(\\d+)]", Pattern.MULTILINE);
     private final String ARRAY_INDEX_CLEANER = "\\[[0-9]+]";
 
-    public Object getCriteriaValue(String path, ContextHolder context) {
+    public Object getCriteriaValue(String path, ContextValueHolder context) {
         String clearPath = path.replaceAll(ARRAY_INDEX_CLEANER, StringUtils.EMPTY);
 
         Object o = context.getValues().get(clearPath);

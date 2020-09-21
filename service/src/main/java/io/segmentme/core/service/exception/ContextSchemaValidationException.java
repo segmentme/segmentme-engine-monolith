@@ -9,7 +9,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class AnalysisContextValidationException extends Exception {
+public class ContextSchemaValidationException extends ContextSchemaManagerException {
     private List<ContextSchemaValidationService.SchemaValidationEntry> schemaValidationResult;
 
 }

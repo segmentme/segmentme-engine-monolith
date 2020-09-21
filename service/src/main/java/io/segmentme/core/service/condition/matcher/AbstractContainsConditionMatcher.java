@@ -1,7 +1,7 @@
 package io.segmentme.core.service.condition.matcher;
 
 import io.segmentme.core.db.domain.condition.ArrayCondition;
-import io.segmentme.core.db.service.ContextHolder;
+import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.CriteriaValueLocator;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractContainsConditionMatcher extends AbstractConditionMatcher<ArrayCondition> {
 
     @Override
-    public boolean match(ArrayCondition condition, ContextHolder context) {
+    public boolean match(ArrayCondition condition, ContextValueHolder context) {
         Collection<Comparable<Object>> propertyValue = null;
 
         try {
@@ -44,7 +44,7 @@ public abstract class AbstractContainsConditionMatcher extends AbstractCondition
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    private Collection<Comparable<Object>> getCollection(String propertyName, ContextHolder context) {
+    private Collection<Comparable<Object>> getCollection(String propertyName, ContextValueHolder context) {
         return (Collection<Comparable<Object>>) CriteriaValueLocator.getCriteriaValue(propertyName, context);
     }
 }

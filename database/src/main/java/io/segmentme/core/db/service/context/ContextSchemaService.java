@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ContextSchemaServiceImpl extends AbstractDatabaseService<ContextSchema, ContextSchemaRepository> {
+public class ContextSchemaService extends AbstractDatabaseService<ContextSchema, ContextSchemaRepository> {
 
 
 }

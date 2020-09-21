@@ -6,6 +6,6 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class WorkspaceManagerException extends AbstractManagerException {
+public class ContextSchemaManagerException extends AbstractManagerException {
 
 }

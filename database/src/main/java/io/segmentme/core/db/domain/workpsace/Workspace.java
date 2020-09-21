@@ -22,4 +22,5 @@ public class Workspace extends DbObject {
     @DBRef
     @CascadeSave
     private List<UserProfile> userProfiles;
+
 }

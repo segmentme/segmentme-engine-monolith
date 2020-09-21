@@ -1,11 +1,12 @@
 package io.segmentme.core.db.service;
 
+import io.segmentme.core.db.domain.context.DbObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public abstract class AbstractDatabaseService<E, R extends MongoRepository<E, String>> {
+public abstract class AbstractDatabaseService<E extends DbObject, R extends MongoRepository<E, String>> {
     @Autowired
     protected R repository;
 
@@ -18,4 +19,7 @@ public abstract class AbstractDatabaseService<E, R extends MongoRepository<E, St
     }
 
 
+    public E update(E update) {
+        return repository.save(update);
+    }
 }

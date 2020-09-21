@@ -34,4 +34,15 @@ class WorkspaceRepositoryTest extends Specification {
         def found = repository.findById(save.getId())
         found.get() == save
     }
+
+
+    def 'test find by integration point key'() {
+        when:
+        def workspaceToFind = workspaceHelper.createAndSaveWorkspace()
+        workspaceHelper.createAndSaveWorkspace()
+        then:
+        def found = repository.findByIntegrationPointsKey(workspaceToFind.integrationPoints[0].key)
+        found.get() == workspaceToFind
+    }
+
 }

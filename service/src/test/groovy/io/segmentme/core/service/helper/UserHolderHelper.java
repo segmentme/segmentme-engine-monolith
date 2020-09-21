@@ -5,14 +5,16 @@ import io.segmentme.core.service.user.UserManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
-class UserHolderHelper {
+public class UserHolderHelper {
 
     private final UserManager userManager;
 
     public static UserHolder createUser() {
-        return new UserHolder().setEmail("ababa@aa.com").setName("name").setPassword("PWD");
+        return new UserHolder().setEmail(UUID.randomUUID().toString() + "@aa.com").setName("name").setPassword("PWD");
     }
 
     public UserHolder createUserAndState() {
