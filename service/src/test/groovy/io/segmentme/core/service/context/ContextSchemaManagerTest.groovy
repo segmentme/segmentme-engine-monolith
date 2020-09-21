@@ -19,8 +19,7 @@ import static io.segmentme.core.service.context.ContextSchemaValidationService.S
 
 class ContextSchemaManagerTest extends BaseTestWithContext {
 
-    public static final String KNOWN_INTEGRATION_POINT = "known-integration-point"
-    public static final String UNKNOWN_INTEGRATION_POINT = "known-integration-point"
+    public static final String UNKNOWN_INTEGRATION_POINT = "unknown-integration-point"
     public static final SchemaNode validSchema = new SchemaNode().setName("ROOT").setType(SchemaNodeType.OBJECT).setSubNodes(Arrays.asList(new SchemaNode().setName("name").setType(SchemaNodeType.NUMBER)))
 
     @Autowired
