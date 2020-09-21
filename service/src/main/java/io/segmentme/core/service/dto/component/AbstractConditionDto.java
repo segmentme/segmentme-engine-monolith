@@ -39,6 +39,8 @@ public abstract class AbstractConditionDto<T> {
 
     private boolean matchResult = true;
 
+    private boolean embedded;
+
 }
 
 

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface AbstractConditionRepository extends MongoRepository<AbstractCondition<?>, String> {
 
-    List<AbstractCondition<?>> findByContextId(String id);
+    List<AbstractCondition<?>> findByContextIdAndEmbeddedIsFalse(String id);
 }

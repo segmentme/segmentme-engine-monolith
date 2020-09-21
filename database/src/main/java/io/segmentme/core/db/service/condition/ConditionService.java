@@ -15,6 +15,6 @@ import java.util.List;
 public class ConditionService extends AbstractDatabaseService<AbstractCondition<?>, AbstractConditionRepository> {
 
     public List<AbstractCondition<?>> findByContextId(String contextId) {
-        return repository.findByContextId(contextId);
+        return repository.findByContextIdAndEmbeddedIsFalse(contextId);
     }
 }

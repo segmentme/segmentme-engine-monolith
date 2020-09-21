@@ -64,6 +64,7 @@ class ConditionManagerTest extends BaseTestWithContext {
 
         if (embeddedConditionTarget instanceof GroupConditionDto) {
             embeddedConditionTarget.conditions.size() > 0
+            embeddedConditionTarget.embedded
         }
 
         where:
@@ -71,7 +72,7 @@ class ConditionManagerTest extends BaseTestWithContext {
         AbstractCondition.ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN)]
         AbstractCondition.ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN), fillCondition(new SingleConditionDto(), 500, AbstractCondition.ConditionType.LT)]
         AbstractCondition.ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN), fillCondition(new SingleConditionDto(), 500, AbstractCondition.ConditionType.LT)]
-        AbstractCondition.ConditionType.GROUP | [fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN)], AbstractCondition.ConditionType.GROUP)]
+        AbstractCondition.ConditionType.GROUP | [fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN, true)], AbstractCondition.ConditionType.GROUP, true)]
     }
 
 
@@ -92,11 +93,11 @@ class ConditionManagerTest extends BaseTestWithContext {
     def "create group condition and find by contextId"() {
         given:
         def contextId = UUID.randomUUID().toString()
-        def condition = fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN)], AbstractCondition.ConditionType.GROUP)
+        def condition = fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN, true)], AbstractCondition.ConditionType.GROUP)
         conditionManager.create(condition, contextId)
         when:
         def existedContexts = conditionManager.findByContextId(contextId)
         then:
-        existedContexts.size() == 2
+        existedContexts.size() == 1
     }
 }

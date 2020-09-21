@@ -44,6 +44,7 @@ public abstract class AbstractAnalysisRule<T> extends DbObject {
 
     private String contextId;
 
+    private boolean embedded;
 
     public enum RuleType {
         BOOLEAN, JSON, PRECONDITION

@@ -7,7 +7,7 @@ import io.segmentme.core.service.dto.component.GroupConditionDto
 
 class ConditionHelper {
 
-    public static def fillCondition(Object condition, Object values, AbstractCondition.ConditionType type) {
+    public static def fillCondition(Object condition, Object values, AbstractCondition.ConditionType type, boolean isEmbedded = false) {
         if (condition instanceof GroupConditionDto || condition instanceof GroupCondition) {
             condition.conditions = values
             condition.aggregation = AbstractAnalysisRule.AggregationType.AND
@@ -19,6 +19,7 @@ class ConditionHelper {
         condition.description = UUID.randomUUID().toString()
         condition.criteria = "root.field.exist"
         condition.matchResult = true
+        condition.embedded = isEmbedded
 
         if (condition instanceof AbstractCondition) {
             condition.contextId == UUID.randomUUID().toString()

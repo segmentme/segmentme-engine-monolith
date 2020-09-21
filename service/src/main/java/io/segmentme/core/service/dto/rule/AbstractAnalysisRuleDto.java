@@ -25,6 +25,8 @@ public abstract class AbstractAnalysisRuleDto<T> {
 
     private List<AbstractCondition<?>> conditions;
 
+    private boolean embedded;
+
     @NotNull
     public T value;
 

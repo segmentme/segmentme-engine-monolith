@@ -67,6 +67,7 @@ public class ConditionConverter {
     private static AbstractConditionDto<?> fillAbstractCondition(AbstractConditionDto<?> target, AbstractCondition<?> source) {
         target.setId(source.getId());
         return target.setMatchResult(source.isMatchResult())
+                .setEmbedded(source.isEmbedded())
                 .setCriteria(source.getCriteria())
                 .setDescription(source.getDescription())
                 .setName(source.getName())
@@ -76,6 +77,7 @@ public class ConditionConverter {
     private static AbstractCondition<?> fillAbstractCondition(AbstractCondition<?> target, AbstractConditionDto<?> source, String contextId) {
         target.setId(source.getId());
         return target.setMatchResult(source.isMatchResult())
+                .setEmbedded(source.isEmbedded())
                 .setCriteria(source.getCriteria())
                 .setDescription(source.getDescription())
                 .setName(source.getName())

@@ -38,6 +38,8 @@ public abstract class AbstractCondition<T> extends DbObject {
 
     private boolean matchResult = true;
 
+    private boolean embedded;
+
     @Indexed
     private String contextId;
 
