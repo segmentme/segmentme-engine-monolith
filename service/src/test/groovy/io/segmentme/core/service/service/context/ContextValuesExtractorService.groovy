@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 import static io.segmentme.core.service.helper.WorkspaceConfigurationHelper.defaultWorkspaceConfiguration
 import static org.apache.commons.lang3.time.DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT
 
-class ContextPreprocessorServiceImplTest extends Specification {
+class ContextValuesExtractorService extends Specification {
 
     static ResourceHolder resourceHolder = new ResourceHolder();
 
