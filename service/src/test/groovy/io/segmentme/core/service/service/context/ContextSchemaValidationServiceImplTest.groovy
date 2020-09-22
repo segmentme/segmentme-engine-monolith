@@ -1,20 +1,21 @@
 package io.segmentme.core.service.service.context
 
+import io.segmentme.core.db.domain.workpsace.Workspace
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
 import io.segmentme.core.service.context.ContextSchemaValidationServiceImpl
-import io.segmentme.core.service.workspace.UserConfigurationServiceImpl
 import spock.lang.Specification
 
 import static io.segmentme.core.service.context.SeverityLevel.CRITICAL
 import static io.segmentme.core.service.context.SeverityLevel.MID
 import static io.segmentme.core.service.exception.error.ContextValidationErrors.*
 import static io.segmentme.core.service.exception.error.Errors.ERRORS_SEVERITY
+import static io.segmentme.core.service.helper.WorkspaceConfigurationHelper.defaultWorkspaceConfiguration
 
 class ContextSchemaValidationServiceImplTest extends Specification {
 
     static ResourceHolder resourceHolder = new ResourceHolder();
-    def contextSchemaResolver = new ContextSchemaResolver(new UserConfigurationServiceImpl())
+    def contextSchemaResolver = new ContextSchemaResolver()
 
     def setupSpec() {
         resourceHolder.init();
@@ -40,7 +41,7 @@ class ContextSchemaValidationServiceImplTest extends Specification {
         given:
         def validationService = new ContextSchemaValidationServiceImpl()
 
-        def schema = contextSchemaResolver.resolve(resourceHolder.getValidJsonPayloadConfiguration())
+        def schema = contextSchemaResolver.resolve(new Workspace().setConfiguration(defaultWorkspaceConfiguration()), resourceHolder.getValidJsonPayloadConfiguration())
         when:
         def validationResult = validationService.validate(schema);
         then:
@@ -50,7 +51,7 @@ class ContextSchemaValidationServiceImplTest extends Specification {
     def "Test invalid json should  contains critical issues"() {
         given:
         def validationService = new ContextSchemaValidationServiceImpl()
-        def schema = contextSchemaResolver.resolve(resourceHolder.getInvalidJsonPayloadConfiguration())
+        def schema = contextSchemaResolver.resolve(new Workspace().setConfiguration(defaultWorkspaceConfiguration()), resourceHolder.getInvalidJsonPayloadConfiguration())
         when:
         def validationResult = validationService.validate(schema);
         then:

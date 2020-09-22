@@ -49,4 +49,5 @@ public class WorkspaceManager {
     IntegrationPoint generateIntegrationPoint() {
         return new IntegrationPoint().setKey(UUID.randomUUID().toString());
     }
+
 }

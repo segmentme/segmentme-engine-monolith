@@ -1,16 +1,16 @@
 package io.segmentme.core.service.service.analysis
 
-
-import io.segmentme.core.service.analysis.ContextPreprocessorServiceImpl
+import io.segmentme.core.db.domain.workpsace.Workspace
+import io.segmentme.core.service.analysis.ContextValuesExtractorImpl
 import io.segmentme.core.service.analysis.CriteriaValueLocator
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
-import io.segmentme.core.service.workspace.UserConfigurationServiceImpl
 import spock.lang.Specification
 
 import java.time.*
 import java.time.format.DateTimeFormatter
 
+import static io.segmentme.core.service.helper.WorkspaceConfigurationHelper.defaultWorkspaceConfiguration
 import static org.apache.commons.lang3.time.DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT
 
 class CriteriaValueLocatorTest extends Specification {
@@ -21,13 +21,13 @@ class CriteriaValueLocatorTest extends Specification {
 
     def setupSpec() {
         resourceHolder.init();
-        schema = new ContextSchemaResolver(new UserConfigurationServiceImpl()).resolve(resourceHolder.getValidJsonPayloadConfiguration())
+        schema = new ContextSchemaResolver().resolve(new Workspace().setConfiguration(defaultWorkspaceConfiguration()), resourceHolder.getValidJsonPayloadConfiguration())
     }
 
     def "Context criteria  #criteria value should be #expectedValue"() {
         given:
         def json = resourceHolder.getValidJsonPayloadConfiguration()
-        def result = new ContextPreprocessorServiceImpl(new UserConfigurationServiceImpl()).prepareContext(json, schema)
+        def result = new ContextValuesExtractorImpl().extractValues(json, schema, defaultWorkspaceConfiguration())
         expect:
         def value = CriteriaValueLocator.getCriteriaValue(criteria, result)
         if (expectedValue instanceof Collection) {

@@ -7,8 +7,8 @@ import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule
 import io.segmentme.core.db.domain.rule.SimpleAnalysisRule
 import io.segmentme.core.db.dto.AnalysisResult
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository
-import io.segmentme.core.service.analysis.ContextPreprocessorServiceImpl
 import io.segmentme.core.service.analysis.ContextValueHolder
+import io.segmentme.core.service.analysis.ContextValuesExtractorImpl
 import io.segmentme.core.service.common.BaseTestWithContext
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
@@ -34,7 +34,7 @@ abstract class BaseRuleTest extends BaseTestWithContext {
     protected ObjectMapper objectMapper
 
     @Autowired
-    private ContextPreprocessorServiceImpl contextPreprocessorService
+    private ContextValuesExtractorImpl contextValuesExtractor
 
     @Autowired
     private ContextSchemaResolver contextSchemaResolver
@@ -46,7 +46,7 @@ abstract class BaseRuleTest extends BaseTestWithContext {
 
     def setup() {
         def json = objectMapper.readValue(schema.getInputStream(), JsonNode.class)
-        context = contextPreprocessorService.prepareContext(json, contextSchemaResolver.resolve(json))
+        context = contextValuesExtractor.extractValues(json, contextSchemaResolver.resolve(json))
     }
 
     protected <T> T resultValue(String flagName, List<AnalysisResult> results) {
