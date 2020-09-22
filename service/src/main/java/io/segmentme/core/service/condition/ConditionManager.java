@@ -26,4 +26,8 @@ public class ConditionManager {
         var conditions = conditionService.findByContextId(contextId);
         return conditions.stream().map(ConditionConverter::of).collect(Collectors.toList());
     }
+
+    public void delete(String conditionId){
+       conditionService.delete(conditionId);
+    }
 }
