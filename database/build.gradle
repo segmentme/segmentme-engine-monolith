@@ -5,6 +5,7 @@ dependencies {
 	compile 'org.apache.commons:commons-lang3'
 	compile 'org.springframework.boot:spring-boot-starter-validation'
 	testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+	testCompile 'org.springframework.boot:spring-boot-starter-web'
 }
 
 task jarTests(type: Jar, dependsOn: testClasses) {
