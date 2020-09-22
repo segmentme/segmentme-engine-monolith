@@ -22,7 +22,7 @@ import static java.util.UUID.randomUUID
 
 class RuleConverterTest extends Specification {
 
-    def "Simple analysis rule converting: #values isDto: #isDto"() {
+    def "Analysis rule converting: #values isDto: #isDto"() {
         given:
         def source = createRule(isDto, values)
         expect:

@@ -8,4 +8,6 @@ import java.util.List;
 public interface AbstractAnalysisRuleRepository extends MongoRepository<AbstractAnalysisRule<?>, String> {
 
     List<AbstractAnalysisRule<?>> findByPreconditionIdIsNull();
+
+    List<AbstractAnalysisRule<?>> findByIntegrationPointKeyAndEmbeddedIsFalse(String integrationPointKey);
 }

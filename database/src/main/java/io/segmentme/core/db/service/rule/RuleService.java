@@ -17,4 +17,8 @@ public class RuleService extends AbstractDatabaseService<AbstractAnalysisRule<?>
     public List<AbstractAnalysisRule<?>> createAll(List<AbstractAnalysisRule<?>> entity) {
         return repository.saveAll(entity);
     }
+
+    public List<AbstractAnalysisRule<?>> findByIntegrationPointKey(String integrationPointKey){
+        return repository.findByIntegrationPointKeyAndEmbeddedIsFalse(integrationPointKey);
+    }
 }
