@@ -42,6 +42,15 @@ public class WorkspaceManager {
         return WorkspaceHolderConverter.toHolder(workspaceService.create(workspace));
     }
 
+    public IntegrationPoint addIntegrationPoint(String workspaceId) {
+        IntegrationPoint integrationPoint = generateIntegrationPoint();
+        workspaceService.findById(workspaceId).map(workspace -> {
+            workspace.getIntegrationPoints().add(integrationPoint);
+            return workspace;
+        }).map(workspaceService::update);
+        return integrationPoint;
+    }
+
     WorkspaceConfiguration generateDefaultWorkspaceConfiguration() {
         return new WorkspaceConfiguration().setKnownDateFormats(DEFAULT_DATE_PATTERNS);
     }
@@ -49,5 +58,4 @@ public class WorkspaceManager {
     IntegrationPoint generateIntegrationPoint() {
         return new IntegrationPoint().setKey(UUID.randomUUID().toString());
     }
-
 }

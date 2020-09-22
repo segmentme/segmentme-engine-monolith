@@ -19,4 +19,5 @@ public class WorkspaceConfiguration {
                 .map(it -> it.withZone(ZoneId.systemDefault()))
                 .collect(Collectors.toList());
     }
+
 }

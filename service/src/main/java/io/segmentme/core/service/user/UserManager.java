@@ -27,7 +27,7 @@ public class UserManager {
         }
 
         if (userService.findByEmail(userToCreate.getEmail()).isPresent()) {
-            throw new UserManagerException().setCode(UserManagerErrors.USER_SHOULD_NOT_HAVE_ID_ATTRIBUTE);
+            throw new UserManagerException().setCode(UserManagerErrors.USER_WITH_SUCH_EMAIL_ALREADY_EXISTS);
         }
 
         User user = userService.create(UserHolderConverter.toUser(userToCreate));
@@ -35,7 +35,5 @@ public class UserManager {
         workspaceManager.createDefaultWorkspace(user);
 
         return UserHolderConverter.toHolder(user);
-
-
     }
 }
