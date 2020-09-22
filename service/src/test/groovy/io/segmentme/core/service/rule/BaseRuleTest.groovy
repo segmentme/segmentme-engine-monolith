@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
 import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule
 import io.segmentme.core.db.domain.rule.SimpleAnalysisRule
+import io.segmentme.core.db.domain.workpsace.Workspace
 import io.segmentme.core.db.dto.AnalysisResult
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository
 import io.segmentme.core.service.analysis.ContextValueHolder
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 
 import java.util.stream.Collectors
+
+import static io.segmentme.core.service.helper.WorkspaceConfigurationHelper.defaultWorkspaceConfiguration
 
 abstract class BaseRuleTest extends BaseTestWithContext {
 
@@ -46,7 +49,7 @@ abstract class BaseRuleTest extends BaseTestWithContext {
 
     def setup() {
         def json = objectMapper.readValue(schema.getInputStream(), JsonNode.class)
-        context = contextValuesExtractor.extractValues(json, contextSchemaResolver.resolve(json))
+        context = contextValuesExtractor.extractValues(json, contextSchemaResolver.resolve(new Workspace().setConfiguration(defaultWorkspaceConfiguration()), json), defaultWorkspaceConfiguration())
     }
 
     protected <T> T resultValue(String flagName, List<AnalysisResult> results) {

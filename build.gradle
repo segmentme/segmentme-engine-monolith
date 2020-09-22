@@ -24,6 +24,17 @@ subprojects {
                 useJUnitPlatform()
             }
         }
+
+        if (moduleSettings.isBoot) {
+            bootProjectConfiguration(it)
+        }
+    }
+}
+
+def bootProjectConfiguration(Project project) {
+    configure(project) {
+        apply plugin: 'org.springframework.boot'
+
     }
 }
 
@@ -54,7 +65,6 @@ def configureDependencyManagement(Project project) {
         wrapper.gradleVersion = '6.6.1'
 
         dependencies {
-            implementation 'org.springframework.boot:spring-boot-starter-web'
             compileOnly 'org.projectlombok:lombok'
             compile 'commons-beanutils:commons-beanutils'
 

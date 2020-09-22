@@ -8,7 +8,7 @@ import lombok.ToString;
 
 @Getter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public abstract class AbstractManagerException extends RuntimeException {
 
     private SeverityLevel severity;
