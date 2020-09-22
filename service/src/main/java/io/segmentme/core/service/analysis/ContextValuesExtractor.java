@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.workpsace.WorkspaceConfiguration;
 
-public interface ContextPreprocessorService {
+public interface ContextValuesExtractor {
 
-    ContextValueHolder prepareContext(JsonNode rawContext, ContextSchema schema, WorkspaceConfiguration workspaceConfiguration);
+    ContextValueHolder extractValues(JsonNode rawContext, ContextSchema schema, WorkspaceConfiguration workspaceConfiguration);
 }

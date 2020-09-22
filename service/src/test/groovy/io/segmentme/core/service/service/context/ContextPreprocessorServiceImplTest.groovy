@@ -3,7 +3,7 @@ package io.segmentme.core.service.service.context
 import io.segmentme.core.db.domain.context.ContextSchema
 import io.segmentme.core.db.domain.context.SchemaNode
 import io.segmentme.core.db.domain.workpsace.Workspace
-import io.segmentme.core.service.analysis.ContextPreprocessorServiceImpl
+import io.segmentme.core.service.analysis.ContextValuesExtractorImpl
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
 import spock.lang.Specification
@@ -29,7 +29,7 @@ class ContextPreprocessorServiceImplTest extends Specification {
         given:
         def json = resourceHolder.getValidJsonPayloadConfiguration()
         when:
-        def result = new ContextPreprocessorServiceImpl().prepareContext(json, schema, defaultWorkspaceConfiguration())
+        def result = new ContextValuesExtractorImpl().extractValues(json, schema, defaultWorkspaceConfiguration())
         then:
         result.getValues().size() == 19
     }
@@ -37,7 +37,7 @@ class ContextPreprocessorServiceImplTest extends Specification {
     def "Test value preparation using context schema value of #criteria  should be #expectedValue"() {
         given:
         def json = resourceHolder.getValidJsonPayloadConfiguration()
-        def result = new ContextPreprocessorServiceImpl().prepareContext(json, schema, defaultWorkspaceConfiguration())
+        def result = new ContextValuesExtractorImpl().extractValues(json, schema, defaultWorkspaceConfiguration())
         expect:
         def value = result.getValues().get(criteria)
         assert value == expectedValue
@@ -69,7 +69,7 @@ class ContextPreprocessorServiceImplTest extends Specification {
     def "Test value preparation without context schema value  of #criteria  should be #expectedValue"() {
         given:
         def json = resourceHolder.getValidJsonPayloadConfiguration()
-        def result = new ContextPreprocessorServiceImpl().prepareContext(json, new ContextSchema().setRootNode(new SchemaNode()), defaultWorkspaceConfiguration())
+        def result = new ContextValuesExtractorImpl().extractValues(json, new ContextSchema().setRootNode(new SchemaNode()), defaultWorkspaceConfiguration())
         expect:
         def value = result.getValues().get(criteria)
         assert value == expectedValue

@@ -16,11 +16,11 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class ContextPreprocessorServiceImpl implements ContextPreprocessorService {
+public class ContextValuesExtractorImpl implements ContextValuesExtractor {
 
 
     @Override
-    public ContextValueHolder prepareContext(JsonNode rawContext, ContextSchema schema, WorkspaceConfiguration workspaceConfiguration) {
+    public ContextValueHolder extractValues(JsonNode rawContext, ContextSchema schema, WorkspaceConfiguration workspaceConfiguration) {
         List<DateTimeFormatter> dateFormats = workspaceConfiguration
                 .toDateFormatters(workspaceConfiguration.getKnownDateFormats());
 

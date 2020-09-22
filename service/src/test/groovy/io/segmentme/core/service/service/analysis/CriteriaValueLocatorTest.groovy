@@ -1,7 +1,7 @@
 package io.segmentme.core.service.service.analysis
 
 import io.segmentme.core.db.domain.workpsace.Workspace
-import io.segmentme.core.service.analysis.ContextPreprocessorServiceImpl
+import io.segmentme.core.service.analysis.ContextValuesExtractorImpl
 import io.segmentme.core.service.analysis.CriteriaValueLocator
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
@@ -27,7 +27,7 @@ class CriteriaValueLocatorTest extends Specification {
     def "Context criteria  #criteria value should be #expectedValue"() {
         given:
         def json = resourceHolder.getValidJsonPayloadConfiguration()
-        def result = new ContextPreprocessorServiceImpl().prepareContext(json, schema, defaultWorkspaceConfiguration())
+        def result = new ContextValuesExtractorImpl().extractValues(json, schema, defaultWorkspaceConfiguration())
         expect:
         def value = CriteriaValueLocator.getCriteriaValue(criteria, result)
         if (expectedValue instanceof Collection) {
