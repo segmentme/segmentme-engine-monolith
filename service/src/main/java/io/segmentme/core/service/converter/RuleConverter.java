@@ -63,6 +63,7 @@ public class RuleConverter {
         target.setId(source.getId());
         return target.setAggregation(source.getAggregation())
                 .setValue(source.getValue())
+                .setEmbedded(source.isEmbedded())
                 .setConditions(source.getConditions().stream().map(it -> ConditionConverter.of(it, contextId)).collect(Collectors.toList()))
                 .setContextId(contextId)
                 .setIntegrationPointKey(integrationPointKey)
@@ -72,6 +73,7 @@ public class RuleConverter {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private AbstractAnalysisRuleDto<?> fillRule(AbstractAnalysisRuleDto target, AbstractAnalysisRule<?> source) {
         return target.setId(source.getId())
+                .setEmbedded(source.isEmbedded())
                 .setAggregation(source.getAggregation())
                 .setValue(source.getValue())
                 .setConditions(source.getConditions().stream().map(ConditionConverter::of).collect(Collectors.toList()))

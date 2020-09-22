@@ -26,6 +26,12 @@ public class RuleManager {
         return ruleService.createAll(analysisRules).stream().map(RuleConverter::of).collect(Collectors.toList());
     }
 
+    public List<AbstractAnalysisRuleDto<?>> findByIntegrationPointKey(String integrationPointKey){
+        return ruleService.findByIntegrationPointKey(integrationPointKey).stream()
+                .map(RuleConverter::of)
+                .collect(Collectors.toList());
+    }
+
     public void delete(String ruleId) {
         ruleService.delete(ruleId);
     }
