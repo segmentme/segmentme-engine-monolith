@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
+import io.segmentme.core.service.dto.component.AbstractConditionDto;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -18,12 +19,14 @@ import java.util.List;
 })
 public abstract class AbstractAnalysisRuleDto<T> {
 
+    private String id;
+
     private AbstractAnalysisRule.RuleType ruleType;
 
     @NotNull
     private AbstractAnalysisRule.AggregationType aggregation;
 
-    private List<AbstractCondition<?>> conditions;
+    private List<AbstractConditionDto<?>> conditions;
 
     private boolean embedded;
 

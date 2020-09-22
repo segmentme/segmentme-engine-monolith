@@ -30,9 +30,9 @@ public class ConditionConverter {
 
     private AbstractCondition<?> convertToEntity(AbstractConditionDto<?> source, String contextId) {
         return switch (source.getType()) {
-            case CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY, IN -> convertToEnity(new ArrayCondition(), (ArrayConditionDto) source, contextId);
-            case LTE, LT, GTE, GT -> convertToEnity(new SingleCondition(), (SingleConditionDto) source, contextId);
-            case RANGE -> convertToEnity(new RangeCondition(), (RangeConditionDto) source, contextId);
+            case CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY, IN -> convertToEntity(new ArrayCondition(), (ArrayConditionDto) source, contextId);
+            case LTE, LT, GTE, GT -> convertToEntity(new SingleCondition(), (SingleConditionDto) source, contextId);
+            case RANGE -> convertToEntity(new RangeCondition(), (RangeConditionDto) source, contextId);
             case GROUP -> convertToGroupConditionEntity((GroupConditionDto) source, contextId);
             default -> throw new IllegalArgumentException("Unknown condition type " + source.getType());
         };
@@ -53,7 +53,7 @@ public class ConditionConverter {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static AbstractCondition<?> convertToEnity(SimpleCondition target, SimpleConditionDto source, String contextId) {
+    private static AbstractCondition<?> convertToEntity(SimpleCondition target, SimpleConditionDto source, String contextId) {
         target.setValue(source.getValue()).setNullValid(source.isNullValid());
         return fillAbstractCondition(target, source, contextId);
     }
