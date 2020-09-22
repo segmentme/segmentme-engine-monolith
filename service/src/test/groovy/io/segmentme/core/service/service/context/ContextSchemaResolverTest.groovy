@@ -1,18 +1,19 @@
 package io.segmentme.core.service.service.context
 
 import io.segmentme.core.db.domain.context.SchemaNodeType
+import io.segmentme.core.db.domain.workpsace.Workspace
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
-import io.segmentme.core.service.workspace.UserConfigurationServiceImpl
 import spock.lang.Specification
 
 import static io.segmentme.core.db.domain.context.ContextSchema.InlineType.of
+import static io.segmentme.core.service.helper.WorkspaceConfigurationHelper.defaultWorkspaceConfiguration
 
 class ContextSchemaResolverTest extends Specification {
 
 
     static ResourceHolder resourceHolder = new ResourceHolder();
-    public static final ContextSchemaResolver resolver = new ContextSchemaResolver(new UserConfigurationServiceImpl())
+    public static final ContextSchemaResolver resolver = new ContextSchemaResolver()
 
 
     def setupSpec() {
@@ -21,7 +22,7 @@ class ContextSchemaResolverTest extends Specification {
 
     def "Test node counts should match expected size"() {
         given:
-        def schema = resolver.resolve(resourceHolder.getValidJsonPayloadConfiguration())
+        def schema = resolver.resolve(new Workspace().setConfiguration(defaultWorkspaceConfiguration()), resourceHolder.getValidJsonPayloadConfiguration())
         expect:
         schema.getInlinePath().size() == 24
     }
@@ -29,7 +30,7 @@ class ContextSchemaResolverTest extends Specification {
 
     def "Valid JSON Check that node #nodeName is  #type"() {
         given:
-        def schema = resolver.resolve((resourceHolder.getValidJsonPayloadConfiguration()))
+        def schema = resolver.resolve(new Workspace().setConfiguration(defaultWorkspaceConfiguration()), resourceHolder.getValidJsonPayloadConfiguration())
         expect:
         schema.getInlinePath().get(nodeName) == type
         where:
@@ -62,7 +63,7 @@ class ContextSchemaResolverTest extends Specification {
 
     def "Invalid JSON Check node #nodeName is  #type"() {
         given:
-        def schema = resolver.resolve((resourceHolder.getInvalidJsonPayloadConfiguration()))
+        def schema = resolver.resolve(new Workspace().setConfiguration(defaultWorkspaceConfiguration()),resourceHolder.getInvalidJsonPayloadConfiguration())
         expect:
         schema.getInlinePath().get(nodeName) == type
         where:

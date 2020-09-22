@@ -52,8 +52,8 @@ public class ContextSchemaManager {
                 .map(ContextSchemaConverter::toHolder).orElseThrow(() -> new ContextSchemaManagerException().setCode(ContextMangerErrors.CONTEXT_NOT_FOUND));
     }
 
-    public ContextSchemaHolder resolveContextSchema(JsonNode jsonNode) {
-        ContextSchema schema = contextSchemaResolver.resolve(jsonNode);
+    public ContextSchemaHolder resolveContextSchema(String workspaceId, JsonNode jsonNode) {
+        ContextSchema schema = contextSchemaResolver.resolve(workspaceService.findById(workspaceId).get(), jsonNode);
         validateContextSchema(schema);
         return ContextSchemaConverter.toHolder(schema);
     }
