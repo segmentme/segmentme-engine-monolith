@@ -3,7 +3,7 @@ def springVersion = '2.3.3.RELEASE'
 def settings = [
         [name: 'database', isJava: true],
         [name: 'service', isJava: true],
-        [name: 'web', isJava: true, isBoot: true]
+        [name: 'api', isJava: true, isBoot: true]
 ]
 
 value = new Settings(settings: settings, springVersion: springVersion)
