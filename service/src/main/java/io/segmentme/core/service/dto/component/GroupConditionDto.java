@@ -4,6 +4,7 @@ import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -15,6 +16,7 @@ public class GroupConditionDto extends AbstractConditionDto<List<AbstractConditi
     @NotNull
     private AbstractAnalysisRule.AggregationType aggregation;
 
+    @Valid
     @NotBlank
     private List<AbstractConditionDto<?>> conditions;
 }

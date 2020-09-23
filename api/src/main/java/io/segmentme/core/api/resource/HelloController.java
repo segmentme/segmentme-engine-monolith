@@ -1,4 +1,4 @@
-package iu.segmentme.api.resource;
+package io.segmentme.core.api.resource;
 
 import io.segmentme.core.service.dto.WorkspaceHolder;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -17,17 +17,22 @@ public class ConditionManager {
 
     private final ConditionService conditionService;
 
-    public AbstractConditionDto<?> create(AbstractConditionDto<?> conditionDto, String contextId) {
-        var savedCondition = conditionService.create(ConditionConverter.of(conditionDto, contextId));
+    public AbstractConditionDto<?> create(AbstractConditionDto<?> conditions, String contextId) {
+        var savedCondition = conditionService.create(ConditionConverter.of(conditions, contextId));
         return ConditionConverter.of(savedCondition);
     }
 
-    public List<AbstractConditionDto<?>> findByContextId(String contextId){
+    public List<AbstractConditionDto<?>> createAll(List<AbstractConditionDto<?>> conditions, String contextId) {
+        var savedCondition = conditionService.createAll(conditions.stream().map(it -> ConditionConverter.of(it, contextId)).collect(Collectors.toList()));
+        return savedCondition.stream().map(ConditionConverter::of).collect(Collectors.toList());
+    }
+
+    public List<AbstractConditionDto<?>> findByContextId(String contextId) {
         var conditions = conditionService.findByContextId(contextId);
         return conditions.stream().map(ConditionConverter::of).collect(Collectors.toList());
     }
 
-    public void delete(String conditionId){
-       conditionService.delete(conditionId);
+    public void delete(String conditionId) {
+        conditionService.delete(conditionId);
     }
 }

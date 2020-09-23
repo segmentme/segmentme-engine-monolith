@@ -17,4 +17,8 @@ public class ConditionService extends AbstractDatabaseService<AbstractCondition<
     public List<AbstractCondition<?>> findByContextId(String contextId) {
         return repository.findByContextIdAndEmbeddedIsFalse(contextId);
     }
+
+    public List<AbstractCondition<?>> createAll(List<AbstractCondition<?>> entities) {
+        return repository.saveAll(entities);
+    }
 }

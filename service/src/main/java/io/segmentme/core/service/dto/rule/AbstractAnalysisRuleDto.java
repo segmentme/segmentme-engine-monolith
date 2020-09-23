@@ -7,11 +7,12 @@ import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import io.segmentme.core.service.dto.component.AbstractConditionDto;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Data
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "ruleType", visible = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "ruleType", include = JsonTypeInfo.As.EXISTING_PROPERTY)
 @JsonSubTypes(value = {
         @JsonSubTypes.Type(name = "BOOLEAN", value = BooleanAnalysisRuleDto.class),
         @JsonSubTypes.Type(name = "PRECONDITION", value = PreconditionAnalysisRuleDto.class),
@@ -26,6 +27,8 @@ public abstract class AbstractAnalysisRuleDto<T> {
     @NotNull
     private AbstractAnalysisRule.AggregationType aggregation;
 
+    @Valid
+    @NotEmpty
     private List<AbstractConditionDto<?>> conditions;
 
     private boolean embedded;

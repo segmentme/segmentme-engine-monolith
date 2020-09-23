@@ -14,7 +14,6 @@ import spock.lang.Specification
 @SpringBootTest(classes = SpringCoreDataApplication.class)
 @ActiveProfiles("test")
 @Import([ResourceHolder.class])
-@AutoConfigureMockMvc
 @ComponentScan("io.segmentme.core")
 abstract class BaseTestWithContext extends Specification {
 
