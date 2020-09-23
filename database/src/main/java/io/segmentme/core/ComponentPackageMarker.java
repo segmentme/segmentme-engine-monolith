@@ -1,10 +1,10 @@
 package io.segmentme.core;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import io.segmentme.core.db.config.DbConfiguration;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@EnableMongoRepositories(basePackageClasses = ComponentPackageMarker.class)
-public final class ComponentPackageMarker {
+@Configuration
+@Import(DbConfiguration.class)
+public class ComponentPackageMarker {
 }
