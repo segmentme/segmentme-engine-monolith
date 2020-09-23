@@ -38,7 +38,7 @@ public class WorkspaceManager {
         workspace.setName(name);
         workspace.setIntegrationPoints(Arrays.asList(generateIntegrationPoint()));
         workspace.setConfiguration(generateDefaultWorkspaceConfiguration());
-        workspace.setUserProfiles(Arrays.asList(new UserProfile().setRole(Role.OWNER).setUserId(ownerId)));
+        workspace.setUserProfiles(Arrays.asList(new UserProfile().setWorkspaceName(name).setRole(Role.OWNER).setUserId(ownerId)));
         return WorkspaceHolderConverter.toHolder(workspaceService.create(workspace));
     }
 
@@ -50,6 +50,7 @@ public class WorkspaceManager {
         }).map(workspaceService::update);
         return integrationPoint;
     }
+
 
     WorkspaceConfiguration generateDefaultWorkspaceConfiguration() {
         return new WorkspaceConfiguration().setKnownDateFormats(DEFAULT_DATE_PATTERNS);

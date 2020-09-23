@@ -18,5 +18,7 @@ public class UserProfile extends DbObject {
     @Indexed
     private String userId;
 
+    private String workspaceName;
+
     private Role role;
 }
