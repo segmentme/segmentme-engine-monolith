@@ -5,7 +5,6 @@ import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
 import io.segmentme.core.db.domain.workpsace.Workspace;
-import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.utils.DateResolver;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +26,6 @@ import static io.segmentme.core.db.domain.context.ContextSchema.InlineType;
 @RequiredArgsConstructor
 @Service
 public class ContextSchemaResolver {
-
-    private final WorkspaceService workspaceService;
 
     public static final String PATH_SPLITERATOR = ".";
 

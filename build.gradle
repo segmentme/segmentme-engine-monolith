@@ -40,7 +40,7 @@ def bootProjectConfiguration(Project project) {
 
 def javaProjectConfiguration(Project project) {
     configure(project) {
-        apply plugin: 'java'
+        apply plugin: 'java-library'
         apply plugin: 'groovy'
         apply plugin: 'io.spring.dependency-management'
 

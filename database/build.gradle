@@ -17,6 +17,7 @@ configurations {
 		extendsFrom testRuntime
 	}
 }
+
 artifacts {
 	tests jarTests
 }

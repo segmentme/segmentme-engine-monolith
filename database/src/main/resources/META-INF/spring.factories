@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+   io.segmentme.core.db.config.DbConfiguration

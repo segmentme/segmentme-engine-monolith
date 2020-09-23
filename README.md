@@ -1,15 +1,19 @@
 # segmentme
-### segmentme-core-db
-Core database module which represent access layer to all core stored entities. Such:
-1. Condition
-1. Rule
-1. Anlysis Context schema
-1. Environments( optional )
-1. Users( 2th priority)
+### Glosarry
 
-
-Challanges:
-1. identify date string
-
-how it works 2 ways:
-
+1. **User**:
+Person registered in System (plain registration or via Auth provider like Auth0,Google)
+1. **Workpsace**:
+Working area which  unite different users to work on set of conditions, working area define unique configuration.
+1. **Integration point**: unique key for 
+1. **Analysis context**:
+User specific request to the system to be analyzed.
+Example 
+1. **Context Schema**:
+defined types of analysis context fields 
+1. **Condition**:
+Logical action which applies to one criteria from Analysis context.
+1. **Analysis Rule**:
+Set of conditions which need to be calculated to determine result for the specific key.
+1. 
+ 

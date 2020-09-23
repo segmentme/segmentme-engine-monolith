@@ -1,15 +1,10 @@
 package io.segmentme.core.api;
 
-import io.segmentme.core.ComponentPackageMarker;
+import io.segmentme.core.db.config.DbConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@SpringBootApplication
-@EnableMongoRepositories(basePackageClasses = ComponentPackageMarker.class)
-@ComponentScans(@ComponentScan(basePackageClasses = ComponentPackageMarker.class))
+@SpringBootApplication(scanBasePackageClasses = DbConfiguration.class)
 public class SpringApiApplication {
 
     public static void main(String[] args) {

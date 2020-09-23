@@ -1,11 +1,5 @@
-
 dependencies {
-    implementation project(':service')
-    implementation project(':database')
-
+    compile project(':service')
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    testImplementation project(path: ':service', configuration: 'tests')
-    testImplementation project(path: ':database', configuration: 'tests')
+    testCompile project(path: ':service', configuration: 'tests')
 }
