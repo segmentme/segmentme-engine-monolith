@@ -1,4 +1,4 @@
-[# segmentme
+# segmentme
  ### Glosarry
  
  1. **User**:
@@ -33,7 +33,7 @@
  Each workspace created with default configuration, which included known date formats,
  you can extend supported datetime formats as you needed.
  
- ### [#context-schema-creation] Context schema creation 
+ ### Context schema creation 
  Context schema is a king of your payload description from field-type perspective,
  Schema will allow you to validate conditions criteria when you setting-up your rules/conditions.
  In some cases schema will help engine to resolve conflicts between types during analysis,
