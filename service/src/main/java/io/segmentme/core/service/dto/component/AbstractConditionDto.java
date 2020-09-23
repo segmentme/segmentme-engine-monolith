@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 
 
 @Data
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", include = JsonTypeInfo.As.EXISTING_PROPERTY)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true, include = JsonTypeInfo.As.EXISTING_PROPERTY)
 @JsonSubTypes(value = {
         @Type(name = "RANGE", value = RangeConditionDto.class),
         @Type(name = "GT", value = SingleConditionDto.class),

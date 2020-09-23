@@ -2,17 +2,17 @@ package io.segmentme.core.service.dto.rule;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
 import io.segmentme.core.service.dto.component.AbstractConditionDto;
 import lombok.Data;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "ruleType", include = JsonTypeInfo.As.EXISTING_PROPERTY)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "ruleType", visible = true, include = JsonTypeInfo.As.EXISTING_PROPERTY)
 @JsonSubTypes(value = {
         @JsonSubTypes.Type(name = "BOOLEAN", value = BooleanAnalysisRuleDto.class),
         @JsonSubTypes.Type(name = "PRECONDITION", value = PreconditionAnalysisRuleDto.class),

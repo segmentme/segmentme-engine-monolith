@@ -16,7 +16,7 @@ public class ConditionController {
     private final ConditionManager conditionManager;
 
     @PostMapping("/{contextId}")
-    public AbstractConditionDto<?> save(@PathVariable String contextId, @Valid AbstractConditionDto<?> conditions) {
+    public AbstractConditionDto<?> save(@PathVariable String contextId, @RequestBody @Valid AbstractConditionDto<?> conditions) {
         return conditionManager.create(conditions, contextId);
     }
 
