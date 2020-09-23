@@ -119,6 +119,9 @@
  |user.numbersArray                   | ARRAY of NUMBERS                |
  |user.email                          | STRING                          |
  |user.name                           | STRING                          |
+ |user.status                         | STRING                          |
+ |user.fullAge                        | NUMBER                          |
+ |user.weight                         | NUMBER                          |
  |user.details                        | OBJECT                          |
  |user.details.gender                 | STRING                          |
  |user.details.address                | OBJECT                          |
@@ -136,9 +139,7 @@
  |objectArrays.numbersArray           | ARRAY of NUMBER                 |
  |objectArrays.isActive               | BOOLEAN                         |
  |objectArrays.dateTime               | DATE                            |
- |user.status                         | STRING                          |
- |user.fullAge                        | NUMBER                          |
- |user.weight                         | NUMBER                          |
+ 
  
  
  As you see node with name `user.details.birthDate` and `objectArrays.dateTime` defined as DATE,
