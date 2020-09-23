@@ -28,7 +28,7 @@
  For example you have WEB and MOBILE applications, and you want to split analysis per platform, 
  due to each  platform can provide own set of data for analysis to identify features available for particular user.
  
- In this case you will need to create 2 integration points due to only 1 context schema [Go to Real Cool Heading section](#context-schema-creation) can be created within 1 integration point.
+ In this case you will need to create 2 integration points due to only 1  [Context Schema](#context-schema-creation) can be created within 1 integration point.
  
  Each workspace created with default configuration, which included known date formats,
  you can extend supported datetime formats as you needed.
