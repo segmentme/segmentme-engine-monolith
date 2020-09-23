@@ -16,7 +16,7 @@ import java.util.*;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableMongoRepositories(basePackages = "io.segmentme.core.db")
+@EnableMongoRepositories(basePackages = "io.segmentme.core")
 public class DbConfiguration {
 
     private final ObjectMapper objectMapper;
