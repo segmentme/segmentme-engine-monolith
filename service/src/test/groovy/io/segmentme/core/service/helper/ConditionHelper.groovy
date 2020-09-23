@@ -5,9 +5,9 @@ import io.segmentme.core.db.domain.condition.GroupCondition
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
 import io.segmentme.core.service.dto.component.GroupConditionDto
 
-public class ConditionHelper {
+class ConditionHelper {
 
-    public static def fillCondition(Object condition, Object values, AbstractCondition.ConditionType type, boolean isEmbedded = false) {
+    static def fillCondition(Object condition, Object values, AbstractCondition.ConditionType type, boolean isEmbedded = false) {
         if (condition instanceof GroupConditionDto || condition instanceof GroupCondition) {
             condition.conditions = values
             condition.aggregation = AbstractAnalysisRule.AggregationType.AND
@@ -23,6 +23,26 @@ public class ConditionHelper {
 
         if (condition instanceof AbstractCondition) {
             condition.contextId == UUID.randomUUID().toString()
+        }
+        return condition
+    }
+
+    static def fillCondition(Object condition, Map args = [:]) {
+        if (condition instanceof GroupConditionDto || condition instanceof GroupCondition) {
+            condition.conditions = args["conditions"]
+            condition.aggregation = args["aggregation"] ?: AbstractAnalysisRule.AggregationType.AND
+        } else {
+            condition.value = args["value"]
+        }
+        condition.type = args["type"]
+        condition.name = args["name"]
+        condition.description = args["description"] ?: UUID.randomUUID().toString()
+        condition.criteria = args["criteria"]
+        condition.matchResult = args["matchResult"] ?: true
+        condition.embedded = args["embedded"] ?: false
+
+        if (condition instanceof AbstractCondition) {
+            condition.contextId == args["contextId"] ?: UUID.randomUUID().toString()
         }
         return condition
     }
