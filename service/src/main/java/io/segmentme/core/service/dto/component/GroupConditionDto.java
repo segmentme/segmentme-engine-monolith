@@ -1,8 +1,7 @@
 package io.segmentme.core.service.dto.component;
 
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -10,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class GroupConditionDto extends AbstractConditionDto<List<AbstractConditionDto<?>>> {
 
