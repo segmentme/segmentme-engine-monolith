@@ -5,7 +5,7 @@ import io.segmentme.core.db.domain.condition.GroupCondition
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
 import io.segmentme.core.service.dto.component.GroupConditionDto
 
-class ConditionHelper {
+public class ConditionHelper {
 
     public static def fillCondition(Object condition, Object values, AbstractCondition.ConditionType type, boolean isEmbedded = false) {
         if (condition instanceof GroupConditionDto || condition instanceof GroupCondition) {

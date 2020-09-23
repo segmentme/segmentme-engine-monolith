@@ -2,3 +2,17 @@ dependencies {
     implementation project(':database')
     testImplementation project(path: ':database', configuration: 'tests')
 }
+
+task jarTests(type: Jar, dependsOn: testClasses) {
+    archiveClassifier = 'tests'
+    from sourceSets.test.output
+}
+configurations {
+    tests {
+        extendsFrom testRuntime
+    }
+}
+artifacts {
+    tests jarTests
+}
+
