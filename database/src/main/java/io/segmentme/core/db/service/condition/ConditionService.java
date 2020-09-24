@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -20,5 +21,9 @@ public class ConditionService extends AbstractDatabaseService<AbstractCondition<
 
     public List<AbstractCondition<?>> createAll(List<AbstractCondition<?>> entities) {
         return repository.saveAll(entities);
+    }
+
+    public void deleteAll(Collection<AbstractCondition<?>> entities) {
+        repository.deleteAll(entities);
     }
 }

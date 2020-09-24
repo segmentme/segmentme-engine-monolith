@@ -23,11 +23,12 @@ public class AnalysisService {
     private final AbstractAnalysisRuleRepository analysisRuleRepository;
 
     public List<AnalysisResult> analyze(ContextValueHolder context) {
-
         //TODO need to find rules in db by params... user_id or other key
-        List<AbstractAnalysisRule<?>> group = analysisRuleRepository.findByPreconditionIdIsNull();
+        return analyze(context, analysisRuleRepository.findByPreconditionIdIsNull());
+    }
 
-        return group.stream().map(it -> analysisRuleService.analyze(it, context))
+    public List<AnalysisResult> analyze(ContextValueHolder context, List<AbstractAnalysisRule<?>> rules) {
+        return rules.stream().map(it -> analysisRuleService.analyze(it, context))
                 .flatMap(Collection::parallelStream)
                 .collect(Collectors.toList());
     }

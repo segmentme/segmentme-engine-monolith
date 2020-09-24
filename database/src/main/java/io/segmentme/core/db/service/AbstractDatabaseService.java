@@ -23,7 +23,11 @@ public abstract class AbstractDatabaseService<E extends DbObject, R extends Mong
         return repository.save(update);
     }
 
-    public void delete(String id) {
+    public void deleteById(String id) {
         repository.deleteById(id);
+    }
+
+    public void delete(E entity) {
+        repository.delete(entity);
     }
 }

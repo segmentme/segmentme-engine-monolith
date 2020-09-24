@@ -29,7 +29,7 @@ class ConditionControllerTest extends BaseControllerTest {
     @Autowired
     private AbstractConditionRepository abstractConditionRepository
 
-    def cleanup(){
+    def cleanup() {
         abstractConditionRepository.deleteAll()
     }
 
@@ -113,6 +113,31 @@ class ConditionControllerTest extends BaseControllerTest {
         conditions.size() == 4
     }
 
+    def "delete condition with embedded condition"() {
+        given:
+        def conditions = [fillCondition(new GroupConditionDto(),
+                [fillCondition(new GroupConditionDto(),
+                        [fillCondition(new GroupConditionDto(),
+                                [
+                                        fillCondition(new GroupConditionDto(), [
+                                                fillCondition(new ArrayConditionDto(), [1], IN, true),
+                                                fillCondition(new ArrayConditionDto(), [2], IN, true)
+                                        ], GROUP, false),
+                                        fillCondition(new GroupConditionDto(), [
+                                                fillCondition(new ArrayConditionDto(), [3], IN, false),
+                                                fillCondition(new ArrayConditionDto(), [4], IN, false)
+                                        ], GROUP, true)
+                                ],
+                                GROUP, true)],
+                        GROUP, true)],
+                GROUP, false)]
+        def createdConditions = conditionManager.createAll(conditions, "32123")
+        mockMvc.perform(delete("/condition/${createdConditions[0].id}").contentType(MediaType.APPLICATION_JSON))
+        when:
+        def existedCondition = abstractConditionRepository.findAll()
+        then:
+        existedCondition.size() == 3
+    }
 
     private createCondition(int count) {
         return IntStream.range(0, count)

@@ -10,4 +10,6 @@ public interface AbstractAnalysisRuleRepository extends MongoRepository<Abstract
     List<AbstractAnalysisRule<?>> findByPreconditionIdIsNull();
 
     List<AbstractAnalysisRule<?>> findByIntegrationPointKeyAndEmbeddedIsFalse(String integrationPointKey);
+
+    List<AbstractAnalysisRule<?>> findByContextIdAndEmbeddedIsFalse(String contextId);
 }
