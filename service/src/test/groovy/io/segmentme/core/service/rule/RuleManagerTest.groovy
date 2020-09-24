@@ -56,7 +56,7 @@ class RuleManagerTest extends BaseTestWithContext {
          'analysisRules': List.of(createRule(['value': true, 'ruleType': BOOLEAN, 'conditions': List.of(fillCondition(new ArrayConditionDto(), true, IN)), 'embedded': true]))] | _
     }
 
-    private static def createRule(Map values) {
+    public static def createRule(Map values) {
         switch (values['ruleType']) {
             case BOOLEAN: return fillRule(new BooleanAnalysisRuleDto(), values)
             case JSON: return fillRule(new JsonAnalysisRuleDto(), values)
