@@ -53,7 +53,7 @@ public class RuleManager {
             Set<AbstractAnalysisRule<?>> rulesToDelete = new HashSet<>(Collections.singletonList(it));
 
             if (it.getRuleType() == PRECONDITION) {
-                ruleService.deleteAll(findRelatedConditionToDelete(((PreconditionAnalysisRule) it).getAnalysisRules()));
+                rulesToDelete.addAll(findRelatedConditionToDelete(((PreconditionAnalysisRule) it).getAnalysisRules()));
             }
 
             List<AbstractCondition<?>> conditions = rulesToDelete.stream().map(AbstractAnalysisRule::getConditions).flatMap(Collection::stream).collect(Collectors.toList());
