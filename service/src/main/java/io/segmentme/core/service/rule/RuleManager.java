@@ -72,4 +72,11 @@ public class RuleManager {
         relatedRules.addAll(rules.stream().filter(AbstractAnalysisRule::isEmbedded).collect(Collectors.toList()));
         return relatedRules;
     }
+
+    public void unlinkFromIntegrationPoint(String integrationPointKey) {
+        List<AbstractAnalysisRule<?>> byIntegrationPointKey = ruleService.findByIntegrationPointKey(integrationPointKey);
+        byIntegrationPointKey.forEach(it->it.setIntegrationPointKey(null));
+        ruleService.update(byIntegrationPointKey);
+
+    }
 }

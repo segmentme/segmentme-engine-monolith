@@ -26,7 +26,6 @@ public class WorkspaceService extends AbstractDatabaseService<Workspace, Workspa
         return repository.findByIntegrationPointsKey(integrationPointKey);
     }
 
-
     public List<Workspace> findAllUserWorkspaces(String userId) {
         return IteratorUtils.toList(repository.findAllById(userProfileService.getUserProfiles(userId).stream().map(UserProfile::getWorkspaceId).collect(Collectors.toList())).iterator());
     }

@@ -42,6 +42,7 @@ public abstract class AbstractAnalysisRule<T> extends DbObject {
 
     public T value;
 
+    @Indexed
     private String contextId;
 
     private boolean embedded;

@@ -19,15 +19,20 @@ public class RuleService extends AbstractDatabaseService<AbstractAnalysisRule<?>
         return repository.saveAll(entity);
     }
 
-    public List<AbstractAnalysisRule<?>> findByIntegrationPointKey(String integrationPointKey){
+    public List<AbstractAnalysisRule<?>> findByIntegrationPointKey(String integrationPointKey) {
         return repository.findByIntegrationPointKeyAndEmbeddedIsFalse(integrationPointKey);
     }
 
-    public List<AbstractAnalysisRule<?>> findByContextId(String contextId){
+    public List<AbstractAnalysisRule<?>> findByContextId(String contextId) {
         return repository.findByContextIdAndEmbeddedIsFalse(contextId);
     }
 
-    public void deleteAll(Collection<? extends AbstractAnalysisRule<?>> rules){
+
+    public void deleteAll(Collection<? extends AbstractAnalysisRule<?>> rules) {
         repository.deleteAll(rules);
+    }
+
+    public void update(List<AbstractAnalysisRule<?>> byIntegrationPointKey) {
+        repository.saveAll(byIntegrationPointKey);
     }
 }

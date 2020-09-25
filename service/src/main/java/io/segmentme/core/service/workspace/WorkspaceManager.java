@@ -3,8 +3,10 @@ package io.segmentme.core.service.workspace;
 import io.segmentme.core.db.domain.user.User;
 import io.segmentme.core.db.domain.workpsace.*;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
+import io.segmentme.core.service.context.ContextSchemaManager;
 import io.segmentme.core.service.converter.WorkspaceHolderConverter;
 import io.segmentme.core.service.dto.WorkspaceHolder;
+import io.segmentme.core.service.rule.RuleManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,10 @@ public class WorkspaceManager {
 
     private final WorkspaceService workspaceService;
 
+    private final RuleManager ruleManager;
+
+    private final ContextSchemaManager contextSchemaManager;
+
     public WorkspaceHolder createDefaultWorkspace(User user) {
         return this.createWorkspace(user.getId(), DEFAULT);
     }
@@ -52,11 +58,28 @@ public class WorkspaceManager {
     }
 
 
+    public void removeIntegrationPoint(String workspaceId, String integrationPointKey) {
+        workspaceService.findById(workspaceId).map(workspace -> {
+            workspace.getIntegrationPoints().removeIf(it -> it.getKey().equalsIgnoreCase(integrationPointKey));
+            return workspace;
+        }).ifPresent(workspaceService::update);
+
+        ruleManager.unlinkFromIntegrationPoint(integrationPointKey);
+        contextSchemaManager.unlinkFromIntegrationPoint(integrationPointKey);
+    }
+
+
     WorkspaceConfiguration generateDefaultWorkspaceConfiguration() {
         return new WorkspaceConfiguration().setKnownDateFormats(DEFAULT_DATE_PATTERNS);
     }
 
     IntegrationPoint generateIntegrationPoint() {
         return new IntegrationPoint().setKey(UUID.randomUUID().toString());
+    }
+
+    public void updateConfiguration(String id, WorkspaceConfiguration workspaceConfiguration) {
+        workspaceService.findById(id).map(it -> {
+            return it.setConfiguration(workspaceConfiguration);
+        }).ifPresent(workspaceService::update);
     }
 }

@@ -65,4 +65,9 @@ public class ContextSchemaManager {
             throw new ContextSchemaValidationException().setSchemaValidationResult(validationResult);
         }
     }
+
+    public void unlinkFromIntegrationPoint(String integrationPointKey) {
+        contextSchemaService.findByIntegrationPointKey(integrationPointKey)
+                .map(it -> it.setIntegrationPointKey(null)).ifPresent(contextSchemaService::update);
+    }
 }

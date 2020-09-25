@@ -4,7 +4,6 @@ import io.segmentme.core.db.domain.context.DbObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractDatabaseService<E extends DbObject, R extends MongoRepository<E, String>> {
@@ -30,4 +29,5 @@ public abstract class AbstractDatabaseService<E extends DbObject, R extends Mong
     public void delete(E entity) {
         repository.delete(entity);
     }
+
 }

@@ -33,8 +33,8 @@ public class UserManager {
         if (user.getLastActiveWorkspace().equalsIgnoreCase(workspaceId)) {
             return workspaceId;
         }
-        if (!userProfileManager.getUserProfiles(userId).stream().anyMatch(it -> it.getWorkspaceId().equalsIgnoreCase(workspaceId))) {
-            throw new UserManagerException().setCode(UserManagerErrors.USER_SHOULD_NOT_HAVE_ID_ATTRIBUTE);
+        if (userProfileManager.getUserProfiles(userId).stream().noneMatch(it -> it.getWorkspaceId().equalsIgnoreCase(workspaceId))) {
+            throw new UserManagerException().setCode(UserManagerErrors.UNABLE_TO_SWITCH_WORKSPACE_DOESNT_EXISTS);
         }
         user.setLastActiveWorkspace(workspaceId);
         return workspaceId;

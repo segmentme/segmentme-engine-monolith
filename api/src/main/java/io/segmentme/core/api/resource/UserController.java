@@ -18,6 +18,11 @@ public class UserController {
         return userFacade.registerUser(user);
     }
 
+    @PostMapping
+    public UserDetails getCurrentUserDetails() {
+        return userFacade.getUserDetails("userId");
+    }
+
     @PutMapping
     public void switchWorkspace(@RequestParam String workspaceId) {
         userFacade.switchWorkspace("userId", workspaceId);
