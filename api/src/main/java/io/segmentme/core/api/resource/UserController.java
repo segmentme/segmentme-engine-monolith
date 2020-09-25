@@ -18,7 +18,7 @@ public class UserController {
         return userFacade.registerUser(user);
     }
 
-    @PostMapping
+    @GetMapping
     public UserDetails getCurrentUserDetails() {
         return userFacade.getUserDetails("userId");
     }

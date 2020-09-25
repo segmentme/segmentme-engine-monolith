@@ -1,5 +1,23 @@
 logging:
   level:
     root: INFO
+application:
+  security:
+    jwt:
+      validity:
+        access: 600
+        refresh: 1200
+      verifier-key: 54wadGAsadasvNs34$+
+    password-secret: MIIDUzeCCAjugAwIBAgIEH+
+  crypto:
+    strong:
+      key-store: classpath:key-store.jks
+      password: GjkdjaNNsj62Ca3a2ta4FAf++
+      keys:
+        jwt:
+          alias: jwt
+        client-secret:
+          alias: client-secret
+          salt: Klgma$2adaf5623dahgH+
     org:
       mongodb: INFO

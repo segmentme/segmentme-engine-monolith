@@ -1,3 +1,17 @@
+spring:
+  application:
+    name: segmentme
+segmentme:
+  security:
+    key-store: classpath:keystore.jks
+    password: Hdarty211vda4Faf++
+    jwtAlias: semgentme-jwt
+    jwt:
+      validity:
+        access: 600
+        refresh: 1200
+      verifier-key: 54wadGAsadasvNs34$+
+    password-secret: MIIDUzeCCAjugAwIBAgIEH+
 logging:
   level:
     root: DEBUG
