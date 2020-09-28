@@ -8,6 +8,7 @@ import io.segmentme.core.service.dto.UserHolder;
 import io.segmentme.core.service.user.UserManager;
 import io.segmentme.core.service.workspace.UserProfileManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,14 +22,16 @@ public class UserFacade {
 
     private final UserProfileManager userProfileManager;
 
+    private final PasswordEncoder passwordEncoder;
+
     public UserDetails getUserDetails(String userId) {
         return getUserDetails(userManager.getById(userId));
     }
 
     public UserDetails registerUser(UserHolder user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         UserHolder createdUser = userManager.createUser(user);
         return getUserDetails(createdUser);
-
     }
 
     private UserDetails getUserDetails(UserHolder createdUser) {
