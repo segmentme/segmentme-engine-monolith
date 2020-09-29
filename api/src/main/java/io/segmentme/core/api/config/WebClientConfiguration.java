@@ -5,12 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.RequestEntity;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
-import org.springframework.security.oauth2.client.endpoint.DefaultClientCredentialsTokenResponseClient;
-import org.springframework.security.oauth2.client.endpoint.OAuth2ClientCredentialsGrantRequest;
-import org.springframework.security.oauth2.client.endpoint.OAuth2ClientCredentialsGrantRequestEntityConverter;
+import org.springframework.security.oauth2.client.*;
+import org.springframework.security.oauth2.client.endpoint.*;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
@@ -18,7 +14,7 @@ import org.springframework.security.oauth2.client.web.reactive.function.client.S
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @RequiredArgsConstructor
@@ -58,7 +54,7 @@ public class WebClientConfiguration {
                                 public RequestEntity<?> convert(OAuth2ClientCredentialsGrantRequest clientCredentialsGrantRequest) {
                                     RequestEntity<?> convert = super.convert(clientCredentialsGrantRequest);
                                     MultiValueMap<String, String> httpEntity = (MultiValueMap<String, String>) convert.getBody();
-                                    httpEntity.put("audience", Arrays.asList(audience));
+                                    httpEntity.put("audience", Collections.singletonList(audience));
                                     return convert;
                                 }
                             });

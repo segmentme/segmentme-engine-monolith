@@ -41,7 +41,7 @@ class AnalysisRuleControllerTest extends BaseControllerTest {
     def "success creation rule: #rule"() {
         given:
         def ruleToSave = createRule(rule)
-        def response = mockMvc.perform(post("/rule/${randomUUID().toString()}")
+        def response = mockMvc.perform(auth(post("/rule/${randomUUID().toString()}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(ruleToSave))
                 .accept(MediaType.APPLICATION_JSON))
@@ -65,7 +65,7 @@ class AnalysisRuleControllerTest extends BaseControllerTest {
     def "success creation precondition rule: #rule"() {
         given:
         def ruleToSave = createRule(rule)
-        def response = mockMvc.perform(post("/rule/${randomUUID().toString()}")
+        def response = mockMvc.perform(auth(post("/rule/${randomUUID().toString()}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(ruleToSave))
                 .accept(MediaType.APPLICATION_JSON))
@@ -89,7 +89,7 @@ class AnalysisRuleControllerTest extends BaseControllerTest {
     def "creation rule validation error: #rule"() {
         given:
         def ruleToSave = createRule(rule)
-        def response = mockMvc.perform(post("/rule/${randomUUID().toString()}")
+        def response = mockMvc.perform(auth(post("/rule/${randomUUID().toString()}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(ruleToSave))
                 .accept(MediaType.APPLICATION_JSON))
@@ -110,7 +110,7 @@ class AnalysisRuleControllerTest extends BaseControllerTest {
                              createRule(['value': true, 'embedded': false, 'ruleType': BOOLEAN, 'conditions': List.of(fillCondition(new ArrayConditionDto(), [true], IN))])
                      )]
         def savedRule = ruleManager.save(createRule(rules), randomUUID().toString(), randomUUID().toString())
-        mockMvc.perform(delete("/rule/${savedRule.id}")
+        mockMvc.perform(auth(delete("/rule/${savedRule.id}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         when:

@@ -37,7 +37,7 @@ class ConditionControllerTest extends BaseControllerTest {
         given:
         def request = (AbstractConditionDto) condition
         def contextId = randomUUID().toString()
-        def response = mockMvc.perform(post("/condition/${contextId}")
+        def response = mockMvc.perform(auth(post("/condition/${contextId}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(request))
                 .accept(MediaType.APPLICATION_JSON))
@@ -69,7 +69,7 @@ class ConditionControllerTest extends BaseControllerTest {
         given:
         def request = (AbstractConditionDto) condition
         def contextId = randomUUID().toString()
-        def response = mockMvc.perform(post("/condition/${contextId}")
+        def response = mockMvc.perform(auth(post("/condition/${contextId}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(request))
                 .accept(MediaType.APPLICATION_JSON))
@@ -86,7 +86,7 @@ class ConditionControllerTest extends BaseControllerTest {
     def "get condition by contextId: #contextId count should be #count"() {
         given:
         conditionManager.createAll(conditions, contextId)
-        def response = mockMvc.perform(get("/condition/${contextId}").contentType(MediaType.APPLICATION_JSON))
+        def response = mockMvc.perform(auth(get("/condition/${contextId}").contentType(MediaType.APPLICATION_JSON)))
         expect:
         response.andExpect(status().isOk()).andExpect(jsonPath('$.*', hasSize(count)))
         where:
@@ -106,7 +106,7 @@ class ConditionControllerTest extends BaseControllerTest {
     def "delete condition"() {
         given:
         def id = createCondition(5)[0].id
-        mockMvc.perform(delete("/condition/${id}").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(auth(delete("/condition/${id}").contentType(MediaType.APPLICATION_JSON)))
         when:
         def conditions = abstractConditionRepository.findAll()
         then:
@@ -132,7 +132,7 @@ class ConditionControllerTest extends BaseControllerTest {
                         GROUP, true)],
                 GROUP, false)]
         def createdConditions = conditionManager.createAll(conditions, "32123")
-        mockMvc.perform(delete("/condition/${createdConditions[0].id}").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(auth(delete("/condition/${createdConditions[0].id}").contentType(MediaType.APPLICATION_JSON)))
         when:
         def existedCondition = abstractConditionRepository.findAll()
         then:

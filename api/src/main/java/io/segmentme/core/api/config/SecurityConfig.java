@@ -19,6 +19,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .oauth2ResourceServer().jwt().authenticationManager(authenticationManager);
     }
-
-
 }
