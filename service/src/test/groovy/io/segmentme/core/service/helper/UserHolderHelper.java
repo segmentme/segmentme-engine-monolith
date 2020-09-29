@@ -14,7 +14,7 @@ public class UserHolderHelper {
     private final UserManager userManager;
 
     public static UserHolder createUser() {
-        return new UserHolder().setEmail(UUID.randomUUID().toString() + "@aa.com").setName("name").setPassword("PWD");
+        return new UserHolder().setEmail(UUID.randomUUID().toString() + "@aa.com").setName("name");
     }
 
     public UserHolder createUserAndState() {

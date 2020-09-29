@@ -2,8 +2,10 @@ package io.segmentme.core.api.resource;
 
 import io.segmentme.core.api.dto.UserDetails;
 import io.segmentme.core.api.facade.UserFacade;
-import io.segmentme.core.service.dto.UserHolder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -13,14 +15,10 @@ public class UserController {
 
     private final UserFacade userFacade;
 
-    @PostMapping
-    public UserDetails createUser(@RequestBody UserHolder user) {
-        return userFacade.registerUser(user);
-    }
 
-    @PostMapping
-    public UserDetails getCurrentUserDetails() {
-        return userFacade.getUserDetails("userId");
+    @GetMapping
+    public UserDetails getCurrentUserDetails(@AuthenticationPrincipal OidcUser princapal) {
+        return userFacade.getUserDetails(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     @PutMapping

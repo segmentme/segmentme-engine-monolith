@@ -9,7 +9,6 @@ public class UserHolderConverter {
         return (User) new User()
                 .setEmail(holder.getEmail())
                 .setName(holder.getName())
-                .setPassword(holder.getPassword())
                 .setLastActiveWorkspace(holder.getLastActiveWorkspace())
                 .setId(holder.getId());
     }
@@ -18,7 +17,6 @@ public class UserHolderConverter {
         return new UserHolder()
                 .setEmail(user.getEmail())
                 .setName(user.getName())
-                .setPassword(user.getPassword())
                 .setLastActiveWorkspace(user.getLastActiveWorkspace())
                 .setId(user.getId());
     }

@@ -10,7 +10,5 @@ public class UserHolder {
 
     private String name;
 
-    private String password;
-
     private String lastActiveWorkspace;
 }

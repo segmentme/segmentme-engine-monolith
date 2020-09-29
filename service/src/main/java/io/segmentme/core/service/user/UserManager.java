@@ -43,10 +43,6 @@ public class UserManager {
     public UserHolder createUser(UserHolder userToCreate) throws UserManagerException {
         log.info("Create userToCreate {}", userToCreate);
 
-        if (userToCreate.getId() != null) {
-            throw new UserManagerException().setCode(UserManagerErrors.USER_SHOULD_NOT_HAVE_ID_ATTRIBUTE);
-        }
-
         if (userService.findByEmail(userToCreate.getEmail()).isPresent()) {
             throw new UserManagerException().setCode(UserManagerErrors.USER_WITH_SUCH_EMAIL_ALREADY_EXISTS);
         }
@@ -60,4 +56,10 @@ public class UserManager {
     }
 
 
+    public void acknowledgeUser(UserHolder holder) {
+        if (userService.findById(holder.getId()).isPresent() || userService.findByEmail(holder.getEmail()).isPresent()) {
+            return;
+        }
+        createUser(holder);
+    }
 }

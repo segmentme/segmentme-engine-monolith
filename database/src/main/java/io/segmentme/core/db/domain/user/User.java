@@ -15,8 +15,6 @@ public class User extends DbObject {
 
     private String name;
 
-    private String password;
-
     private String lastActiveWorkspace;
 
 }

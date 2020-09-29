@@ -1,3 +1,22 @@
 logging:
   level:
     root: DEBUG
+auth0:
+  audience: https://segmentme.us.auth0.com/api/v2/
+  managementApi: https://segmentme.us.auth0.com/api/v2/
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          auth0:
+            client-id: FRFEhM5zwQCva2tSfBxDuM3og5TdjUpC
+            client-secret: Rsic0pW4Wr_q91Ppin-UNRuq5EdH5X7EmhA4ZUTcN-6MBu_Wy8Ce1J89WPCpkD_4
+            authorization-grant-type: client_credentials
+            clientAuthenticationMethod: post
+        provider:
+          auth0:
+            token-uri: https://segmentme.us.auth0.com/oauth/token
+      resourceserver:
+        jwt:
+          issuer-uri: https://segmentme.us.auth0.com/

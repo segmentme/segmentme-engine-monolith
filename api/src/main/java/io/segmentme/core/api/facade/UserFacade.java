@@ -25,12 +25,6 @@ public class UserFacade {
         return getUserDetails(userManager.getById(userId));
     }
 
-    public UserDetails registerUser(UserHolder user) {
-        UserHolder createdUser = userManager.createUser(user);
-        return getUserDetails(createdUser);
-
-    }
-
     private UserDetails getUserDetails(UserHolder createdUser) {
         List<UserProfile> userProfiles = userProfileManager.getUserProfiles(createdUser.getId());
         return new UserDetails()
@@ -52,5 +46,9 @@ public class UserFacade {
 
     public void switchWorkspace(String userId, String workspaceId) {
         userManager.switchWorkspace(userId, workspaceId);
+    }
+
+    public void acknowledgeUser(String id, String email) {
+        userManager.acknowledgeUser(new UserHolder().setEmail(email).setId(id));
     }
 }
