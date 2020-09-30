@@ -1,5 +1,7 @@
 package io.segmentme.core.api.config.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.segmentme.core.api.config.AuthUser;
 import io.segmentme.core.api.facade.UserFacade;
 import io.segmentme.core.api.service.Auth0;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +19,6 @@ import javax.annotation.PostConstruct;
 @RequiredArgsConstructor
 public class AuthenticationManager implements org.springframework.security.authentication.AuthenticationManager {
 
-    private static final String EMAIL_ATTRIBUTE = "https://segmentme.io:email";
-
-    private static final String ACKNOWLEDGE_ATTRIBUTE = "https://segmentme.io:acknowledged";
-
     @Value("${auth0.audience}")
     private final String audience;
 
@@ -31,11 +29,14 @@ public class AuthenticationManager implements org.springframework.security.authe
 
     private final UserFacade userFacade;
 
+    private final ObjectMapper objectMapper;
+
     private JwtAuthenticationProvider customJwtAuthenticationProvider;
 
     @PostConstruct
     void init() {
         customJwtAuthenticationProvider = new JwtAuthenticationProvider(jwtDecoder());
+        customJwtAuthenticationProvider.setJwtAuthenticationConverter(new JwtTokenConverter(objectMapper));
     }
 
     private JwtDecoder jwtDecoder() {
@@ -57,11 +58,10 @@ public class AuthenticationManager implements org.springframework.security.authe
         Authentication authenticate = customJwtAuthenticationProvider.authenticate(authentication);
 
         //check for app https://segmentme.io:persisted  true
-        Jwt credentials = (Jwt) authenticate.getCredentials();
-        if (authenticate.isAuthenticated() && !Boolean.parseBoolean(credentials.getClaims().getOrDefault(ACKNOWLEDGE_ATTRIBUTE, false).toString())) {
-            String id = credentials.getClaims().get("sub").toString();
-            userFacade.acknowledgeUser(id, credentials.getClaims().get(EMAIL_ATTRIBUTE).toString());
-            auth0.acknowledge(id);
+        AuthUser authUser = (AuthUser) authenticate.getPrincipal();
+        if (authenticate.isAuthenticated() && !Boolean.TRUE.equals(authUser.isAcknowledged())) {
+            userFacade.acknowledgeUser(authUser.getId(), authUser.getEmail());
+            auth0.acknowledge(authUser.getId());
         }
 
         return authenticate;

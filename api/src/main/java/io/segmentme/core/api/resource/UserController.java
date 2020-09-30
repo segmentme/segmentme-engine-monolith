@@ -1,5 +1,6 @@
 package io.segmentme.core.api.resource;
 
+import io.segmentme.core.api.config.AuthUser;
 import io.segmentme.core.api.dto.UserDetails;
 import io.segmentme.core.api.facade.UserFacade;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,8 @@ public class UserController {
 
 
     @GetMapping
-    public UserDetails getCurrentUserDetails(@AuthenticationPrincipal OidcUser princapal) {
-        return userFacade.getUserDetails(SecurityContextHolder.getContext().getAuthentication().getName());
+    public UserDetails getCurrentUserDetails(@AuthenticationPrincipal AuthUser authUser) {
+        return userFacade.getUserDetails(authUser.getId());
     }
 
     @PutMapping
