@@ -53,6 +53,8 @@ public class UserManager {
         WorkspaceHolder defaultWorkspace = workspaceManager.createDefaultWorkspace(user);
         user.setLastActiveWorkspace(defaultWorkspace.getId());
 
+        userService.update(user);
+
         return UserHolderConverter.toHolder(user);
     }
 
