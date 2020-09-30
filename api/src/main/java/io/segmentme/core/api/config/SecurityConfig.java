@@ -35,7 +35,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(accessDeniedHandler())
                 .authenticationEntryPoint(entryPointExceptionHandler())
                 .and()
-                .oauth2ResourceServer().jwt().authenticationManager(authenticationManager);
+                .oauth2ResourceServer()
+                .accessDeniedHandler(accessDeniedHandler())
+                .authenticationEntryPoint(entryPointExceptionHandler())
+                .jwt().authenticationManager(authenticationManager);
     }
 
     private AccessDeniedHandler accessDeniedHandler() {
