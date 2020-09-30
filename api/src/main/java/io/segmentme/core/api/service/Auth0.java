@@ -24,7 +24,8 @@ public class Auth0 {
 
         auth0WebClient.patch().uri("/users/" + userId)
                 .bodyValue(new AppMetadata().setAppMetadata(appMetadata))
-                .exchange().doOnSuccess(it -> log.info("Acknowledge result {}", it.body(BodyExtractors.toMono(String.class)))).subscribe();
+                .exchange()
+                .doOnSuccess(it -> log.info("Acknowledge result {}", it.body(BodyExtractors.toMono(String.class)))).subscribe();
 
     }
 

@@ -5,6 +5,9 @@ import io.segmentme.core.api.error.dto.SimpleErrorDto;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.CharEncoding;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +16,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,19 +32,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AuthenticationManager authenticationManager;
 
+    @Bean
+    public FilterRegistrationBean<?> filterRegistrationBean() {
+        var source = new UrlBasedCorsConfigurationSource();
+        var config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        var bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return bean;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .mvcMatchers("/**").authenticated()
-                .and()
-                .exceptionHandling()
-                .accessDeniedHandler(accessDeniedHandler())
-                .authenticationEntryPoint(entryPointExceptionHandler())
-                .and()
-                .oauth2ResourceServer()
-                .accessDeniedHandler(accessDeniedHandler())
-                .authenticationEntryPoint(entryPointExceptionHandler())
-                .jwt().authenticationManager(authenticationManager);
+        http.cors().disable().authorizeRequests()
+            .mvcMatchers("/**").authenticated()
+            .and()
+            .exceptionHandling()
+            .accessDeniedHandler(accessDeniedHandler())
+            .authenticationEntryPoint(entryPointExceptionHandler())
+            .and()
+            .oauth2ResourceServer()
+            .accessDeniedHandler(accessDeniedHandler())
+            .authenticationEntryPoint(entryPointExceptionHandler())
+            .jwt().authenticationManager(authenticationManager);
     }
 
     private AccessDeniedHandler accessDeniedHandler() {
