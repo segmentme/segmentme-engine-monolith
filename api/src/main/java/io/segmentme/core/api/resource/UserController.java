@@ -23,7 +23,8 @@ public class UserController {
     }
 
     @PutMapping
-    public void switchWorkspace(@RequestParam String workspaceId) {
-        userFacade.switchWorkspace("userId", workspaceId);
+    public void switchWorkspace(@RequestParam String workspaceId,
+                                @AuthenticationPrincipal AuthUser authUser) {
+        userFacade.switchWorkspace(authUser.getId(), workspaceId);
     }
 }

@@ -30,13 +30,14 @@ public class UserManager {
 
     public String switchWorkspace(String userId, String workspaceId) {
         User user = userService.findById(userId).get();
-        if (user.getLastActiveWorkspace().equalsIgnoreCase(workspaceId)) {
+        if (workspaceId.equalsIgnoreCase(user.getLastActiveWorkspace())) {
             return workspaceId;
         }
         if (userProfileManager.getUserProfiles(userId).stream().noneMatch(it -> it.getWorkspaceId().equalsIgnoreCase(workspaceId))) {
             throw new UserManagerException().setCode(UserManagerErrors.UNABLE_TO_SWITCH_WORKSPACE_DOESNT_EXISTS);
         }
         user.setLastActiveWorkspace(workspaceId);
+        userService.update(user);
         return workspaceId;
     }
 
