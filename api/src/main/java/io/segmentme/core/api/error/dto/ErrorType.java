@@ -7,4 +7,6 @@ public enum ErrorType {
     VALIDATION_ERROR,
 
     UNKNOWN_ERROR,
+
+    AUTHENTICATION_ERROR
 }
