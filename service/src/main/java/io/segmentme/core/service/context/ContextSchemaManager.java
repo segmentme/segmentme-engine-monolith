@@ -3,6 +3,8 @@ package io.segmentme.core.service.context;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;
+import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
+import io.segmentme.core.db.domain.workpsace.Workspace;
 import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.converter.ContextSchemaConverter;
@@ -14,7 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static io.segmentme.core.service.exception.error.ContextMangerErrors.INTEGRATION_POINT_NOT_FOUND;
 
@@ -49,7 +54,7 @@ public class ContextSchemaManager {
             it.setRootNode(contextSchema.getRootNode());
             return it;
         }).map(contextSchemaService::update)
-                .map(ContextSchemaConverter::toHolder).orElseThrow(() -> new ContextSchemaManagerException().setCode(ContextMangerErrors.CONTEXT_NOT_FOUND));
+            .map(ContextSchemaConverter::toHolder).orElseThrow(() -> new ContextSchemaManagerException().setCode(ContextMangerErrors.CONTEXT_NOT_FOUND));
     }
 
     public ContextSchemaHolder resolveContextSchema(String workspaceId, JsonNode jsonNode) {
@@ -68,6 +73,14 @@ public class ContextSchemaManager {
 
     public void unlinkFromIntegrationPoint(String integrationPointKey) {
         contextSchemaService.findByIntegrationPointKey(integrationPointKey)
-                .map(it -> it.setIntegrationPointKey(null)).ifPresent(contextSchemaService::update);
+            .map(it -> it.setIntegrationPointKey(null)).ifPresent(contextSchemaService::update);
+    }
+
+    public List<ContextSchemaHolder> getAllByWorkspaceId(String workspaceId) {
+        Map<String, IntegrationPoint> points = workspaceService.findById(workspaceId)
+            .map(Workspace::getIntegrationPoints).stream().flatMap(Collection::stream).collect(Collectors.toMap(IntegrationPoint::getKey, it -> it));
+        return contextSchemaService.findByIntegrationPointKeys(points.keySet()).stream().map(ContextSchemaConverter::toHolder)
+            .peek(it -> it.setIntegrationPointName(points.get(it.getIntegrationPointKey()).getName()))
+            .collect(Collectors.toList());
     }
 }

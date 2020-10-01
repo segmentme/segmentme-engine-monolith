@@ -1,4 +1,4 @@
-package io.segmentme.core.service.dto.context;
+package io.segmentme.core.api.dto;
 
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;
@@ -7,9 +7,7 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class ContextSchemaHolder {
-    public String id;
-
+public class ContextSchemaDetails {
     private SchemaNode rootNode;
 
     private Map<String, ContextSchema.InlineType> inlinePath;
@@ -17,5 +15,4 @@ public class ContextSchemaHolder {
     private String integrationPointKey;
 
     private String integrationPointName;
-
 }

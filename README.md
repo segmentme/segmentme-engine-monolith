@@ -21,8 +21,8 @@
  ## Workflow
  ### Begin
  Register new user. 
- When registration complete you will get an access to your personal default workspace.
- *Personal workspace could have only 1 integration point.
+ When registration complete you will get an access to your personal default schema.
+ *Personal schema could have only 1 integration point.
  Integration point is a token which is using to analyze only 1 type of schema from 1 consumer .
  
  For example you have WEB and MOBILE applications, and you want to split analysis per platform, 
@@ -30,7 +30,7 @@
  
  In this case you will need to create 2 integration points due to only 1  [Context Schema](#context-schema-creation) can be created within 1 integration point.
  
- Each workspace created with default configuration, which included known date formats,
+ Each schema created with default configuration, which included known date formats,
  you can extend supported datetime formats as you needed.
  
  ### Context schema creation 
