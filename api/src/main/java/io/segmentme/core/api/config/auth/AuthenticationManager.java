@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.core.*;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.stereotype.Component;
@@ -60,7 +63,7 @@ public class AuthenticationManager implements org.springframework.security.authe
         //check for app https://segmentme.io:persisted  true
         AuthUser authUser = (AuthUser) authenticate.getPrincipal();
         if (authenticate.isAuthenticated() && !Boolean.TRUE.equals(authUser.isAcknowledged())) {
-            userFacade.acknowledgeUser(authUser.getId(), authUser.getEmail());
+            userFacade.acknowledgeUser(authUser.getId(), authUser.getEmail(), authUser.getFullName());
             auth0.acknowledge(authUser.getId());
         }
 

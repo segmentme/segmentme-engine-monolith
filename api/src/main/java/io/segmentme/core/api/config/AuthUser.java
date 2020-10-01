@@ -11,6 +11,9 @@ public class AuthUser {
     @JsonAlias("sub")
     private String id;
 
+    @JsonAlias("https://segmentme.io:fullName")
+    private String fullName;
+
     @JsonAlias("https://segmentme.io:email")
     private String email;
 

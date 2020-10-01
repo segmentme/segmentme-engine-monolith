@@ -28,10 +28,10 @@ public class UserFacade {
     private UserDetails getUserDetails(UserHolder createdUser) {
         List<UserProfile> userProfiles = userProfileManager.getUserProfiles(createdUser.getId());
         return new UserDetails()
-                .setUserBasicInfo(convertToBasicUserInfo(createdUser))
-                .setProfiles(userProfiles.stream()
-                        .map(this::convertToWorkspaceProfile)
-                        .map(it -> it.setActive(it.getWorkspaceId().equals(createdUser.getLastActiveWorkspace()))).collect(Collectors.toList()));
+            .setUserBasicInfo(convertToBasicUserInfo(createdUser))
+            .setProfiles(userProfiles.stream()
+                .map(this::convertToWorkspaceProfile)
+                .map(it -> it.setActive(it.getWorkspaceId().equals(createdUser.getLastActiveWorkspace()))).collect(Collectors.toList()));
     }
 
     private UserBasicInfo convertToBasicUserInfo(UserHolder createdUser) {
@@ -40,15 +40,15 @@ public class UserFacade {
 
     private WorkspaceProfile convertToWorkspaceProfile(UserProfile userProfile) {
         return new WorkspaceProfile().setRole(userProfile.getRole())
-                .setWorkspaceId(userProfile.getWorkspaceId())
-                .setWorkspaceName(userProfile.getWorkspaceName());
+            .setWorkspaceId(userProfile.getWorkspaceId())
+            .setWorkspaceName(userProfile.getWorkspaceName());
     }
 
     public void switchWorkspace(String userId, String workspaceId) {
         userManager.switchWorkspace(userId, workspaceId);
     }
 
-    public void acknowledgeUser(String id, String email) {
-        userManager.acknowledgeUser(new UserHolder().setEmail(email).setId(id));
+    public void acknowledgeUser(String id, String email, String fullName) {
+        userManager.acknowledgeUser(new UserHolder().setName(fullName).setEmail(email).setId(id));
     }
 }
