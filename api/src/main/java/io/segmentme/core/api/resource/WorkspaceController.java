@@ -4,6 +4,7 @@ import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.WorkspaceConfiguration;
 import io.segmentme.core.service.workspace.WorkspaceManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -12,18 +13,24 @@ import org.springframework.web.bind.annotation.*;
 public class WorkspaceController {
     private final WorkspaceManager workspaceManager;
 
-    @PostMapping("/{id}/integration-point")
-    public IntegrationPoint createIntegrationPoint(@PathVariable String id) {
-        return workspaceManager.addIntegrationPoint(id);
+    @PostMapping("/{workspaceId}/integration-point")
+    public IntegrationPoint createIntegrationPoint(@PathVariable String workspaceId, @RequestParam String name) {
+        return workspaceManager.addIntegrationPoint(workspaceId, name);
     }
 
-    @PutMapping("/{id}/configuration")
-    public void updateWorkspaceConfguration(@PathVariable String id, @RequestBody WorkspaceConfiguration workspaceConfiguration) {
-        workspaceManager.updateConfiguration(id, workspaceConfiguration);
+    @PutMapping("/{workspaceId}/configuration")
+    public void updateWorkspaceConfguration(@PathVariable String workspaceId, @RequestBody WorkspaceConfiguration workspaceConfiguration) {
+        workspaceManager.updateConfiguration(workspaceId, workspaceConfiguration);
     }
 
-    @DeleteMapping("/{id}/integration-point/{key}")
-    public IntegrationPoint createIntegrationPoint(@PathVariable String id, @PathVariable String key) {
-        return workspaceManager.addIntegrationPoint(id);
+    @PutMapping("/{workspaceId}/integration-point")
+    public void updateIntegrationPoint(@PathVariable String workspaceId, @RequestBody IntegrationPoint integrationPoint) {
+        workspaceManager.updateIntegrationPoint(workspaceId, integrationPoint);
+    }
+
+    @DeleteMapping("/{workspaceId}/integration-point/{key}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteIntegrationPoint(@PathVariable String workspaceId, @PathVariable String key) {
+        workspaceManager.removeIntegrationPoint(workspaceId, key);
     }
 }

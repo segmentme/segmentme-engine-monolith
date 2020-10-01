@@ -38,7 +38,7 @@ class UserManagerTest extends BaseTestWithContext {
         assert profile.getRole() == Role.OWNER
 
         def workspace = workspaceService.findById(profile.getWorkspaceId()).get()
-        assert workspace.name == "DEFAULT"
+        assert workspace.name == "Default"
         assert workspace.configuration == new WorkspaceConfiguration().setKnownDateFormats(WorkspaceManager.DEFAULT_DATE_PATTERNS)
         assert workspace.integrationPoints.size() == 1
     }
