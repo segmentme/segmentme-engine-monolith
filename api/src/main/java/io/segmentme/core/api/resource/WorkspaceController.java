@@ -1,10 +1,14 @@
 package io.segmentme.core.api.resource;
 
+import io.segmentme.core.api.config.AuthUser;
+import io.segmentme.core.api.dto.WorkspaceDetails;
+import io.segmentme.core.api.facade.WorkspaceFacade;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.WorkspaceConfiguration;
 import io.segmentme.core.service.workspace.WorkspaceManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -12,25 +16,39 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/workspace")
 public class WorkspaceController {
     private final WorkspaceManager workspaceManager;
+    private final WorkspaceFacade workspaceFacade;
+
+    @GetMapping("/{workspaceId}")
+    public WorkspaceDetails getWorkspace(@AuthenticationPrincipal AuthUser currentUser,
+                                         @PathVariable String workspaceId) {
+        return workspaceFacade.getWorkspaceDetails(currentUser.getId(), workspaceId);
+    }
+
+    @PostMapping
+    public WorkspaceDetails createWorkspace(@AuthenticationPrincipal AuthUser currentUser,
+                                            @RequestParam String name) {
+        return workspaceFacade.createWorkspace(currentUser.getId(), name);
+    }
 
     @PostMapping("/{workspaceId}/integration-point")
-    public IntegrationPoint createIntegrationPoint(@PathVariable String workspaceId, @RequestParam String name) {
-        return workspaceManager.addIntegrationPoint(workspaceId, name);
+    public IntegrationPoint createIntegrationPoint(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @RequestParam String name) {
+        return workspaceFacade.addIntegrationPoint(currentUser, workspaceId, name);
     }
 
     @PutMapping("/{workspaceId}/configuration")
-    public void updateWorkspaceConfguration(@PathVariable String workspaceId, @RequestBody WorkspaceConfiguration workspaceConfiguration) {
-        workspaceManager.updateConfiguration(workspaceId, workspaceConfiguration);
+    public void updateWorkspaceConfguration(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @RequestBody WorkspaceConfiguration workspaceConfiguration) {
+        workspaceFacade.updateConfiguration(currentUser.getId(), workspaceId, workspaceConfiguration);
     }
 
     @PutMapping("/{workspaceId}/integration-point")
-    public void updateIntegrationPoint(@PathVariable String workspaceId, @RequestBody IntegrationPoint integrationPoint) {
-        workspaceManager.updateIntegrationPoint(workspaceId, integrationPoint);
+    public void updateIntegrationPoint(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @RequestBody IntegrationPoint integrationPoint) {
+        workspaceFacade.updateIntegrationPoint(currentUser.getId(), workspaceId, integrationPoint);
     }
 
     @DeleteMapping("/{workspaceId}/integration-point/{key}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteIntegrationPoint(@PathVariable String workspaceId, @PathVariable String key) {
-        workspaceManager.removeIntegrationPoint(workspaceId, key);
+    public void deleteIntegrationPoint(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @PathVariable String key) {
+        workspaceFacade.removeIntegrationPoint(currentUser.getId(), workspaceId, key);
     }
+
 }

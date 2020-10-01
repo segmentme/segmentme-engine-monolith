@@ -40,6 +40,10 @@ public class WorkspaceManager {
         return this.createWorkspace(user.getId(), DEFAULT);
     }
 
+    public WorkspaceHolder getWorkspace(String workspaceId) {
+        return workspaceService.findById(workspaceId).map(WorkspaceHolderConverter::toHolder).orElse(null);
+    }
+
     public WorkspaceHolder createWorkspace(String ownerId, String name) {
         Workspace workspace = new Workspace();
         workspace.setName(name);
