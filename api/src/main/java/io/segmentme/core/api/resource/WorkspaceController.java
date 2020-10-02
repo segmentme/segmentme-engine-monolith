@@ -36,7 +36,7 @@ public class WorkspaceController {
     }
 
     @PutMapping("/{workspaceId}/configuration")
-    public void updateWorkspaceConfguration(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @RequestBody WorkspaceConfiguration workspaceConfiguration) {
+    public void updateWorkspaceConfiguration(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @RequestBody WorkspaceConfiguration workspaceConfiguration) {
         workspaceFacade.updateConfiguration(currentUser.getId(), workspaceId, workspaceConfiguration);
     }
 

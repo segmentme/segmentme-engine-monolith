@@ -95,8 +95,7 @@ public class WorkspaceManager {
     }
 
     public void updateConfiguration(String id, WorkspaceConfiguration workspaceConfiguration) {
-        workspaceService.findById(id).map(it -> {
-            return it.setConfiguration(workspaceConfiguration);
-        }).ifPresent(workspaceService::update);
+        workspaceService.findById(id).map(it -> it.setConfiguration(workspaceConfiguration))
+            .ifPresent(workspaceService::update);
     }
 }
