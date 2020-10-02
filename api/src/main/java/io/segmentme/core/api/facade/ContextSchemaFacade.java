@@ -1,5 +1,6 @@
 package io.segmentme.core.api.facade;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.api.dto.ContextSchemaDetails;
 import io.segmentme.core.service.context.ContextSchemaManager;
 import io.segmentme.core.service.dto.context.ContextSchemaHolder;
@@ -23,5 +24,9 @@ public class ContextSchemaFacade {
             .setIntegrationPointKey(contextSchema.getIntegrationPointKey())
             .setIntegrationPointName(contextSchema.getIntegrationPointName())
             .setRootNode(contextSchema.getRootNode());
+    }
+
+    public ContextSchemaHolder resolve(String userId, String workspaceId, JsonNode payload) {
+        return contextSchemaManager.resolveContextSchema(workspaceId, payload);
     }
 }
