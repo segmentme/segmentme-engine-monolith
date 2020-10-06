@@ -67,7 +67,7 @@ public class ContextSchemaValidationServiceImpl implements ContextSchemaValidati
 
         Optional.ofNullable(node.getSubNodes())
                 .orElse(Collections.emptyList())
-                .forEach(it -> validateNode(parentPath + "." + node.getName(), it, entries));
+                .forEach(it -> validateNode(parentPath + "." + it.getName(), it, entries));
         return entries;
     }
 
@@ -82,6 +82,10 @@ public class ContextSchemaValidationServiceImpl implements ContextSchemaValidati
         } else {
             if (node.getSubType() != null) {
                 entries.add(of(parentPath, NODE_SUBTYPE_SHOULD_NOT_BE_DEFINED));
+            }
+
+            if(node.getType()==SchemaNodeType.OBJECT && node.getSubNodes().isEmpty()){
+                entries.add(of(parentPath, NODE_OBJECT_SHOULD_HAVE_CHILDREN));
             }
         }
     }

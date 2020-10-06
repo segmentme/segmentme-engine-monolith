@@ -44,7 +44,7 @@ public class ContextSchemaResolver {
 
     private SchemaNode resolveSchemaNode(Workspace workspace, JsonNode jsonNode) {
         List<DateTimeFormatter> dateFormats = workspace.getConfiguration()
-                .toDateFormatters(workspace.getConfiguration().getKnownDateFormats());
+            .toDateFormatters(workspace.getConfiguration().getKnownDateFormats());
 
 
         SchemaNode root = new SchemaNode().setName(ROOT).setType(SchemaNodeType.OBJECT);
@@ -68,7 +68,7 @@ public class ContextSchemaResolver {
         }
 
         Optional.ofNullable(node.getSubNodes())
-                .ifPresent(subNodes -> subNodes.stream().map(it -> resolveInlinePath(pathPrefix + it.getName(), it)).forEach(inlinePath::putAll));
+            .ifPresent(subNodes -> subNodes.stream().map(it -> resolveInlinePath(pathPrefix + it.getName(), it)).forEach(inlinePath::putAll));
 
         return inlinePath;
     }
@@ -113,6 +113,9 @@ public class ContextSchemaResolver {
             }
         });
 
+        if (arrayNodeDescriptor.getArraySubType() == null) {
+            arrayNodeDescriptor.setArraySubType(SchemaNodeType.UNDEFINED);
+        }
         if (!CollectionUtils.isEmpty(nodes)) {
             arrayNodeDescriptor.setNodes(nodes);
         }
@@ -143,6 +146,6 @@ public class ContextSchemaResolver {
             return SchemaNodeType.STRING;
         }
         return DateResolver.resolve(json.textValue(), dateTimeFormatters)
-                .map(it -> SchemaNodeType.DATE).orElseGet(() -> SchemaNodeType.STRING);
+            .map(it -> SchemaNodeType.DATE).orElseGet(() -> SchemaNodeType.STRING);
     }
 }

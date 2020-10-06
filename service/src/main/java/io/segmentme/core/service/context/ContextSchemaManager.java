@@ -43,7 +43,7 @@ public class ContextSchemaManager {
         ContextSchema contextSchema = contextSchemaResolver.resolve(root);
         contextSchema.setIntegrationPointKey(integrationPointKey);
 
-        validateContextSchema(contextSchema);
+        validateContextSchemaAndThrowAnError(contextSchema);
         return ContextSchemaConverter.toHolder(contextSchemaService.create(contextSchema));
     }
 
@@ -58,12 +58,14 @@ public class ContextSchemaManager {
     }
 
     public ContextSchemaHolder resolveContextSchema(String workspaceId, JsonNode jsonNode) {
-        ContextSchema schema = contextSchemaResolver.resolve(workspaceService.findById(workspaceId).get(), jsonNode);
-        validateContextSchema(schema);
-        return ContextSchemaConverter.toHolder(schema);
+        return ContextSchemaConverter.toHolder(contextSchemaResolver.resolve(workspaceService.findById(workspaceId).get(), jsonNode));
     }
 
-    private void validateContextSchema(ContextSchema contextSchema) {
+    public List<ContextSchemaValidationService.SchemaValidationEntry> validate(ContextSchemaHolder contextSchema) {
+        return validationService.validate(new ContextSchema().setRootNode(contextSchema.getRootNode()));
+    }
+
+    private void validateContextSchemaAndThrowAnError(ContextSchema contextSchema) {
         List<ContextSchemaValidationService.SchemaValidationEntry> validationResult = validationService.validate(contextSchema);
 
         if (validationResult.stream().anyMatch(it -> it.getSeverity() == SeverityLevel.CRITICAL)) {

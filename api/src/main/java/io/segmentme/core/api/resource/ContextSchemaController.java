@@ -2,9 +2,10 @@ package io.segmentme.core.api.resource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.api.config.AuthUser;
+import io.segmentme.core.api.dto.ContextSchemaCreateRequest;
 import io.segmentme.core.api.dto.ContextSchemaDetails;
+import io.segmentme.core.api.dto.ContextSchemaValidationResult;
 import io.segmentme.core.api.facade.ContextSchemaFacade;
-import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,17 @@ public class ContextSchemaController {
 
 
     @PostMapping("/resolve")
-    public ContextSchemaHolder getContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody JsonNode payload) {
+    public ContextSchemaValidationResult resolveContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody JsonNode payload) {
         return contextSchemaFacade.resolve(authUser.getId(),workspaceId, payload);
+    }
+
+    @PostMapping("/validate")
+    public ContextSchemaValidationResult resolveContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody ContextSchemaDetails contextSchemaDetails) {
+        return contextSchemaFacade.validate(authUser.getId(),workspaceId, contextSchemaDetails);
+    }
+
+    @PostMapping
+    public ContextSchemaDetails resolveContextSchema(@AuthenticationPrincipal AuthUser authUser,@RequestParam String workspaceId, @RequestBody ContextSchemaCreateRequest contextSchemaCreateRequest) {
+        return contextSchemaFacade.create(authUser.getId(),workspaceId, contextSchemaCreateRequest);
     }
 }
