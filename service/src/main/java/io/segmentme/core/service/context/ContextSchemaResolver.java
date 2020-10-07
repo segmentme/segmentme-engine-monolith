@@ -133,7 +133,7 @@ public class ContextSchemaResolver {
         return switch (json.getNodeType()) {
             case ARRAY -> SchemaNodeType.ARRAY;
             case BOOLEAN -> SchemaNodeType.BOOLEAN;
-            case MISSING, NULL, BINARY -> null;
+            case MISSING, NULL, BINARY -> SchemaNodeType.UNDEFINED;
             case NUMBER -> SchemaNodeType.NUMBER;
             case OBJECT, POJO -> SchemaNodeType.OBJECT;
             case STRING -> checkForDateType(json, dateTimeFormatters);

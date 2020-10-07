@@ -48,8 +48,8 @@ public class ContextSchemaValidationServiceImpl implements ContextSchemaValidati
         }
 
         entries.addAll(rootNode.getSubNodes().stream().map(this::validateNode)
-                .filter(Predicate.not(CollectionUtils::isEmpty))
-                .flatMap(List::stream).collect(Collectors.toList()));
+            .filter(Predicate.not(CollectionUtils::isEmpty))
+            .flatMap(List::stream).collect(Collectors.toList()));
 
         return entries;
 
@@ -62,12 +62,12 @@ public class ContextSchemaValidationServiceImpl implements ContextSchemaValidati
 
     private List<SchemaValidationEntry> validateNode(String parentPath, SchemaNode node, List<SchemaValidationEntry> entries) {
         Optional.ofNullable(node.getType())
-                .ifPresentOrElse(it -> checkNodeWithType(parentPath, node, entries),
-                        () -> entries.add(of(parentPath, NODE_TYPE_NOT_DEFINED)));
+            .ifPresentOrElse(it -> checkNodeWithType(parentPath, node, entries),
+                () -> entries.add(of(parentPath, NODE_TYPE_NOT_DEFINED)));
 
         Optional.ofNullable(node.getSubNodes())
-                .orElse(Collections.emptyList())
-                .forEach(it -> validateNode(parentPath + "." + it.getName(), it, entries));
+            .orElse(Collections.emptyList())
+            .forEach(it -> validateNode(parentPath + "." + it.getName(), it, entries));
         return entries;
     }
 
@@ -84,8 +84,11 @@ public class ContextSchemaValidationServiceImpl implements ContextSchemaValidati
                 entries.add(of(parentPath, NODE_SUBTYPE_SHOULD_NOT_BE_DEFINED));
             }
 
-            if(node.getType()==SchemaNodeType.OBJECT && node.getSubNodes().isEmpty()){
+            if (node.getType() == SchemaNodeType.OBJECT && node.getSubNodes().isEmpty()) {
                 entries.add(of(parentPath, NODE_OBJECT_SHOULD_HAVE_CHILDREN));
+            }
+            if (node.getType() == SchemaNodeType.UNDEFINED) {
+                entries.add(of(parentPath, NODE_TYPE_NOT_DEFINED));
             }
         }
     }
