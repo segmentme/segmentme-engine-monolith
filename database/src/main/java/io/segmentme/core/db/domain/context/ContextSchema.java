@@ -19,6 +19,10 @@ public class ContextSchema extends DbObject {
     @Indexed
     private String integrationPointKey;
 
+    private String name;
+
+    private String rawPayload;
+
     @Data
     @AllArgsConstructor
     public static class InlineType {

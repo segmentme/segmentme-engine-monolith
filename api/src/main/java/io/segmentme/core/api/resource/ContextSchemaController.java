@@ -31,12 +31,12 @@ public class ContextSchemaController {
     }
 
     @PostMapping("/validate")
-    public ContextSchemaValidationResult resolveContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody ContextSchemaDetails contextSchemaDetails) {
+    public ContextSchemaValidationResult validateContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody ContextSchemaDetails contextSchemaDetails) {
         return contextSchemaFacade.validate(authUser.getId(),workspaceId, contextSchemaDetails);
     }
 
     @PostMapping
-    public ContextSchemaDetails resolveContextSchema(@AuthenticationPrincipal AuthUser authUser,@RequestParam String workspaceId, @RequestBody ContextSchemaCreateRequest contextSchemaCreateRequest) {
+    public ContextSchemaDetails create(@AuthenticationPrincipal AuthUser authUser,@RequestParam String workspaceId, @RequestBody ContextSchemaCreateRequest contextSchemaCreateRequest) {
         return contextSchemaFacade.create(authUser.getId(),workspaceId, contextSchemaCreateRequest);
     }
 }

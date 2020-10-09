@@ -7,18 +7,20 @@ public class ContextSchemaConverter {
 
     public static ContextSchemaHolder toHolder(ContextSchema contextSchema) {
         return new ContextSchemaHolder().setId(contextSchema.getId())
-                .setInlinePath(contextSchema.getInlinePath())
-                .setRootNode(contextSchema.getRootNode())
-                .setIntegrationPointKey(contextSchema.getIntegrationPointKey());
+            .setName(contextSchema.getName())
+            .setInlinePath(contextSchema.getInlinePath())
+            .setRootNode(contextSchema.getRootNode())
+            .setIntegrationPointKey(contextSchema.getIntegrationPointKey());
     }
 
     public static ContextSchema toEntity(ContextSchemaHolder contextSchema) {
 
         return (ContextSchema) new ContextSchema()
-                .setInlinePath(contextSchema.getInlinePath())
-                .setRootNode(contextSchema.getRootNode())
-                .setIntegrationPointKey(contextSchema.getIntegrationPointKey())
-                .setId(contextSchema.getId());
+            .setName(contextSchema.getName())
+            .setInlinePath(contextSchema.getInlinePath())
+            .setRootNode(contextSchema.getRootNode())
+            .setIntegrationPointKey(contextSchema.getIntegrationPointKey())
+            .setId(contextSchema.getId());
     }
 
 }
