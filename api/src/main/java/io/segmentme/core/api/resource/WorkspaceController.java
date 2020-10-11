@@ -1,6 +1,8 @@
 package io.segmentme.core.api.resource;
 
 import io.segmentme.core.api.config.AuthUser;
+import io.segmentme.core.api.dto.WorkspaceDatesValidationRequest;
+import io.segmentme.core.api.dto.WorkspaceDatesValidationResponse;
 import io.segmentme.core.api.dto.WorkspaceDetails;
 import io.segmentme.core.api.facade.WorkspaceFacade;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
@@ -38,6 +40,11 @@ public class WorkspaceController {
     @PutMapping("/{workspaceId}/configuration")
     public void updateWorkspaceConfiguration(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @RequestBody WorkspaceConfiguration workspaceConfiguration) {
         workspaceFacade.updateConfiguration(currentUser.getId(), workspaceId, workspaceConfiguration);
+    }
+
+    @PostMapping("/{workspaceId}/configuration/date-format/validate")
+    public WorkspaceDatesValidationResponse validateWorkspaceConfiguration(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @RequestBody WorkspaceDatesValidationRequest validationRequest) {
+        return workspaceFacade.validateDateFormats(currentUser.getId(), workspaceId, validationRequest);
     }
 
     @PutMapping("/{workspaceId}/integration-point")

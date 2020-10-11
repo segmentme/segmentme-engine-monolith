@@ -14,5 +14,7 @@ public class ContextSchemaDetails {
 
     private String integrationPointKey;
 
-    private String integrationPointName;
+    private String name;
+
+    private String id;
 }

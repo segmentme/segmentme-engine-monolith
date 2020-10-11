@@ -36,12 +36,14 @@ public class ContextSchemaManager {
 
     private final WorkspaceService workspaceService;
 
-    public ContextSchemaHolder create(String integrationPointKey, SchemaNode root) {
+    public ContextSchemaHolder create(String integrationPointKey, SchemaNode root, String name, String rawPayload) {
         if (workspaceService.findByIntegrationPointKey(integrationPointKey).isEmpty()) {
             throw new ContextSchemaManagerException().setCode(INTEGRATION_POINT_NOT_FOUND);
         }
         ContextSchema contextSchema = contextSchemaResolver.resolve(root);
         contextSchema.setIntegrationPointKey(integrationPointKey);
+        contextSchema.setName(name);
+        contextSchema.setRawPayload(rawPayload);
 
         validateContextSchemaAndThrowAnError(contextSchema);
         return ContextSchemaConverter.toHolder(contextSchemaService.create(contextSchema));
@@ -81,8 +83,7 @@ public class ContextSchemaManager {
     public List<ContextSchemaHolder> getAllByWorkspaceId(String workspaceId) {
         Map<String, IntegrationPoint> points = workspaceService.findById(workspaceId)
             .map(Workspace::getIntegrationPoints).stream().flatMap(Collection::stream).collect(Collectors.toMap(IntegrationPoint::getKey, it -> it));
-        return contextSchemaService.findByIntegrationPointKeys(points.keySet()).stream().map(ContextSchemaConverter::toHolder)
-            .peek(it -> it.setIntegrationPointName(points.get(it.getIntegrationPointKey()).getName()))
-            .collect(Collectors.toList());
+
+        return contextSchemaService.findByIntegrationPointKeys(points.keySet()).stream().map(ContextSchemaConverter::toHolder).collect(Collectors.toList());
     }
 }

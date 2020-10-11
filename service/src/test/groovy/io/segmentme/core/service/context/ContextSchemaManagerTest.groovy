@@ -40,7 +40,7 @@ class ContextSchemaManagerTest extends BaseTestWithContext {
         workspaces = workspaceService.findAllUserWorkspaces(user.getId())
         expect:
         try {
-            def create = contextSchemaManager.create(integrationKey ?: workspaces[0].integrationPoints[0].key, rootNode)
+            def create = contextSchemaManager.create(integrationKey ?: workspaces[0].integrationPoints[0].key, rootNode, null, null)
             assert create != null && result == true
         } catch (AbstractManagerException ex) {
             assert ex == result

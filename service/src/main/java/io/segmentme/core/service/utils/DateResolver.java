@@ -19,19 +19,26 @@ public class DateResolver {
         return formats.stream().map(it -> {
             try {
                 TemporalAccessor parse = it.parse(candidate);
+
                 return parse;
             } catch (Throwable ex) {
                 log.debug("Unable to parse {} to format {}", candidate, it);
                 return null;
             }
         })
-                .filter(Objects::nonNull)
-                .findAny()
-                .map(it -> {
-                    if (!it.isSupported(ChronoField.SECOND_OF_DAY)) {
-                        return ZonedDateTime.of(LocalDate.from(it), LocalTime.MIDNIGHT, ZoneId.systemDefault());
-                    }
-                    return it;
-                }).map(Instant::from);
+            .filter(Objects::nonNull)
+            .filter(it -> it.isSupported(ChronoField.DAY_OF_MONTH))
+            .findAny()
+            .map(it -> {
+                if (!it.isSupported(ChronoField.SECOND_OF_DAY)) {
+                    return ZonedDateTime.of(LocalDate.from(it), LocalTime.MIDNIGHT, ZoneId.systemDefault());
+                }
+                try {
+                    ZoneId.from(it);
+                } catch (Throwable ex) {
+                    return ZonedDateTime.of(LocalDateTime.from(it), ZoneId.systemDefault());
+                }
+                return it;
+            }).map(Instant::from);
     }
 }

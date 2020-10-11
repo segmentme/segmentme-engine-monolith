@@ -21,21 +21,25 @@ public class ContextValuesExtractorImpl implements ContextValuesExtractor {
 
     @Override
     public ContextValueHolder extractValues(JsonNode rawContext, ContextSchema schema, WorkspaceConfiguration workspaceConfiguration) {
-        List<DateTimeFormatter> dateFormats = workspaceConfiguration
-                .toDateFormatters(workspaceConfiguration.getKnownDateFormats());
+        List<DateTimeFormatter> dateFormats = Optional.ofNullable(workspaceConfiguration)
+            .map(it -> it.toDateFormatters(it.getKnownDateFormats()))
+            .orElseGet(ArrayList::new);
 
 
         ContextValueHolder context = new ContextValueHolder();
         context.setValues(new HashMap<>());
         context.setSchema(schema);
-        rawContext.fields().forEachRemaining(it -> buildValuesMap(it.getKey(), it.getValue(), schema.getRootNode().getSubNodes(), context.getValues(), dateFormats));
+        rawContext.fields().forEachRemaining(it -> {
+            List<SchemaNode> schemaNodes = Optional.ofNullable(schema).map(ContextSchema::getRootNode).map(SchemaNode::getSubNodes).orElse(null);
+            buildValuesMap(it.getKey(), it.getValue(), schemaNodes, context.getValues(), dateFormats);
+        });
         return context;
     }
 
     private void buildValuesMap(String path, JsonNode value, List<SchemaNode> schemaNodes, Map<String, Object> values, List<DateTimeFormatter> dateFormats) {
         Optional<SchemaNode> schemaNode = Optional.ofNullable(schemaNodes).orElseGet(ArrayList::new).stream().filter(it -> it.getName().equalsIgnoreCase(path)).findFirst();
         getNodeValue(value, schemaNode.orElseGet(() -> new SchemaNode().setPath(path)
-                .setType(SchemaNodeType.getPossibleSchemaNodeTypes(value.getNodeType()).get(0))), values, dateFormats);
+            .setType(SchemaNodeType.getPossibleSchemaNodeTypes(value.getNodeType()).get(0))), values, dateFormats);
     }
 
 

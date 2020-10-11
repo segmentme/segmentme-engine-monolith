@@ -8,14 +8,13 @@ import java.util.Map;
 
 @Data
 public class ContextSchemaHolder {
-    public String id;
+    private String id;
+
+    private String name;
 
     private SchemaNode rootNode;
 
     private Map<String, ContextSchema.InlineType> inlinePath;
 
     private String integrationPointKey;
-
-    private String integrationPointName;
-
 }

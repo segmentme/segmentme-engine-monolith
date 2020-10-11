@@ -1,6 +1,5 @@
 package io.segmentme.core.api.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.SchemaNode;
 import lombok.Data;
 
@@ -10,6 +9,8 @@ public class ContextSchemaCreateRequest {
 
     private String integrationPointKey;
 
-    private JsonNode rawPayload;
+    private String rawPayload;
+
+    private String name;
 
 }
