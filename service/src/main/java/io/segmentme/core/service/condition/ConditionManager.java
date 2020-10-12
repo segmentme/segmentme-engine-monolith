@@ -38,6 +38,10 @@ public class ConditionManager {
         return conditions.stream().map(ConditionConverter::of).collect(Collectors.toList());
     }
 
+    public AbstractConditionDto<?> findByConditionId(String conditionId){
+        return ConditionConverter.of(conditionService.findById(conditionId).orElseThrow(() -> new RuntimeException("Condition doesn't exist")));
+    }
+
     public void unlinkFromContextId(String contextId) {
         var conditions = conditionService.findByContextId(contextId);
         conditions.forEach(it -> it.setContextId(null));
