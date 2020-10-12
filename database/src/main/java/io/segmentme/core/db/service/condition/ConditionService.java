@@ -23,6 +23,10 @@ public class ConditionService extends AbstractDatabaseService<AbstractCondition<
         return repository.saveAll(entities);
     }
 
+    public List<AbstractCondition<?>> updateAll(List<AbstractCondition<?>> entities) {
+        return repository.saveAll(entities);
+    }
+
     public void deleteAll(Collection<AbstractCondition<?>> entities) {
         repository.deleteAll(entities);
     }

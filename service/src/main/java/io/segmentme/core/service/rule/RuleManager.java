@@ -79,4 +79,11 @@ public class RuleManager {
         ruleService.update(byIntegrationPointKey);
 
     }
+
+    public void unlinkFromContext(String contextId) {
+        List<AbstractAnalysisRule<?>> contextRules = ruleService.findByContextId(contextId);
+        contextRules.forEach(it->it.setContextId(null));
+        ruleService.update(contextRules);
+
+    }
 }

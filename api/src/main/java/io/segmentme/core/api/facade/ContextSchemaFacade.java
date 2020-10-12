@@ -1,6 +1,7 @@
 package io.segmentme.core.api.facade;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.segmentme.core.api.config.AuthUser;
 import io.segmentme.core.api.dto.ContextSchemaCreateRequest;
 import io.segmentme.core.api.dto.ContextSchemaDetails;
 import io.segmentme.core.api.dto.ContextSchemaValidationResult;
@@ -26,7 +27,7 @@ public class ContextSchemaFacade {
     private final ContextValuesExtractor contextValuesExtractor;
 
     public List<ContextSchemaDetails> getByWorkspace(String userId, String workspaceId) {
-        return contextSchemaManager.getAllByWorkspaceId(workspaceId).stream().map(this::convertToDto).collect(Collectors.toList());
+        return contextSchemaManager.getAllByWorkspaceId(workspaceId, true).stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     private ContextSchemaDetails convertToDto(ContextSchemaHolder contextSchema) {
@@ -61,5 +62,13 @@ public class ContextSchemaFacade {
     public ContextSchemaDetails create(String id, String workspaceId, ContextSchemaCreateRequest request) {
         ContextSchemaHolder contextSchemaHolder = contextSchemaManager.create(request.getIntegrationPointKey(), request.getRootNode(), request.getName(), request.getRawPayload());
         return this.convertToDto(contextSchemaHolder);
+    }
+
+    public void delete(AuthUser authUser, String contextSchemaId) {
+        contextSchemaManager.deleteContextSchema(contextSchemaId);
+    }
+
+    public ContextSchemaDetails getById(AuthUser authUser, String contextSchemaId) {
+        return convertToDto(contextSchemaManager.getById(contextSchemaId));
     }
 }

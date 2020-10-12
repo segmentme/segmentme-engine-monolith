@@ -7,11 +7,13 @@ import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.Workspace;
 import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
+import io.segmentme.core.service.condition.ConditionManager;
 import io.segmentme.core.service.converter.ContextSchemaConverter;
 import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import io.segmentme.core.service.exception.ContextSchemaManagerException;
 import io.segmentme.core.service.exception.ContextSchemaValidationException;
 import io.segmentme.core.service.exception.error.ContextMangerErrors;
+import io.segmentme.core.service.rule.RuleManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,10 @@ public class ContextSchemaManager {
     private final ContextSchemaResolver contextSchemaResolver;
 
     private final WorkspaceService workspaceService;
+
+    private final RuleManager ruleManager;
+
+    private final ConditionManager conditionManager;
 
     public ContextSchemaHolder create(String integrationPointKey, SchemaNode root, String name, String rawPayload) {
         if (workspaceService.findByIntegrationPointKey(integrationPointKey).isEmpty()) {
@@ -80,10 +86,22 @@ public class ContextSchemaManager {
             .map(it -> it.setIntegrationPointKey(null)).ifPresent(contextSchemaService::update);
     }
 
-    public List<ContextSchemaHolder> getAllByWorkspaceId(String workspaceId) {
+    public List<ContextSchemaHolder> getAllByWorkspaceId(String workspaceId, boolean shortForm) {
         Map<String, IntegrationPoint> points = workspaceService.findById(workspaceId)
             .map(Workspace::getIntegrationPoints).stream().flatMap(Collection::stream).collect(Collectors.toMap(IntegrationPoint::getKey, it -> it));
 
-        return contextSchemaService.findByIntegrationPointKeys(points.keySet()).stream().map(ContextSchemaConverter::toHolder).collect(Collectors.toList());
+        return contextSchemaService.findByIntegrationPointKeys(points.keySet(), shortForm).stream().map(ContextSchemaConverter::toHolder).collect(Collectors.toList());
+    }
+
+    public void deleteContextSchema(String contextSchemaId) {
+
+        contextSchemaService.deleteById(contextSchemaId);
+        ruleManager.unlinkFromContext(contextSchemaId);
+        conditionManager.unlinkFromContextId(contextSchemaId);
+
+    }
+
+    public ContextSchemaHolder getById(String contextSchemaId) {
+        return contextSchemaService.findById(contextSchemaId).map(ContextSchemaConverter::toHolder).orElse(null);
     }
 }
