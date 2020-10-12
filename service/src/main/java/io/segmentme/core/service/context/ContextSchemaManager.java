@@ -69,6 +69,10 @@ public class ContextSchemaManager {
         return ContextSchemaConverter.toHolder(contextSchemaResolver.resolve(workspaceService.findById(workspaceId).get(), jsonNode));
     }
 
+    public ContextSchemaHolder resolveContextSchema(SchemaNode rootNode) {
+        return ContextSchemaConverter.toHolder(contextSchemaResolver.resolve(rootNode));
+    }
+
     public List<ContextSchemaValidationService.SchemaValidationEntry> validate(ContextSchemaHolder contextSchema) {
         return validationService.validate(new ContextSchema().setRootNode(contextSchema.getRootNode()));
     }

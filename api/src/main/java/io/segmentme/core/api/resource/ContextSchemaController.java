@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.api.config.AuthUser;
 import io.segmentme.core.api.dto.ContextSchemaCreateRequest;
 import io.segmentme.core.api.dto.ContextSchemaDetails;
+import io.segmentme.core.api.dto.ContextSchemaValidationRequest;
 import io.segmentme.core.api.dto.ContextSchemaValidationResult;
 import io.segmentme.core.api.facade.ContextSchemaFacade;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +41,9 @@ public class ContextSchemaController {
     }
 
     @PostMapping("/validate")
-    public ContextSchemaValidationResult validateContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody ContextSchemaDetails contextSchemaDetails) {
-        return contextSchemaFacade.validate(authUser.getId(), workspaceId, contextSchemaDetails);
+    public ContextSchemaValidationResult validateContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId,
+                                                               @RequestBody ContextSchemaValidationRequest validationRequest) {
+        return contextSchemaFacade.validate(authUser.getId(), workspaceId, validationRequest);
     }
 
     @PostMapping

@@ -18,11 +18,11 @@ public enum SchemaNodeType {
     DATE(Collections.singletonList(JsonNodeType.STRING)),
     NUMBER(Collections.singletonList(JsonNodeType.NUMBER)),
     BOOLEAN(Collections.singletonList(JsonNodeType.BOOLEAN)),
-    UNDEFINED(null);
+    UNDEFINED(Arrays.asList(JsonNodeType.NULL, JsonNodeType.BINARY));
     private final List<JsonNodeType> jsonNodeType;
 
     public static List<SchemaNodeType> getPossibleSchemaNodeTypes(JsonNodeType jsonNodeType) {
         return Arrays.stream(SchemaNodeType.values()).filter(it -> it.jsonNodeType != null)
-                .filter(it -> it.jsonNodeType.contains(jsonNodeType)).collect(Collectors.toList());
+            .filter(it -> it.jsonNodeType.contains(jsonNodeType)).collect(Collectors.toList());
     }
 }
