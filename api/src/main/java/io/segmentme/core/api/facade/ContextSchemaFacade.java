@@ -31,8 +31,8 @@ public class ContextSchemaFacade {
     private final ContextValuesExtractor contextValuesExtractor;
 
 
-    public List<ContextSchemaDetails> getByWorkspace(String userId, String workspaceId) {
-        return contextSchemaManager.getAllByWorkspaceId(workspaceId, true).stream().map(this::convertToDto).collect(Collectors.toList());
+    public List<ContextSchemaDetails> getByWorkspace(String userId, String workspaceId, boolean shortForm) {
+        return contextSchemaManager.getAllByWorkspaceId(workspaceId, shortForm).stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     private ContextSchemaDetails convertToDto(ContextSchemaHolder contextSchema) {

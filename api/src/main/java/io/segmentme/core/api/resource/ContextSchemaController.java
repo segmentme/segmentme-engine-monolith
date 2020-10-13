@@ -18,8 +18,10 @@ public class ContextSchemaController {
     private final ContextSchemaFacade contextSchemaFacade;
 
     @GetMapping
-    public List<ContextSchemaDetails> getContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId) {
-        return contextSchemaFacade.getByWorkspace(authUser.getId(), workspaceId);
+    public List<ContextSchemaDetails> getContextSchema(@AuthenticationPrincipal AuthUser authUser,
+                                                       @RequestParam String workspaceId,
+                                                       @RequestParam(defaultValue = "true") boolean shortForm) {
+        return contextSchemaFacade.getByWorkspace(authUser.getId(), workspaceId, shortForm);
     }
 
     @DeleteMapping("/{id}")
