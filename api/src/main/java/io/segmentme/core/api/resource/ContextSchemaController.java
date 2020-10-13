@@ -2,10 +2,7 @@ package io.segmentme.core.api.resource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.api.config.AuthUser;
-import io.segmentme.core.api.dto.ContextSchemaCreateRequest;
-import io.segmentme.core.api.dto.ContextSchemaDetails;
-import io.segmentme.core.api.dto.ContextSchemaValidationRequest;
-import io.segmentme.core.api.dto.ContextSchemaValidationResult;
+import io.segmentme.core.api.dto.*;
 import io.segmentme.core.api.facade.ContextSchemaFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,5 +46,10 @@ public class ContextSchemaController {
     @PostMapping
     public ContextSchemaDetails create(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody ContextSchemaCreateRequest contextSchemaCreateRequest) {
         return contextSchemaFacade.create(authUser.getId(), workspaceId, contextSchemaCreateRequest);
+    }
+
+    @PutMapping("/{id}")
+    public ContextSchemaDetails update(@AuthenticationPrincipal AuthUser authUser, @PathVariable String id, @RequestBody ContextSchemaUpdateRequest payload) {
+        return contextSchemaFacade.update(authUser.getId(), id,payload);
     }
 }

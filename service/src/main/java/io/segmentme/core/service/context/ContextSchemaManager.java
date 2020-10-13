@@ -55,11 +55,13 @@ public class ContextSchemaManager {
         return ContextSchemaConverter.toHolder(contextSchemaService.create(contextSchema));
     }
 
-    public ContextSchemaHolder updateContextSchema(String id, SchemaNode root) {
+    public ContextSchemaHolder updateContextSchema(String id, ContextSchemaHolder holder) {
         return contextSchemaService.findById(id).map(it -> {
-            ContextSchema contextSchema = contextSchemaResolver.resolve(root);
+            ContextSchema contextSchema = contextSchemaResolver.resolve(holder.getRootNode());
             it.setInlinePath(contextSchema.getInlinePath());
             it.setRootNode(contextSchema.getRootNode());
+            it.setIntegrationPointKey(holder.getIntegrationPointKey());
+            it.setName(holder.getName());
             return it;
         }).map(contextSchemaService::update)
             .map(ContextSchemaConverter::toHolder).orElseThrow(() -> new ContextSchemaManagerException().setCode(ContextMangerErrors.CONTEXT_NOT_FOUND));

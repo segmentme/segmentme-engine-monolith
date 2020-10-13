@@ -1,0 +1,13 @@
+package io.segmentme.core.api.dto;
+
+import io.segmentme.core.db.domain.context.SchemaNode;
+import lombok.Data;
+
+@Data
+public class ContextSchemaUpdateRequest {
+    private SchemaNode rootNode;
+
+    private String integrationPointKey;
+
+    private String name;
+}

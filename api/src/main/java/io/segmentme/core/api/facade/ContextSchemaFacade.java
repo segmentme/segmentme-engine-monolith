@@ -2,10 +2,7 @@ package io.segmentme.core.api.facade;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.api.config.AuthUser;
-import io.segmentme.core.api.dto.ContextSchemaCreateRequest;
-import io.segmentme.core.api.dto.ContextSchemaDetails;
-import io.segmentme.core.api.dto.ContextSchemaValidationRequest;
-import io.segmentme.core.api.dto.ContextSchemaValidationResult;
+import io.segmentme.core.api.dto.*;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
 import io.segmentme.core.service.analysis.ContextValueHolder;
@@ -43,6 +40,7 @@ public class ContextSchemaFacade {
             .setIntegrationPointKey(contextSchema.getIntegrationPointKey())
             .setName(contextSchema.getName())
             .setId(contextSchema.getId())
+            .setRawPayload(contextSchema.getRawPayload())
             .setRootNode(contextSchema.getRootNode());
     }
 
@@ -100,5 +98,12 @@ public class ContextSchemaFacade {
 
     public ContextSchemaDetails getById(AuthUser authUser, String contextSchemaId) {
         return convertToDto(contextSchemaManager.getById(contextSchemaId));
+    }
+
+    public ContextSchemaDetails update(String id, String contextId, ContextSchemaUpdateRequest payload) {
+        return convertToDto(contextSchemaManager.updateContextSchema(contextId, new ContextSchemaHolder()
+            .setName(payload.getName())
+            .setIntegrationPointKey(payload.getIntegrationPointKey())
+            .setRootNode(payload.getRootNode())));
     }
 }

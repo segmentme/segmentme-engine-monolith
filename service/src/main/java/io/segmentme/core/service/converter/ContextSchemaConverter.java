@@ -10,6 +10,7 @@ public class ContextSchemaConverter {
             .setName(contextSchema.getName())
             .setInlinePath(contextSchema.getInlinePath())
             .setRootNode(contextSchema.getRootNode())
+            .setRawPayload(contextSchema.getRawPayload())
             .setIntegrationPointKey(contextSchema.getIntegrationPointKey());
     }
 

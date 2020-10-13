@@ -17,4 +17,6 @@ public class ContextSchemaHolder {
     private Map<String, ContextSchema.InlineType> inlinePath;
 
     private String integrationPointKey;
+
+    private String rawPayload;
 }

@@ -17,4 +17,6 @@ public class ContextSchemaDetails {
     private String name;
 
     private String id;
+
+    private String rawPayload;
 }
