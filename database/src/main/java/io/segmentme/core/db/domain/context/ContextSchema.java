@@ -23,6 +23,8 @@ public class ContextSchema extends DbObject {
 
     private String rawPayload;
 
+    private Map<String, Object> nodeValues;
+
     @Data
     @AllArgsConstructor
     public static class InlineType {

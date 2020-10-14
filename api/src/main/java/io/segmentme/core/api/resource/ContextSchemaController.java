@@ -2,7 +2,7 @@ package io.segmentme.core.api.resource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.api.config.AuthUser;
-import io.segmentme.core.api.dto.*;
+import io.segmentme.core.api.dto.context.*;
 import io.segmentme.core.api.facade.ContextSchemaFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,9 +18,9 @@ public class ContextSchemaController {
     private final ContextSchemaFacade contextSchemaFacade;
 
     @GetMapping
-    public List<ContextSchemaDetails> getContextSchema(@AuthenticationPrincipal AuthUser authUser,
-                                                       @RequestParam String workspaceId,
-                                                       @RequestParam(defaultValue = "true") boolean shortForm) {
+    public List<ContextSchemaBasicInfo> getContextSchema(@AuthenticationPrincipal AuthUser authUser,
+                                                         @RequestParam String workspaceId,
+                                                         @RequestParam(defaultValue = "true") boolean shortForm) {
         return contextSchemaFacade.getByWorkspace(authUser.getId(), workspaceId, shortForm);
     }
 
@@ -30,12 +30,12 @@ public class ContextSchemaController {
     }
 
     @GetMapping("/{id}")
-    public ContextSchemaDetails getContexSchemaDetails(@AuthenticationPrincipal AuthUser authUser, @PathVariable String id) {
+    public ContextSchemaFullDetails getContexSchemaDetails(@AuthenticationPrincipal AuthUser authUser, @PathVariable String id) {
         return contextSchemaFacade.getById(authUser, id);
     }
 
     @PostMapping("/resolve")
-    public ContextSchemaValidationResult resolveContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody JsonNode payload) {
+    public ContextSchemaResolveResult resolveContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody JsonNode payload) {
         return contextSchemaFacade.resolve(authUser.getId(), workspaceId, payload);
     }
 
@@ -46,12 +46,12 @@ public class ContextSchemaController {
     }
 
     @PostMapping
-    public ContextSchemaDetails create(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody ContextSchemaCreateRequest contextSchemaCreateRequest) {
+    public ContextSchemaBasicInfo create(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody ContextSchemaCreateRequest contextSchemaCreateRequest) {
         return contextSchemaFacade.create(authUser.getId(), workspaceId, contextSchemaCreateRequest);
     }
 
     @PutMapping("/{id}")
-    public ContextSchemaDetails update(@AuthenticationPrincipal AuthUser authUser, @PathVariable String id, @RequestBody ContextSchemaUpdateRequest payload) {
-        return contextSchemaFacade.update(authUser.getId(), id,payload);
+    public ContextSchemaBasicInfo update(@AuthenticationPrincipal AuthUser authUser, @PathVariable String id, @RequestBody ContextSchemaUpdateRequest payload) {
+        return contextSchemaFacade.update(authUser.getId(), id, payload);
     }
 }
