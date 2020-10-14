@@ -25,10 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.segmentme.core.service.exception.error.ContextMangerErrors.INTEGRATION_POINT_NOT_FOUND;
@@ -115,8 +112,8 @@ public class ContextSchemaManager {
     }
 
     public void unlinkFromIntegrationPoint(String integrationPointKey) {
-        contextSchemaService.findByIntegrationPointKey(integrationPointKey)
-            .map(it -> it.setIntegrationPointKey(null)).ifPresent(contextSchemaService::update);
+        contextSchemaService.updateAll(contextSchemaService.findByIntegrationPointKeys(Collections.singletonList(integrationPointKey), false).stream()
+            .map(it -> it.setIntegrationPointKey(null)).collect(Collectors.toList()));
     }
 
     public List<ContextSchemaHolder> getAllByWorkspaceId(String workspaceId, boolean shortForm) {

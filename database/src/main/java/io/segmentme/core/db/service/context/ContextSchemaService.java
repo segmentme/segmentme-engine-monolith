@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -17,9 +16,6 @@ import java.util.Optional;
 public class ContextSchemaService extends AbstractDatabaseService<ContextSchema, ContextSchemaRepository> {
 
 
-    public Optional<ContextSchema> findByIntegrationPointKey(String integrationPointKey) {
-        return repository.findByIntegrationPointKey(integrationPointKey);
-    }
 
     public List<ContextSchema> findByIntegrationPointKeys(Collection<String> integrationPointKeys, boolean shortForm) {
         return shortForm ? repository.findShortFormByIntegrationPointKeyIn(integrationPointKeys) : repository.findByIntegrationPointKeyIn(integrationPointKeys);
