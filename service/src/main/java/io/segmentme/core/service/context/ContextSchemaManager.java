@@ -1,12 +1,18 @@
 package io.segmentme.core.service.context;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.SchemaNode;
+import io.segmentme.core.db.domain.context.SchemaNodeType;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.Workspace;
 import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
+import io.segmentme.core.service.analysis.ContextValueHolder;
+import io.segmentme.core.service.analysis.ContextValuesExtractor;
+import io.segmentme.core.service.analysis.CriteriaValueLocator;
 import io.segmentme.core.service.condition.ConditionManager;
 import io.segmentme.core.service.converter.ContextSchemaConverter;
 import io.segmentme.core.service.dto.context.ContextSchemaHolder;
@@ -16,9 +22,11 @@ import io.segmentme.core.service.exception.error.ContextMangerErrors;
 import io.segmentme.core.service.rule.RuleManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,6 +50,10 @@ public class ContextSchemaManager {
 
     private final ConditionManager conditionManager;
 
+    private final ContextValuesExtractor contextValuesExtractor;
+
+    private final ObjectMapper objectMapper;
+
     public ContextSchemaHolder create(String integrationPointKey, SchemaNode root, String name, String rawPayload) {
         if (workspaceService.findByIntegrationPointKey(integrationPointKey).isEmpty()) {
             throw new ContextSchemaManagerException().setCode(INTEGRATION_POINT_NOT_FOUND);
@@ -50,8 +62,17 @@ public class ContextSchemaManager {
         contextSchema.setIntegrationPointKey(integrationPointKey);
         contextSchema.setName(name);
         contextSchema.setRawPayload(rawPayload);
-
         validateContextSchemaAndThrowAnError(contextSchema);
+
+        if (StringUtils.isNoneBlank(rawPayload)) {
+            try {
+                JsonNode rawContext = objectMapper.readValue(rawPayload, JsonNode.class);
+                contextSchema.setNodeValues(getNodeValues(contextSchema, contextValuesExtractor.extractValues(rawContext, null, null)));
+            } catch (JsonProcessingException e) {
+                log.error("Unable to parse json", e);
+            }
+        }
+
         return ContextSchemaConverter.toHolder(contextSchemaService.create(contextSchema));
     }
 
@@ -68,7 +89,13 @@ public class ContextSchemaManager {
     }
 
     public ContextSchemaHolder resolveContextSchema(String workspaceId, JsonNode jsonNode) {
-        return ContextSchemaConverter.toHolder(contextSchemaResolver.resolve(workspaceService.findById(workspaceId).get(), jsonNode));
+        Workspace workspace = workspaceService.findById(workspaceId).get();
+        ContextSchema resolve = contextSchemaResolver.resolve(workspace, jsonNode);
+
+        ContextSchemaHolder contextSchemaHolder = ContextSchemaConverter.toHolder(resolve);
+        contextSchemaHolder.setNodeValues(getNodeValues(resolve, contextValuesExtractor.extractValues(jsonNode, null, null)));
+        contextSchemaHolder.setRawPayload(jsonNode.toString());
+        return contextSchemaHolder;
     }
 
     public ContextSchemaHolder resolveContextSchema(SchemaNode rootNode) {
@@ -110,4 +137,11 @@ public class ContextSchemaManager {
     public ContextSchemaHolder getById(String contextSchemaId) {
         return contextSchemaService.findById(contextSchemaId).map(ContextSchemaConverter::toHolder).orElse(null);
     }
+
+    private Map<String, Object> getNodeValues(ContextSchema contextSchema, ContextValueHolder payload) {
+        return contextSchema.getInlinePath().entrySet().stream()
+            .filter(it -> it.getValue().getRootType() != SchemaNodeType.OBJECT && it.getValue().getSubType() != SchemaNodeType.OBJECT)
+            .collect(HashMap::new, (m, v) -> m.put(v.getKey(), CriteriaValueLocator.getCriteriaValue(v.getKey(), payload)), HashMap::putAll);
+    }
+
 }

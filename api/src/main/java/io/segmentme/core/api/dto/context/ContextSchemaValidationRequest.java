@@ -1,4 +1,4 @@
-package io.segmentme.core.api.dto;
+package io.segmentme.core.api.dto.context;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.SchemaNode;

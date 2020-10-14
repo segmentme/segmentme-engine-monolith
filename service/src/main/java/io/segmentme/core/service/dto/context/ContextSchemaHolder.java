@@ -19,4 +19,6 @@ public class ContextSchemaHolder {
     private String integrationPointKey;
 
     private String rawPayload;
+
+    private Map<String, Object> nodeValues;
 }
