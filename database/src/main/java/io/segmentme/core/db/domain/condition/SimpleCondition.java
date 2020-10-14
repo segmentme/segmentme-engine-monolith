@@ -11,4 +11,6 @@ public abstract class SimpleCondition<T> extends AbstractCondition<T> {
 
     private boolean isNullValid;
 
+    private String criteria;
+
 }

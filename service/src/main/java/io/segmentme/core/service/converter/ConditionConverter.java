@@ -55,12 +55,14 @@ public class ConditionConverter {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static AbstractCondition<?> convertToEntity(SimpleCondition target, SimpleConditionDto source, String contextId) {
         target.setValue(source.getValue()).setNullValid(source.isNullValid());
+        target.setCriteria(source.getCriteria());
         return fillAbstractCondition(target, source, contextId);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static AbstractConditionDto<?> convertToDto(SimpleConditionDto target, SimpleCondition source) {
         target.setValue(source.getValue()).setNullValid(source.isNullValid());
+        target.setCriteria(source.getCriteria());
         return fillAbstractCondition(target, source);
     }
 
@@ -68,7 +70,6 @@ public class ConditionConverter {
         target.setId(source.getId());
         return target.setMatchResult(source.isMatchResult())
                 .setEmbedded(source.isEmbedded())
-                .setCriteria(source.getCriteria())
                 .setDescription(source.getDescription())
                 .setName(source.getName())
                 .setType(source.getType());
@@ -78,7 +79,6 @@ public class ConditionConverter {
         target.setId(source.getId());
         return target.setMatchResult(source.isMatchResult())
                 .setEmbedded(source.isEmbedded())
-                .setCriteria(source.getCriteria())
                 .setDescription(source.getDescription())
                 .setName(source.getName())
                 .setType(source.getType())

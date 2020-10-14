@@ -48,12 +48,7 @@ class RuleManagerTest extends BaseTestWithContext {
         convertedCondition.type == condition.type
         where:
         values                                                                                                                                                                  | _
-        ['value': true, 'ruleType': BOOLEAN, 'conditions': List.of(fillCondition(new ArrayConditionDto(), true, IN))]                                                           | _
-        ['value': false, 'ruleType': BOOLEAN, 'conditions': List.of(fillCondition(new ArrayConditionDto(), true, IN))]                                                          | _
-        ['value': MAPPER.readValue("[1,2,3,4,5]", JsonNode.class), 'ruleType': JSON, 'conditions': List.of(fillCondition(new SingleConditionDto(), 1, LT))]                     | _
-        ['value': MAPPER.readValue("[1,2,3,4,5]", JsonNode.class), 'ruleType': JSON, 'conditions': List.of(fillCondition(new SingleConditionDto(), 2, LTE))]                    | _
-        ['value'        : true, 'ruleType': PRECONDITION, 'conditions': List.of(fillCondition(new SingleConditionDto(), 1, LT)),
-         'analysisRules': List.of(createRule(['value': true, 'ruleType': BOOLEAN, 'conditions': List.of(fillCondition(new ArrayConditionDto(), true, IN)), 'embedded': true]))] | _
+        ['value': MAPPER.convertValue(new int[]{1,2,3,4,5}, JsonNode.class), 'ruleType': JSON, 'conditions': List.of(fillCondition(new SingleConditionDto(), 1, LT))]                    | _
     }
 
     public static def createRule(Map values) {

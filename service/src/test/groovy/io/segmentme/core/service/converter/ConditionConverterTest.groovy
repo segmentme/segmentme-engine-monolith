@@ -76,7 +76,6 @@ class ConditionConverterTest extends Specification {
         def target = isDto ? ConditionConverter.of(source, UUID.randomUUID().toString()) : ConditionConverter.of(source)
         target.name == source.name
         target.type == source.type
-        target.criteria == source.criteria
         target.description == source.description
         target.matchResult == source.matchResult
         target.aggregation == source.aggregation

@@ -32,9 +32,6 @@ public abstract class AbstractConditionDto<T> {
     @NotBlank
     private String name;
 
-    @NotBlank
-    private String criteria;
-
     private String description;
 
     private AbstractCondition.ConditionType type;

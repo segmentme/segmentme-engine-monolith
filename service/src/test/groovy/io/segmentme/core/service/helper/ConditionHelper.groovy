@@ -13,11 +13,11 @@ class ConditionHelper {
             condition.aggregation = AbstractAnalysisRule.AggregationType.AND
         } else {
             condition.value = values
+            condition.criteria = "root.field.exist"
         }
         condition.type = type
         condition.name = UUID.randomUUID().toString()
         condition.description = UUID.randomUUID().toString()
-        condition.criteria = "root.field.exist"
         condition.matchResult = true
         condition.embedded = isEmbedded
 

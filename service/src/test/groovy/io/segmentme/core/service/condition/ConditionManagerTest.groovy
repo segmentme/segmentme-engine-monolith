@@ -47,7 +47,6 @@ class ConditionManagerTest extends BaseTestWithContext {
         target.id != null
         target.name == source.name
         target.type == source.type
-        target.criteria == source.criteria
         target.description == source.description
         target.matchResult == source.matchResult
         target.aggregation == source.aggregation
@@ -58,7 +57,6 @@ class ConditionManagerTest extends BaseTestWithContext {
         embeddedConditionTarget.id != null
         embeddedConditionTarget.name == embeddedConditionSource.name
         embeddedConditionTarget.type == embeddedConditionSource.type
-        embeddedConditionTarget.criteria == embeddedConditionSource.criteria
         embeddedConditionTarget.description == embeddedConditionSource.description
         embeddedConditionTarget.matchResult == embeddedConditionSource.matchResult
 
