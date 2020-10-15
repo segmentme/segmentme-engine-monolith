@@ -3,10 +3,9 @@ package io.segmentme.core.service.rule
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
-import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule
-import io.segmentme.core.db.domain.rule.SimpleAnalysisRule
+
 import io.segmentme.core.db.domain.workpsace.Workspace
-import io.segmentme.core.db.dto.AnalysisResult
+import io.segmentme.core.service.dto.rule.SegmentAnalysisResult
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository
 import io.segmentme.core.service.analysis.ContextValueHolder
 import io.segmentme.core.service.analysis.ContextValuesExtractorImpl
@@ -52,7 +51,7 @@ abstract class BaseRuleTest extends BaseTestWithContext {
         context = contextValuesExtractor.extractValues(json, contextSchemaResolver.resolve(new Workspace().setConfiguration(defaultWorkspaceConfiguration()), json), defaultWorkspaceConfiguration())
     }
 
-    protected <T> T resultValue(String flagName, List<AnalysisResult> results) {
+    protected <T> T resultValue(String flagName, List<SegmentAnalysisResult> results) {
         return results.stream()
                 .filter(it -> it.getNames().contains(flagName))
                 .findFirst()

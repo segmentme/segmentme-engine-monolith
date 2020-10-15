@@ -1,4 +1,4 @@
-package io.segmentme.core.service.dto.component;
+package io.segmentme.core.service.dto.analysis.component;
 
 public class SingleConditionDto extends SimpleConditionDto<Object> {
 }

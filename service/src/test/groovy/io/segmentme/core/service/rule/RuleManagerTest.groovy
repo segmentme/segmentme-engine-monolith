@@ -2,9 +2,8 @@ package io.segmentme.core.service.rule
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.segmentme.core.db.domain.rule.SimpleAnalysisRule
+
 import io.segmentme.core.service.common.BaseTestWithContext
-import io.segmentme.core.service.dto.component.ArrayConditionDto
 import io.segmentme.core.service.dto.component.SingleConditionDto
 import io.segmentme.core.service.dto.rule.BooleanAnalysisRuleDto
 import io.segmentme.core.service.dto.rule.JsonAnalysisRuleDto
@@ -13,7 +12,6 @@ import io.segmentme.core.service.dto.rule.SimpleAnalysisRuleDto
 import org.springframework.beans.factory.annotation.Autowired
 
 import static io.segmentme.core.db.domain.condition.AbstractCondition.ConditionType.*
-import static io.segmentme.core.db.domain.rule.AbstractAnalysisRule.RuleType.*
 import static io.segmentme.core.service.helper.ConditionHelper.fillCondition
 import static io.segmentme.core.service.helper.RuleHelper.fillRule
 
@@ -35,7 +33,7 @@ class RuleManagerTest extends BaseTestWithContext {
         def existedRules = ruleManager.findByIntegrationPointKey(integrationPointKey)
         existedRules.size() == 1
         def rule = existedRules[0]
-        rule.value == source.value
+        rule.matchResult == source.value
         if (rule instanceof SimpleAnalysisRule || rule instanceof SimpleAnalysisRuleDto) {
             rule.flags.size() == 3
         }

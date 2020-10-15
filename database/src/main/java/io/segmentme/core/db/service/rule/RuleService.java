@@ -1,6 +1,6 @@
 package io.segmentme.core.db.service.rule;
 
-import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
+import io.segmentme.core.db.domain.rule.Segment;
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository;
 import io.segmentme.core.db.service.AbstractDatabaseService;
 import lombok.RequiredArgsConstructor;
@@ -13,26 +13,25 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RuleService extends AbstractDatabaseService<AbstractAnalysisRule<?>, AbstractAnalysisRuleRepository> {
+public class RuleService extends AbstractDatabaseService<Segment, AbstractAnalysisRuleRepository> {
 
-    public List<AbstractAnalysisRule<?>> createAll(List<AbstractAnalysisRule<?>> entity) {
+    public List<Segment> createAll(List<Segment> entity) {
         return repository.saveAll(entity);
     }
 
-    public List<AbstractAnalysisRule<?>> findByIntegrationPointKey(String integrationPointKey) {
+    public List<Segment> findByIntegrationPointKey(String integrationPointKey) {
         return repository.findByIntegrationPointKeyAndEmbeddedIsFalse(integrationPointKey);
     }
 
-    public List<AbstractAnalysisRule<?>> findByContextId(String contextId) {
+    public List<Segment> findByContextId(String contextId) {
         return repository.findByContextIdAndEmbeddedIsFalse(contextId);
     }
 
-
-    public void deleteAll(Collection<? extends AbstractAnalysisRule<?>> rules) {
+    public void deleteAll(Collection<Segment> rules) {
         repository.deleteAll(rules);
     }
 
-    public void update(List<AbstractAnalysisRule<?>> byIntegrationPointKey) {
+    public void update(List<Segment> byIntegrationPointKey) {
         repository.saveAll(byIntegrationPointKey);
     }
 }

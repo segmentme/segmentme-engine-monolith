@@ -13,21 +13,21 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ConditionService extends AbstractDatabaseService<AbstractCondition<?>, AbstractConditionRepository> {
+public class ConditionService extends AbstractDatabaseService<AbstractCondition, AbstractConditionRepository> {
 
-    public List<AbstractCondition<?>> findByContextId(String contextId) {
+    public List<AbstractCondition> findByContextId(String contextId) {
         return repository.findByContextIdAndEmbeddedIsFalse(contextId);
     }
 
-    public List<AbstractCondition<?>> createAll(List<AbstractCondition<?>> entities) {
+    public List<AbstractCondition> createAll(List<AbstractCondition> entities) {
         return repository.saveAll(entities);
     }
 
-    public List<AbstractCondition<?>> updateAll(List<AbstractCondition<?>> entities) {
+    public List<AbstractCondition> updateAll(List<AbstractCondition> entities) {
         return repository.saveAll(entities);
     }
 
-    public void deleteAll(Collection<AbstractCondition<?>> entities) {
+    public void deleteAll(Collection<AbstractCondition> entities) {
         repository.deleteAll(entities);
     }
 }

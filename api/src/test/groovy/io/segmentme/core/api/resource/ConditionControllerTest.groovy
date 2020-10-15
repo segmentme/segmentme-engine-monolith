@@ -93,7 +93,7 @@ class ConditionControllerTest extends BaseControllerTest {
         conditions                                                                                                                                                                                    | contextId               | count
         [fillCondition(new ArrayConditionDto(), [1, 2, 3], IN)]                                                                                                                                       | randomUUID().toString() | 1
         [fillCondition(new ArrayConditionDto(), [2], CONTAINS_ONLY), fillCondition(new ArrayConditionDto(), [2], CONTAINS_ANY)]                                                                       | randomUUID().toString() | 2
-        [fillCondition(new GroupConditionDto(), ['values': [2], 'type': GROUP, 'conditions': [fillCondition(new ArrayConditionDto(), ['values': ["ad"], 'type': CONTAINS_ONLY, 'embedded': true])]])] | randomUUID().toString() | 1
+        [fillCondition(new GroupConditionDto(), ['values': [2], 'type': SEGMENT, 'conditions': [fillCondition(new ArrayConditionDto(), ['values': ["ad"], 'type': CONTAINS_ONLY, 'embedded': true])]])] | randomUUID().toString() | 1
         [
                 fillCondition(new ArrayConditionDto(), [1, 2, 3], IN),
                 fillCondition(new ArrayConditionDto(), [1, 2, 3], CONTAINS_ANY),
@@ -122,15 +122,15 @@ class ConditionControllerTest extends BaseControllerTest {
                                         fillCondition(new GroupConditionDto(), [
                                                 fillCondition(new ArrayConditionDto(), [1], IN, true),
                                                 fillCondition(new ArrayConditionDto(), [2], IN, true)
-                                        ], GROUP, false),
+                                        ], SEGMENT, false),
                                         fillCondition(new GroupConditionDto(), [
                                                 fillCondition(new ArrayConditionDto(), [3], IN, false),
                                                 fillCondition(new ArrayConditionDto(), [4], IN, false)
-                                        ], GROUP, true)
+                                        ], SEGMENT, true)
                                 ],
-                                GROUP, true)],
-                        GROUP, true)],
-                GROUP, false)]
+                                SEGMENT, true)],
+                        SEGMENT, true)],
+                SEGMENT, false)]
         def createdConditions = conditionManager.createAll(conditions, "32123")
         mockMvc.perform(auth(delete("/condition/${createdConditions[0].id}").contentType(MediaType.APPLICATION_JSON)))
         when:

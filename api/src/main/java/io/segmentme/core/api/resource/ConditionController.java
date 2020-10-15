@@ -1,7 +1,7 @@
 package io.segmentme.core.api.resource;
 
 import io.segmentme.core.service.condition.ConditionManager;
-import io.segmentme.core.service.dto.component.AbstractConditionDto;
+import io.segmentme.core.service.dto.analysis.component.AbstractConditionDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -18,19 +18,19 @@ public class ConditionController {
     private final ConditionManager conditionManager;
 
     @PostMapping("/context/{contextId}")
-    public AbstractConditionDto<?> save(@PathVariable String contextId, @RequestBody @Valid AbstractConditionDto<?> condition) {
+    public AbstractConditionDto save(@PathVariable String contextId, @RequestBody @Valid AbstractConditionDto condition) {
         log.info("Request to create condition {} with contextId {}", condition, contextId);
         return conditionManager.create(condition, contextId);
     }
 
     @GetMapping("/context/{contextId}")
-    public List<AbstractConditionDto<?>> findByContextId(@PathVariable String contextId){
+    public List<AbstractConditionDto> findByContextId(@PathVariable String contextId){
         log.info("Request to find conditions for contextId {}", contextId);
         return conditionManager.findByContextId(contextId);
     }
 
     @GetMapping("/{conditionId}")
-    public AbstractConditionDto<?> findByConditionId(@PathVariable String conditionId){
+    public AbstractConditionDto findByConditionId(@PathVariable String conditionId){
         log.info("Request to find conditions for conditionId {}", conditionId);
         return conditionManager.findByConditionId(conditionId);
     }

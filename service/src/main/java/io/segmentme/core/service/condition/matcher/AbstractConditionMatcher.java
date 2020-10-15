@@ -4,15 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.CriteriaValueLocator;
-import lombok.SneakyThrows;
+import io.segmentme.core.service.dto.analysis.DebugResult;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
+import java.util.Optional;
+import java.util.function.*;
 
 @Slf4j
-abstract class AbstractConditionMatcher<T extends AbstractCondition<?>> implements Matcher<T> {
+abstract class AbstractConditionMatcher<T extends AbstractCondition> implements Matcher<T> {
 
     @Autowired
     private ObjectMapper mapper;
@@ -27,7 +30,8 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition<?>> implemen
         return castIfRequired(CriteriaValueLocator.getCriteriaValue(propertyName, context), propertyName);
     }
 
-    public abstract boolean match(T condition, ContextValueHolder context);
+    public abstract boolean match(T condition, ContextValueHolder context, Optional<Function<String, DebugResult>> debugWorm);
+
 
     public abstract AbstractCondition.ConditionType getType();
 
@@ -46,4 +50,5 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition<?>> implemen
 
         return collectionProperty.stream().findFirst().orElseThrow(() -> new RuntimeException("Collection property is empty"));
     }
+
 }

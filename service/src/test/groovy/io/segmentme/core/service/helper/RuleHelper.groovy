@@ -1,8 +1,7 @@
 package io.segmentme.core.service.helper
 
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
-import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule
-import io.segmentme.core.db.domain.rule.SimpleAnalysisRule
+
 import io.segmentme.core.service.dto.rule.PreconditionAnalysisRuleDto
 import io.segmentme.core.service.dto.rule.SimpleAnalysisRuleDto
 

@@ -1,12 +1,11 @@
 package io.segmentme.core.service.rule;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
-import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
-import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule;
+import io.segmentme.core.db.domain.rule.Segment;
 import io.segmentme.core.db.service.rule.RuleService;
 import io.segmentme.core.service.condition.ConditionManager;
-import io.segmentme.core.service.converter.RuleConverter;
-import io.segmentme.core.service.dto.rule.AbstractAnalysisRuleDto;
+import io.segmentme.core.service.converter.SegmentConverter;
+import io.segmentme.core.service.dto.analysis.rule.SegmentDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.segmentme.core.db.domain.rule.AbstractAnalysisRule.RuleType.PRECONDITION;
 
 @Slf4j
 @Service
@@ -25,64 +23,49 @@ public class RuleManager {
 
     private final ConditionManager conditionManager;
 
-    public AbstractAnalysisRuleDto<?> save(AbstractAnalysisRuleDto<?> rule, String contextId, String integrationPointKey) {
-        AbstractAnalysisRule<?> analysisRule = RuleConverter.of(rule, contextId, integrationPointKey);
-        return RuleConverter.of(ruleService.create(analysisRule));
+    public SegmentDto save(SegmentDto rule, String contextId, String integrationPointKey) {
+        Segment analysisRule = SegmentConverter.of(rule, contextId, integrationPointKey);
+        return SegmentConverter.of(ruleService.create(analysisRule));
     }
 
-    public List<AbstractAnalysisRuleDto<?>> save(List<AbstractAnalysisRuleDto<?>> rules, String contextId, String integrationPointKey) {
+    public List<SegmentDto> save(List<SegmentDto> rules, String contextId, String integrationPointKey) {
 
-        List<AbstractAnalysisRule<?>> analysisRules = rules.stream().map(it -> RuleConverter.of(it, contextId, integrationPointKey))
+        List<Segment> analysisRules = rules.stream().map(it -> SegmentConverter.of(it, contextId, integrationPointKey))
                 .collect(Collectors.toList());
 
-        return ruleService.createAll(analysisRules).stream().map(RuleConverter::of).collect(Collectors.toList());
+        return ruleService.createAll(analysisRules).stream().map(SegmentConverter::of).collect(Collectors.toList());
     }
 
-    public List<AbstractAnalysisRuleDto<?>> findByIntegrationPointKey(String integrationPointKey) {
+    public List<SegmentDto> findByIntegrationPointKey(String integrationPointKey) {
         return ruleService.findByIntegrationPointKey(integrationPointKey).stream()
-                .map(RuleConverter::of)
+                .map(SegmentConverter::of)
                 .collect(Collectors.toList());
     }
 
-    public List<AbstractAnalysisRuleDto<?>> findByContextId(String contextId) {
-        return ruleService.findByContextId(contextId).stream().map(RuleConverter::of).collect(Collectors.toList());
+    public List<SegmentDto> findByContextId(String contextId) {
+        return ruleService.findByContextId(contextId).stream().map(SegmentConverter::of).collect(Collectors.toList());
     }
 
     public void delete(String ruleId) {
         ruleService.findById(ruleId).ifPresent(it -> {
-            Set<AbstractAnalysisRule<?>> rulesToDelete = new HashSet<>(Collections.singletonList(it));
+            Set<Segment> rulesToDelete = new HashSet<>(Collections.singletonList(it));
 
-            if (it.getRuleType() == PRECONDITION) {
-                rulesToDelete.addAll(findRelatedConditionToDelete(((PreconditionAnalysisRule) it).getAnalysisRules()));
-            }
-
-            List<AbstractCondition<?>> conditions = rulesToDelete.stream().map(AbstractAnalysisRule::getConditions).flatMap(Collection::stream).collect(Collectors.toList());
+            List<AbstractCondition> conditions = rulesToDelete.stream().map(Segment::getConditions).flatMap(Collection::stream).collect(Collectors.toList());
             conditionManager.deleteEmbeddedConditions(conditions);
-            ruleService.deleteAll(rulesToDelete);
+            ruleService.delete(it);
         });
     }
 
-    private Collection<AbstractAnalysisRule<?>> findRelatedConditionToDelete(List<? extends AbstractAnalysisRule<?>> rules) {
-        Set<AbstractAnalysisRule<?>> relatedRules = rules.stream()
-                .filter(it -> it.getRuleType() == PRECONDITION)
-                .map(it -> findRelatedConditionToDelete(((PreconditionAnalysisRule) it).getAnalysisRules()))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
-
-        relatedRules.addAll(rules.stream().filter(AbstractAnalysisRule::isEmbedded).collect(Collectors.toList()));
-        return relatedRules;
-    }
-
     public void unlinkFromIntegrationPoint(String integrationPointKey) {
-        List<AbstractAnalysisRule<?>> byIntegrationPointKey = ruleService.findByIntegrationPointKey(integrationPointKey);
-        byIntegrationPointKey.forEach(it->it.setIntegrationPointKey(null));
+        List<Segment> byIntegrationPointKey = ruleService.findByIntegrationPointKey(integrationPointKey);
+        byIntegrationPointKey.forEach(it -> it.setIntegrationPointKey(null));
         ruleService.update(byIntegrationPointKey);
 
     }
 
     public void unlinkFromContext(String contextId) {
-        List<AbstractAnalysisRule<?>> contextRules = ruleService.findByContextId(contextId);
-        contextRules.forEach(it->it.setContextId(null));
+        List<Segment> contextRules = ruleService.findByContextId(contextId);
+        contextRules.forEach(it -> it.setContextId(null));
         ruleService.update(contextRules);
 
     }

@@ -1,20 +1,20 @@
 package io.segmentme.core.service.condition;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
-import io.segmentme.core.db.domain.condition.GroupCondition;
+import io.segmentme.core.db.domain.condition.SegmentCondition;
 import io.segmentme.core.db.service.condition.ConditionService;
 import io.segmentme.core.service.converter.ConditionConverter;
-import io.segmentme.core.service.dto.component.AbstractConditionDto;
+import io.segmentme.core.service.dto.analysis.component.AbstractConditionDto;
+import io.segmentme.core.service.rule.RuleManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.segmentme.core.db.domain.condition.AbstractCondition.ConditionType.GROUP;
+import static io.segmentme.core.db.domain.condition.AbstractCondition.ConditionType.SEGMENT;
 
 @Slf4j
 @Service
@@ -23,22 +23,20 @@ public class ConditionManager {
 
     private final ConditionService conditionService;
 
-    public AbstractConditionDto<?> create(AbstractConditionDto<?> conditions, String contextId) {
+    @Lazy
+    private final RuleManager ruleManager;
+
+    public AbstractConditionDto create(AbstractConditionDto conditions, String contextId) {
         var savedCondition = conditionService.create(ConditionConverter.of(conditions, contextId));
         return ConditionConverter.of(savedCondition);
     }
 
-    public List<AbstractConditionDto<?>> createAll(List<AbstractConditionDto<?>> conditions, String contextId) {
-        var savedCondition = conditionService.createAll(conditions.stream().map(it -> ConditionConverter.of(it, contextId)).collect(Collectors.toList()));
-        return savedCondition.stream().map(ConditionConverter::of).collect(Collectors.toList());
-    }
-
-    public List<AbstractConditionDto<?>> findByContextId(String contextId) {
+    public List<AbstractConditionDto> findByContextId(String contextId) {
         var conditions = conditionService.findByContextId(contextId);
         return conditions.stream().map(ConditionConverter::of).collect(Collectors.toList());
     }
 
-    public AbstractConditionDto<?> findByConditionId(String conditionId){
+    public AbstractConditionDto findByConditionId(String conditionId) {
         return ConditionConverter.of(conditionService.findById(conditionId).orElseThrow(() -> new RuntimeException("Condition doesn't exist")));
     }
 
@@ -50,24 +48,27 @@ public class ConditionManager {
 
     public void delete(String conditionId) {
         conditionService.findById(conditionId)
-            .ifPresent(it -> {
-                if (it.getType() == GROUP) {
-                    deleteEmbeddedConditions(((GroupCondition) it).getConditions());
-                }
-                conditionService.delete(it);
-            });
+                .ifPresent(it -> {
+                    if (it.getType() == SEGMENT) {
+                        ruleManager.delete(((SegmentCondition) it).getSegment().getId());
+                    }
+                    conditionService.delete(it);
+                });
     }
 
-    public void deleteEmbeddedConditions(List<AbstractCondition<?>> conditions) {
+    public void deleteEmbeddedConditions(List<AbstractCondition> conditions) {
         conditionService.deleteAll(findRelatedConditionToDelete(conditions));
     }
 
-    private Collection<AbstractCondition<?>> findRelatedConditionToDelete(List<AbstractCondition<?>> conditions) {
-        Set<AbstractCondition<?>> relatedConditions = conditions.parallelStream()
-            .filter(it -> it.getType() == AbstractCondition.ConditionType.GROUP)
-            .map(it -> findRelatedConditionToDelete(((GroupCondition) it).getConditions()))
-            .flatMap(Collection::stream)
-            .collect(Collectors.toSet());
+    private Collection<AbstractCondition> findRelatedConditionToDelete(List<AbstractCondition> conditions) {
+        Set<AbstractCondition> relatedConditions = conditions.parallelStream()
+                .filter(it -> it.getType() == AbstractCondition.ConditionType.SEGMENT)
+                .peek(it -> {
+                    if (it.getType() == SEGMENT) {
+                        ruleManager.delete(((SegmentCondition) it).getSegment().getId());
+                    }
+                })
+                .collect(Collectors.toSet());
 
         relatedConditions.addAll(conditions.stream().filter(AbstractCondition::isEmbedded).collect(Collectors.toList()));
         return relatedConditions;

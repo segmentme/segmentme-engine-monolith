@@ -1,12 +1,12 @@
 package io.segmentme.core.service.rule
 
-import io.segmentme.core.db.dto.AnalysisResult
+import io.segmentme.core.service.dto.rule.SegmentAnalysisResult
 
 class AnalysisRulesTest extends BaseRuleTest {
 
     def "Boolean rule #flag - should be #isMatch"() {
         given:
-        1 * analysisRuleRepository.findByPreconditionIdIsNull() >> getRule(flag)
+        1 * analysisRuleRepository.findByIntegrationPointKey() >> getRule(flag)
         and:
         def result = analysisService.analyze(context)
         expect:
@@ -32,7 +32,7 @@ class AnalysisRulesTest extends BaseRuleTest {
 
     def "Value rule #flag - should be #matchResult"() {
         given:
-        1 * analysisRuleRepository.findByPreconditionIdIsNull() >> getRule(flag)
+        1 * analysisRuleRepository.findByIntegrationPointKey() >> getRule(flag)
         and:
         def result = analysisService.analyze(context)
         expect:
@@ -47,7 +47,7 @@ class AnalysisRulesTest extends BaseRuleTest {
         "GROUP_RULE_JSON_RETURN_NUMBER" | "555"
     }
 
-    def compareValue(String flag, List<AnalysisResult> results, Object matchResult) {
+    def compareValue(String flag, List<SegmentAnalysisResult> results, Object matchResult) {
         return Objects.equals(Optional.ofNullable(resultValue(flag, results))
                 .map(it -> it.toString())
                 .orElse(null), matchResult)

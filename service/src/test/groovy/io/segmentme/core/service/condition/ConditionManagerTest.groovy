@@ -67,10 +67,10 @@ class ConditionManagerTest extends BaseTestWithContext {
 
         where:
         type                                  | values
-        AbstractCondition.ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN)]
-        AbstractCondition.ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN), fillCondition(new SingleConditionDto(), 500, AbstractCondition.ConditionType.LT)]
-        AbstractCondition.ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN), fillCondition(new SingleConditionDto(), 500, AbstractCondition.ConditionType.LT)]
-        AbstractCondition.ConditionType.GROUP | [fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN, true)], AbstractCondition.ConditionType.GROUP, true)]
+        AbstractCondition.ConditionType.SEGMENT | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN)]
+        AbstractCondition.ConditionType.SEGMENT | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN), fillCondition(new SingleConditionDto(), 500, AbstractCondition.ConditionType.LT)]
+        AbstractCondition.ConditionType.SEGMENT | [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN), fillCondition(new SingleConditionDto(), 500, AbstractCondition.ConditionType.LT)]
+        AbstractCondition.ConditionType.SEGMENT | [fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN, true)], AbstractCondition.ConditionType.SEGMENT, true)]
     }
 
 
@@ -91,7 +91,7 @@ class ConditionManagerTest extends BaseTestWithContext {
     def "create group condition and find by contextId"() {
         given:
         def contextId = UUID.randomUUID().toString()
-        def condition = fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN, true)], AbstractCondition.ConditionType.GROUP)
+        def condition = fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], AbstractCondition.ConditionType.IN, true)], AbstractCondition.ConditionType.SEGMENT)
         conditionManager.create(condition, contextId)
         when:
         def existedContexts = conditionManager.findByContextId(contextId)

@@ -2,10 +2,8 @@ package io.segmentme.core.service.converter
 
 import io.segmentme.core.db.domain.condition.ArrayCondition
 import io.segmentme.core.db.domain.condition.SingleCondition
-import io.segmentme.core.db.domain.rule.BooleanAnalysisRule
-import io.segmentme.core.db.domain.rule.JsonAnalysisRule
-import io.segmentme.core.db.domain.rule.PreconditionAnalysisRule
-import io.segmentme.core.db.domain.rule.SimpleAnalysisRule
+
+
 import io.segmentme.core.service.dto.component.ArrayConditionDto
 import io.segmentme.core.service.dto.component.SingleConditionDto
 import io.segmentme.core.service.dto.rule.BooleanAnalysisRuleDto
@@ -15,7 +13,6 @@ import io.segmentme.core.service.dto.rule.SimpleAnalysisRuleDto
 import spock.lang.Specification
 
 import static io.segmentme.core.db.domain.condition.AbstractCondition.ConditionType.*
-import static io.segmentme.core.db.domain.rule.AbstractAnalysisRule.RuleType.*
 import static io.segmentme.core.service.helper.ConditionHelper.fillCondition
 import static io.segmentme.core.service.helper.RuleHelper.fillRule
 import static java.util.UUID.randomUUID
@@ -26,7 +23,7 @@ class RuleConverterTest extends Specification {
         given:
         def source = createRule(isDto, values)
         expect:
-        def target = isDto ? RuleConverter.of(source, randomUUID().toString(), randomUUID().toString()) : RuleConverter.of(source)
+        def target = isDto ? SegmentConverter.of(source, randomUUID().toString(), randomUUID().toString()) : SegmentConverter.of(source)
         target.value == source.value
         if (target instanceof SimpleAnalysisRule || target instanceof SimpleAnalysisRuleDto) {
             target.flags.size() == 3

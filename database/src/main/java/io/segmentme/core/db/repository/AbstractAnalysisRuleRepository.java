@@ -1,15 +1,15 @@
 package io.segmentme.core.db.repository;
 
-import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
+import io.segmentme.core.db.domain.rule.Segment;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface AbstractAnalysisRuleRepository extends MongoRepository<AbstractAnalysisRule<?>, String> {
+public interface AbstractAnalysisRuleRepository extends MongoRepository<Segment, String> {
 
-    List<AbstractAnalysisRule<?>> findByPreconditionIdIsNull();
+    List<Segment> findByIntegrationPointKey();
 
-    List<AbstractAnalysisRule<?>> findByIntegrationPointKeyAndEmbeddedIsFalse(String integrationPointKey);
+    List<Segment> findByIntegrationPointKeyAndEmbeddedIsFalse(String integrationPointKey);
 
-    List<AbstractAnalysisRule<?>> findByContextIdAndEmbeddedIsFalse(String contextId);
+    List<Segment> findByContextIdAndEmbeddedIsFalse(String contextId);
 }

@@ -21,12 +21,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
         @Type(name = "GTE", value = SingleCondition.class),
         @Type(name = "LT", value = SingleCondition.class),
         @Type(name = "LTE", value = SingleCondition.class),
-        @Type(name = "GROUP", value = GroupCondition.class),
+        @Type(name = "SEGMENT", value = SegmentCondition.class),
         @Type(name = "CONTAINS_ALL", value = ArrayCondition.class),
         @Type(name = "CONTAINS_ANY", value = ArrayCondition.class),
         @Type(name = "CONTAINS_ONLY", value = ArrayCondition.class)
 })
-public abstract class AbstractCondition<T> extends DbObject {
+public abstract class AbstractCondition extends DbObject {
 
     private String name;
 
@@ -42,6 +42,6 @@ public abstract class AbstractCondition<T> extends DbObject {
     private String contextId;
 
     public enum ConditionType {
-        IN, RANGE, GT, GTE, LT, LTE, GROUP, CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY
+        IN, RANGE, GT, GTE, LT, LTE, SEGMENT, CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY
     }
 }

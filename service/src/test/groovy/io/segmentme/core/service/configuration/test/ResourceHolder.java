@@ -40,8 +40,8 @@ public class ResourceHolder {
     }
 
     @SneakyThrows
-    public List<AbstractAnalysisRule<?>> getRuleSchema() {
-        return OBJECT_MAPPER.readValue(ruleSchema.getInputStream(), new TypeReference<List<AbstractAnalysisRule<?>>>() {});
+    public List<SimpleAnalysisRule> getRuleSchema() {
+        return OBJECT_MAPPER.readValue(ruleSchema.getInputStream(), new TypeReference<List<SimpleAnalysisRule>>() {});
     }
 
     @SneakyThrows

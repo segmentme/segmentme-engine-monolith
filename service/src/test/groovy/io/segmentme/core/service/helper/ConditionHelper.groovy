@@ -1,14 +1,14 @@
 package io.segmentme.core.service.helper
 
 import io.segmentme.core.db.domain.condition.AbstractCondition
-import io.segmentme.core.db.domain.condition.GroupCondition
+import io.segmentme.core.db.domain.condition.SegmentCondition
 import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
 import io.segmentme.core.service.dto.component.GroupConditionDto
 
 class ConditionHelper {
 
     static def fillCondition(Object condition, Object values, AbstractCondition.ConditionType type, boolean isEmbedded = false) {
-        if (condition instanceof GroupConditionDto || condition instanceof GroupCondition) {
+        if (condition instanceof GroupConditionDto || condition instanceof SegmentCondition) {
             condition.conditions = values
             condition.aggregation = AbstractAnalysisRule.AggregationType.AND
         } else {
@@ -28,7 +28,7 @@ class ConditionHelper {
     }
 
     static def fillCondition(Object condition, Map args = [:]) {
-        if (condition instanceof GroupConditionDto || condition instanceof GroupCondition) {
+        if (condition instanceof GroupConditionDto || condition instanceof SegmentCondition) {
             condition.conditions = args["conditions"]
             condition.aggregation = args["aggregation"] ?: AbstractAnalysisRule.AggregationType.AND
         } else {

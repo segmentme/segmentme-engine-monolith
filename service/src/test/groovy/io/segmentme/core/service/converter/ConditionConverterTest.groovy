@@ -2,7 +2,7 @@ package io.segmentme.core.service.converter
 
 import io.segmentme.core.db.domain.condition.AbstractCondition.ConditionType
 import io.segmentme.core.db.domain.condition.ArrayCondition
-import io.segmentme.core.db.domain.condition.GroupCondition
+import io.segmentme.core.db.domain.condition.SegmentCondition
 import io.segmentme.core.db.domain.condition.SingleCondition
 import io.segmentme.core.service.dto.component.ArrayConditionDto
 import io.segmentme.core.service.dto.component.GroupConditionDto
@@ -71,7 +71,7 @@ class ConditionConverterTest extends Specification {
 
     def "group condition dto converting: #type and val: #values isDto: #isDto"() {
         given:
-        def source = fillCondition(isDto ? new GroupConditionDto() : new GroupCondition(), values, type)
+        def source = fillCondition(isDto ? new GroupConditionDto() : new SegmentCondition(), values, type)
         expect:
         def target = isDto ? ConditionConverter.of(source, UUID.randomUUID().toString()) : ConditionConverter.of(source)
         target.name == source.name
@@ -81,13 +81,13 @@ class ConditionConverterTest extends Specification {
         target.aggregation == source.aggregation
         where:
         type                | values                                                                                                                          | isDto
-        ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN)]                                                                 | true
-        ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN), fillCondition(new SingleConditionDto(), 500, ConditionType.LT)] | true
-        ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN), fillCondition(new SingleConditionDto(), 500, ConditionType.LT)] | true
-        ConditionType.GROUP | [fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN)], ConditionType.GROUP)]  | true
-        ConditionType.GROUP | [fillCondition(new ArrayCondition(), [1], ConditionType.IN)]                                                                    | false
-        ConditionType.GROUP | [fillCondition(new ArrayCondition(), [1], ConditionType.IN), fillCondition(new SingleCondition(), 500, ConditionType.LT)]       | false
-        ConditionType.GROUP | [fillCondition(new ArrayCondition(), [1], ConditionType.IN), fillCondition(new SingleCondition(), 500, ConditionType.LT)]       | false
-        ConditionType.GROUP | [fillCondition(new GroupCondition(), [fillCondition(new ArrayCondition(), [1], ConditionType.IN)], ConditionType.GROUP)]        | false
+        ConditionType.SEGMENT | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN)]                                                                  | true
+        ConditionType.SEGMENT | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN), fillCondition(new SingleConditionDto(), 500, ConditionType.LT)]  | true
+        ConditionType.SEGMENT | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN), fillCondition(new SingleConditionDto(), 500, ConditionType.LT)]  | true
+        ConditionType.SEGMENT | [fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN)], ConditionType.SEGMENT)] | true
+        ConditionType.SEGMENT | [fillCondition(new ArrayCondition(), [1], ConditionType.IN)]                                                                     | false
+        ConditionType.SEGMENT | [fillCondition(new ArrayCondition(), [1], ConditionType.IN), fillCondition(new SingleCondition(), 500, ConditionType.LT)]        | false
+        ConditionType.SEGMENT | [fillCondition(new ArrayCondition(), [1], ConditionType.IN), fillCondition(new SingleCondition(), 500, ConditionType.LT)]        | false
+        ConditionType.SEGMENT | [fillCondition(new SegmentCondition(), [fillCondition(new ArrayCondition(), [1], ConditionType.IN)], ConditionType.SEGMENT)]     | false
     }
 }

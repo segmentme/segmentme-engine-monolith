@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface AbstractConditionRepository extends MongoRepository<AbstractCondition<?>, String> {
+public interface AbstractConditionRepository extends MongoRepository<AbstractCondition, String> {
 
-    List<AbstractCondition<?>> findByContextIdAndEmbeddedIsFalse(String id);
+    List<AbstractCondition> findByContextIdAndEmbeddedIsFalse(String id);
 }

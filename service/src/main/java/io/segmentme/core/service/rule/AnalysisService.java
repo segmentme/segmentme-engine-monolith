@@ -2,23 +2,22 @@ package io.segmentme.core.service.rule;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.ContextSchema;
-import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
+import io.segmentme.core.db.domain.rule.Segment;
 import io.segmentme.core.db.domain.workpsace.Workspace;
-import io.segmentme.core.db.dto.AnalysisResult;
+import io.segmentme.core.service.dto.analysis.*;
 import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository;
 import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.ContextValuesExtractor;
-import io.segmentme.core.service.rule.common.AnalysisRuleService;
+import io.segmentme.core.service.rule.common.SegmentAnalysisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AnalysisService {
 
-    private final AnalysisRuleService analysisRuleService;
+    private final SegmentAnalysisService segmentAnalysisService;
 
     private final AbstractAnalysisRuleRepository analysisRuleRepository;
 
@@ -36,26 +35,40 @@ public class AnalysisService {
 
     private final WorkspaceService workspaceService;
 
-    public List<AnalysisResult> analyze(ContextValueHolder context) {
-        //TODO need to find rules in db by params... user_id or other key
-        return analyze(context, analysisRuleRepository.findByPreconditionIdIsNull());
+
+    public AnalysisResult debug(ContextValueHolder context, Segment segment) {
+
+        Map<String, DebugResult> debugResult = new HashMap<>();
+
+        Function<String, DebugResult> debugWorm = id -> debugResult.computeIfAbsent(id, key -> new DebugResult().setConditionId(key));
+
+        SegmentAnalysisResult result = analyze(context, segment, Optional.of(debugWorm));
+
+        return AnalysisResult.of(Arrays.asList(result), debugResult);
     }
 
-    public List<AnalysisResult> analyze(ContextValueHolder context, List<AbstractAnalysisRule<?>> rules) {
-        return rules.stream().map(it -> analysisRuleService.analyze(it, context))
-            .flatMap(Collection::parallelStream)
-            .collect(Collectors.toList());
+    public List<SegmentAnalysisResult> analyze(ContextValueHolder context, List<Segment> rules) {
+        return rules.stream().map(it -> this.analyze(context, it, Optional.empty())).collect(Collectors.toList());
     }
 
-    public List<AnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload) {
+    public List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload) {
         Workspace workspace = workspaceService.findByIntegrationPointKey(integrationPointKey).orElseThrow(() -> new IllegalArgumentException("Workspace not found"));
         List<ContextSchema> schemas = contextSchemaService.findByIntegrationPointKeys(Collections.singletonList(integrationPointKey), false);
+
+        List<Segment> segments = analysisRuleRepository.findByIntegrationPointKeyAndEmbeddedIsFalse(integrationPointKey);
         if (StringUtils.isNoneBlank(contextId)) {
             schemas = schemas.stream().filter(it -> it.getId().equalsIgnoreCase(contextId)).findFirst().map(Collections::singletonList).orElseThrow(() -> new IllegalArgumentException("Context not found"));
+            segments = segments.stream().filter(it -> it.getContextId().equalsIgnoreCase(contextId)).collect(Collectors.toList());
         }
 
+        List<Segment> finalSegments = segments;
         return schemas.stream()
-            .map(it -> contextValuesExtractor.extractValues(payload, it, workspace.getConfiguration()))
-            .map(this::analyze).flatMap(List::stream).collect(Collectors.toList());
+                .map(it -> contextValuesExtractor.extractValues(payload, it, workspace.getConfiguration()))
+                .map(it -> this.analyze(it, finalSegments))
+                .flatMap(List::stream).collect(Collectors.toList());
+    }
+
+    private SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, Optional<Function<String, DebugResult>> debugWorm) {
+        return segmentAnalysisService.analyze(context, rule, debugWorm);
     }
 }

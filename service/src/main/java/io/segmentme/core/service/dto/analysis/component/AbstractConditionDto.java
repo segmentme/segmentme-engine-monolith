@@ -1,4 +1,4 @@
-package io.segmentme.core.service.dto.component;
+package io.segmentme.core.service.dto.analysis.component;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -19,13 +19,13 @@ import javax.validation.constraints.NotBlank;
         @Type(name = "GTE", value = SingleConditionDto.class),
         @Type(name = "LT", value = SingleConditionDto.class),
         @Type(name = "LTE", value = SingleConditionDto.class),
-        @Type(name = "GROUP", value = GroupConditionDto.class),
+        @Type(name = "SEGMENT", value = SegmentConditionDto.class),
         @Type(name = "IN", value = ArrayConditionDto.class),
         @Type(name = "CONTAINS_ALL", value = ArrayConditionDto.class),
         @Type(name = "CONTAINS_ANY", value = ArrayConditionDto.class),
         @Type(name = "CONTAINS_ONLY", value = ArrayConditionDto.class)
 })
-public abstract class AbstractConditionDto<T> {
+public abstract class AbstractConditionDto {
 
     private String id;
 

@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class SimpleCondition<T> extends AbstractCondition<T> {
+public abstract class SimpleCondition<T> extends AbstractCondition {
 
     private T value;
 

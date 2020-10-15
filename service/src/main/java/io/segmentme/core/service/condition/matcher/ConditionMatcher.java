@@ -2,31 +2,39 @@ package io.segmentme.core.service.condition.matcher;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.service.analysis.ContextValueHolder;
+import io.segmentme.core.service.dto.analysis.DebugResult;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
 public class ConditionMatcher {
 
-    private final Map<AbstractCondition.ConditionType, Matcher<? extends AbstractCondition<?>>> conditionServices;
+    private final Map<AbstractCondition.ConditionType, Matcher<? extends AbstractCondition>> conditionServices;
 
-    public ConditionMatcher(List<Matcher<? extends AbstractCondition<?>>> services) {
+    public ConditionMatcher(List<Matcher<? extends AbstractCondition>> services) {
         conditionServices = services.stream().collect(Collectors.toMap(Matcher::getType, it -> it));
     }
 
-    public boolean match(AbstractCondition<?> condition, ContextValueHolder context) {
-        Matcher<AbstractCondition<?>> matcher = findMatcher(condition.getType());
-        return matcher.match(condition, context) == condition.isMatchResult();
+    public boolean match(AbstractCondition condition, ContextValueHolder context, Optional<Function<String, DebugResult>> debugWorm) {
+        var matcher = findMatcher(condition.getType());
+
+        var conditionMatchResult = matcher.match(condition, context, debugWorm);
+
+        var result = conditionMatchResult == condition.isMatchResult();
+
+        debugWorm.map(it -> it.apply(condition.getContextId())).ifPresent(it -> it.setMatchResult(result).setConditionMatchResult(conditionMatchResult));
+
+        return result;
     }
 
     @SuppressWarnings("unchecked")
-    private Matcher<AbstractCondition<?>> findMatcher(AbstractCondition.ConditionType type) {
-        Matcher<? extends AbstractCondition<?>> matcher = conditionServices.computeIfAbsent(type, key -> {
+    private Matcher<AbstractCondition> findMatcher(AbstractCondition.ConditionType type) {
+        Matcher<? extends AbstractCondition> matcher = conditionServices.computeIfAbsent(type, key -> {
             throw new IllegalStateException("Unknown condition service type " + key);
         });
-        return (Matcher<AbstractCondition<?>>) matcher;
+        return (Matcher<AbstractCondition>) matcher;
     }
 }
