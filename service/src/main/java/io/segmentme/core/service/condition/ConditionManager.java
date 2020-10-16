@@ -5,7 +5,7 @@ import io.segmentme.core.db.domain.condition.SegmentCondition;
 import io.segmentme.core.db.service.condition.ConditionService;
 import io.segmentme.core.service.converter.ConditionConverter;
 import io.segmentme.core.service.dto.analysis.component.AbstractConditionDto;
-import io.segmentme.core.service.rule.RuleManager;
+import io.segmentme.core.service.rule.SegmentManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -24,7 +24,7 @@ public class ConditionManager {
     private final ConditionService conditionService;
 
     @Lazy
-    private final RuleManager ruleManager;
+    private final SegmentManager segmentManager;
 
     public AbstractConditionDto create(AbstractConditionDto conditions, String contextId) {
         var savedCondition = conditionService.create(ConditionConverter.of(conditions, contextId));
@@ -50,7 +50,7 @@ public class ConditionManager {
         conditionService.findById(conditionId)
                 .ifPresent(it -> {
                     if (it.getType() == SEGMENT) {
-                        ruleManager.delete(((SegmentCondition) it).getSegment().getId());
+                        segmentManager.delete(((SegmentCondition) it).getSegment().getId());
                     }
                     conditionService.delete(it);
                 });
@@ -65,7 +65,7 @@ public class ConditionManager {
                 .filter(it -> it.getType() == AbstractCondition.ConditionType.SEGMENT)
                 .peek(it -> {
                     if (it.getType() == SEGMENT) {
-                        ruleManager.delete(((SegmentCondition) it).getSegment().getId());
+                        segmentManager.delete(((SegmentCondition) it).getSegment().getId());
                     }
                 })
                 .collect(Collectors.toSet());

@@ -6,7 +6,7 @@ import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.context.ContextSchemaManager;
 import io.segmentme.core.service.converter.WorkspaceHolderConverter;
 import io.segmentme.core.service.dto.WorkspaceHolder;
-import io.segmentme.core.service.rule.RuleManager;
+import io.segmentme.core.service.rule.SegmentManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -32,7 +32,7 @@ public class WorkspaceManager {
 
     private final WorkspaceService workspaceService;
 
-    private final RuleManager ruleManager;
+    private final SegmentManager segmentManager;
 
     private final ContextSchemaManager contextSchemaManager;
 
@@ -81,7 +81,7 @@ public class WorkspaceManager {
             return workspace;
         }).ifPresent(workspaceService::update);
 
-        ruleManager.unlinkFromIntegrationPoint(integrationPointKey);
+        segmentManager.unlinkFromIntegrationPoint(integrationPointKey);
         contextSchemaManager.unlinkFromIntegrationPoint(integrationPointKey);
     }
 

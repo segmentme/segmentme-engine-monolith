@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.rule.Segment;
 import io.segmentme.core.db.domain.workpsace.Workspace;
-import io.segmentme.core.service.dto.analysis.*;
-import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository;
+import io.segmentme.core.db.repository.SegmentRepository;
 import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.ContextValuesExtractor;
+import io.segmentme.core.service.dto.analysis.*;
 import io.segmentme.core.service.rule.common.SegmentAnalysisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class AnalysisService {
 
     private final SegmentAnalysisService segmentAnalysisService;
 
-    private final AbstractAnalysisRuleRepository analysisRuleRepository;
+    private final SegmentRepository analysisRuleRepository;
 
     private final ContextSchemaService contextSchemaService;
 
@@ -35,6 +35,10 @@ public class AnalysisService {
 
     private final WorkspaceService workspaceService;
 
+
+    public AnalysisResult debug(ContextValueHolder context, String segmentId) {
+        return debug(context, analysisRuleRepository.findById(segmentId).get());
+    }
 
     public AnalysisResult debug(ContextValueHolder context, Segment segment) {
 

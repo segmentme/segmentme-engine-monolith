@@ -6,7 +6,7 @@ import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
 
 import io.segmentme.core.db.domain.workpsace.Workspace
 import io.segmentme.core.service.dto.rule.SegmentAnalysisResult
-import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository
+import io.segmentme.core.db.repository.SegmentRepository
 import io.segmentme.core.service.analysis.ContextValueHolder
 import io.segmentme.core.service.analysis.ContextValuesExtractorImpl
 import io.segmentme.core.service.common.BaseTestWithContext
@@ -42,7 +42,7 @@ abstract class BaseRuleTest extends BaseTestWithContext {
     private ContextSchemaResolver contextSchemaResolver
 
     @SpringBean
-    protected AbstractAnalysisRuleRepository analysisRuleRepository = Mock(AbstractAnalysisRuleRepository.class)
+    protected SegmentRepository analysisRuleRepository = Mock(SegmentRepository.class)
 
     private ContextValueHolder context
 

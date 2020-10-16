@@ -1,7 +1,7 @@
 package io.segmentme.core.db.service.rule;
 
 import io.segmentme.core.db.domain.rule.Segment;
-import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository;
+import io.segmentme.core.db.repository.SegmentRepository;
 import io.segmentme.core.db.service.AbstractDatabaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RuleService extends AbstractDatabaseService<Segment, AbstractAnalysisRuleRepository> {
+public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepository> {
 
     public List<Segment> createAll(List<Segment> entity) {
         return repository.saveAll(entity);

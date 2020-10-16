@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface AbstractAnalysisRuleRepository extends MongoRepository<Segment, String> {
+public interface SegmentRepository extends MongoRepository<Segment, String> {
 
     List<Segment> findByIntegrationPointKey();
 

@@ -1,10 +1,10 @@
 package io.segmentme.core.api.resource
 
 import io.segmentme.core.api.common.BaseControllerTest
-import io.segmentme.core.db.repository.AbstractAnalysisRuleRepository
+import io.segmentme.core.db.repository.SegmentRepository
 import io.segmentme.core.db.repository.AbstractConditionRepository
 import io.segmentme.core.service.dto.component.ArrayConditionDto
-import io.segmentme.core.service.rule.RuleManager
+import io.segmentme.core.service.rule.SegmentManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 
@@ -24,10 +24,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AnalysisRuleControllerTest extends BaseControllerTest {
 
     @Autowired
-    private RuleManager ruleManager
+    private SegmentManager ruleManager
 
     @Autowired
-    private AbstractAnalysisRuleRepository analysisRuleRepository
+    private SegmentRepository analysisRuleRepository
 
     @Autowired
     private AbstractConditionRepository abstractConditionRepository

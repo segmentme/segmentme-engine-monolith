@@ -19,7 +19,7 @@ import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import io.segmentme.core.service.exception.ContextSchemaManagerException;
 import io.segmentme.core.service.exception.ContextSchemaValidationException;
 import io.segmentme.core.service.exception.error.ContextMangerErrors;
-import io.segmentme.core.service.rule.RuleManager;
+import io.segmentme.core.service.rule.SegmentManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +43,7 @@ public class ContextSchemaManager {
 
     private final WorkspaceService workspaceService;
 
-    private final RuleManager ruleManager;
+    private final SegmentManager segmentManager;
 
     private final ConditionManager conditionManager;
 
@@ -126,7 +126,7 @@ public class ContextSchemaManager {
     public void deleteContextSchema(String contextSchemaId) {
 
         contextSchemaService.deleteById(contextSchemaId);
-        ruleManager.unlinkFromContext(contextSchemaId);
+        segmentManager.unlinkFromContext(contextSchemaId);
         conditionManager.unlinkFromContextId(contextSchemaId);
 
     }

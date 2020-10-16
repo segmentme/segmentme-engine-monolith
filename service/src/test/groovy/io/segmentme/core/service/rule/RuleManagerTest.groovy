@@ -20,7 +20,7 @@ class RuleManagerTest extends BaseTestWithContext {
     private static final ObjectMapper MAPPER = new ObjectMapper()
 
     @Autowired
-    private RuleManager ruleManager
+    private SegmentManager ruleManager
 
     def "Analysis rule converting:"() {
         given:
