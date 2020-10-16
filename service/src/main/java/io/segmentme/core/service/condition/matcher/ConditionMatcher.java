@@ -2,11 +2,12 @@ package io.segmentme.core.service.condition.matcher;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.service.analysis.ContextValueHolder;
-import io.segmentme.core.service.dto.analysis.DebugResult;
+import io.segmentme.core.service.segment.worm.WormConsumer;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -18,16 +19,14 @@ public class ConditionMatcher {
         conditionServices = services.stream().collect(Collectors.toMap(Matcher::getType, it -> it));
     }
 
-    public boolean match(AbstractCondition condition, ContextValueHolder context, Optional<Function<String, DebugResult>> debugWorm) {
+    public boolean match(AbstractCondition condition, ContextValueHolder context, WormConsumer worm) {
         var matcher = findMatcher(condition.getType());
 
-        var conditionMatchResult = matcher.match(condition, context, debugWorm);
+        var conditionMatchResult = matcher.match(condition, context, worm);
 
         var result = conditionMatchResult == condition.isMatchResult();
 
-        debugWorm.map(it -> it.apply(condition.getContextId())).ifPresent(it ->
-                it.setMatchResult(result).setConditionMatchResult(conditionMatchResult).setConditionName(condition.getName())
-        );
+        Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, conditionMatchResult));
 
         return result;
     }

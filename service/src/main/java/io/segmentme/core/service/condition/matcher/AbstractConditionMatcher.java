@@ -4,15 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.CriteriaValueLocator;
-import io.segmentme.core.service.dto.analysis.DebugResult;
-import lombok.*;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
-import java.util.Optional;
-import java.util.function.*;
 
 @Slf4j
 abstract class AbstractConditionMatcher<T extends AbstractCondition> implements Matcher<T> {
@@ -29,9 +26,6 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition> implements 
     protected Comparable<Object> getProperty(String propertyName, ContextValueHolder context) {
         return castIfRequired(CriteriaValueLocator.getCriteriaValue(propertyName, context), propertyName);
     }
-
-    public abstract boolean match(T condition, ContextValueHolder context, Optional<Function<String, DebugResult>> debugWorm);
-
 
     public abstract AbstractCondition.ConditionType getType();
 

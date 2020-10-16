@@ -2,15 +2,17 @@ package io.segmentme.core.service.condition.matcher;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.SegmentCondition;
-import io.segmentme.core.service.dto.analysis.DebugResult;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.segment.common.SegmentAnalysisService;
-import lombok.*;
+import io.segmentme.core.service.segment.worm.WormConsumer;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.function.*;
 
 @Data
 @Component
@@ -29,12 +31,13 @@ public class SegmentConditionMatcher extends AbstractConditionMatcher<SegmentCon
 
 
     @Override
-    public boolean match(SegmentCondition condition, ContextValueHolder context, Optional<Function<String, DebugResult>> debugWorm) {
-        boolean conditionMatchResult = analysisRuleService.analyze(context, condition.getSegment(), debugWorm).isValue();
+    public boolean match(SegmentCondition condition, ContextValueHolder context, WormConsumer worm) {
+        boolean conditionMatchResult = analysisRuleService.analyze(context, condition.getSegment(), worm).isValue();
 
         boolean result = conditionMatchResult == condition.isMatchResult();
 
-        debugWorm.map(it -> it.apply(condition.getContextId())).ifPresent(it -> it.setMatchResult(result).setConditionMatchResult(conditionMatchResult));
+
+        Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, conditionMatchResult));
 
         return result;
 

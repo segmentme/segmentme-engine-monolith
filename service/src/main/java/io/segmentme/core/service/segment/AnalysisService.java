@@ -9,15 +9,19 @@ import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.ContextValuesExtractor;
-import io.segmentme.core.service.dto.analysis.*;
+import io.segmentme.core.service.dto.analysis.AnalysisResult;
+import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
 import io.segmentme.core.service.segment.common.SegmentAnalysisService;
+import io.segmentme.core.service.segment.worm.DebugWorm;
+import io.segmentme.core.service.segment.worm.WormConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -42,17 +46,14 @@ public class AnalysisService {
 
     public AnalysisResult debug(ContextValueHolder context, Segment segment) {
 
-        Map<String, DebugResult> debugResult = new HashMap<>();
+        DebugWorm worm = new DebugWorm(context);
+        SegmentAnalysisResult result = analyze(context, segment, WormConsumer.of(Collections.singletonList(worm)));
 
-        Function<String, DebugResult> debugWorm = id -> debugResult.computeIfAbsent(id, key -> new DebugResult().setConditionId(key));
-
-        SegmentAnalysisResult result = analyze(context, segment, Optional.of(debugWorm));
-
-        return AnalysisResult.of(Arrays.asList(result), debugResult);
+        return AnalysisResult.of(Arrays.asList(result), worm.getDebugResultMap());
     }
 
     public List<SegmentAnalysisResult> analyze(ContextValueHolder context, List<Segment> rules) {
-        return rules.stream().map(it -> this.analyze(context, it, Optional.empty())).collect(Collectors.toList());
+        return rules.stream().map(it -> this.analyze(context, it, null)).collect(Collectors.toList());
     }
 
     public List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload) {
@@ -67,12 +68,12 @@ public class AnalysisService {
 
         List<Segment> finalSegments = segments;
         return schemas.stream()
-                .map(it -> contextValuesExtractor.extractValues(payload, it, workspace.getConfiguration()))
-                .map(it -> this.analyze(it, finalSegments))
-                .flatMap(List::stream).collect(Collectors.toList());
+            .map(it -> contextValuesExtractor.extractValues(payload, it, workspace.getConfiguration()))
+            .map(it -> this.analyze(it, finalSegments))
+            .flatMap(List::stream).collect(Collectors.toList());
     }
 
-    private SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, Optional<Function<String, DebugResult>> debugWorm) {
-        return segmentAnalysisService.analyze(context, rule, debugWorm);
+    private SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, WormConsumer worm) {
+        return segmentAnalysisService.analyze(context, rule, worm);
     }
 }
