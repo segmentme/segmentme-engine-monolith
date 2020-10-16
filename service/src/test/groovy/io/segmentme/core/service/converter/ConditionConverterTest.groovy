@@ -2,11 +2,9 @@ package io.segmentme.core.service.converter
 
 import io.segmentme.core.db.domain.condition.AbstractCondition.ConditionType
 import io.segmentme.core.db.domain.condition.ArrayCondition
-import io.segmentme.core.db.domain.condition.SegmentCondition
 import io.segmentme.core.db.domain.condition.SingleCondition
-import io.segmentme.core.service.dto.component.ArrayConditionDto
-import io.segmentme.core.service.dto.component.GroupConditionDto
-import io.segmentme.core.service.dto.component.SingleConditionDto
+import io.segmentme.core.service.dto.analysis.conditions.ArrayConditionDto
+import io.segmentme.core.service.dto.analysis.conditions.SingleConditionDto
 import spock.lang.Specification
 
 import static io.segmentme.core.service.helper.ConditionHelper.fillCondition
@@ -66,28 +64,5 @@ class ConditionConverterTest extends Specification {
         ConditionType.LT  | "1990-12-31" | false
         ConditionType.GTE | 500          | false
         ConditionType.GT  | 413          | false
-    }
-
-
-    def "group condition dto converting: #type and val: #values isDto: #isDto"() {
-        given:
-        def source = fillCondition(isDto ? new GroupConditionDto() : new SegmentCondition(), values, type)
-        expect:
-        def target = isDto ? ConditionConverter.of(source, UUID.randomUUID().toString()) : ConditionConverter.of(source)
-        target.name == source.name
-        target.type == source.type
-        target.description == source.description
-        target.matchResult == source.matchResult
-        target.aggregation == source.aggregation
-        where:
-        type                | values                                                                                                                          | isDto
-        ConditionType.SEGMENT | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN)]                                                                  | true
-        ConditionType.SEGMENT | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN), fillCondition(new SingleConditionDto(), 500, ConditionType.LT)]  | true
-        ConditionType.SEGMENT | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN), fillCondition(new SingleConditionDto(), 500, ConditionType.LT)]  | true
-        ConditionType.SEGMENT | [fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN)], ConditionType.SEGMENT)] | true
-        ConditionType.SEGMENT | [fillCondition(new ArrayCondition(), [1], ConditionType.IN)]                                                                     | false
-        ConditionType.SEGMENT | [fillCondition(new ArrayCondition(), [1], ConditionType.IN), fillCondition(new SingleCondition(), 500, ConditionType.LT)]        | false
-        ConditionType.SEGMENT | [fillCondition(new ArrayCondition(), [1], ConditionType.IN), fillCondition(new SingleCondition(), 500, ConditionType.LT)]        | false
-        ConditionType.SEGMENT | [fillCondition(new SegmentCondition(), [fillCondition(new ArrayCondition(), [1], ConditionType.IN)], ConditionType.SEGMENT)]     | false
     }
 }

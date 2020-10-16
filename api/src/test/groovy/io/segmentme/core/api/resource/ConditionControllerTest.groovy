@@ -3,10 +3,9 @@ package io.segmentme.core.api.resource
 import io.segmentme.core.api.common.BaseControllerTest
 import io.segmentme.core.db.repository.AbstractConditionRepository
 import io.segmentme.core.service.condition.ConditionManager
-import io.segmentme.core.service.dto.component.AbstractConditionDto
-import io.segmentme.core.service.dto.component.ArrayConditionDto
-import io.segmentme.core.service.dto.component.GroupConditionDto
-import io.segmentme.core.service.dto.component.SingleConditionDto
+import io.segmentme.core.service.dto.analysis.conditions.AbstractConditionDto
+import io.segmentme.core.service.dto.analysis.conditions.ArrayConditionDto
+import io.segmentme.core.service.dto.analysis.conditions.SingleConditionDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 
@@ -16,8 +15,8 @@ import java.util.stream.IntStream
 import static io.segmentme.core.db.domain.condition.AbstractCondition.ConditionType.*
 import static io.segmentme.core.service.helper.ConditionHelper.fillCondition
 import static java.util.UUID.randomUUID
-import static org.hamcrest.Matchers.hasSize
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -37,11 +36,12 @@ class ConditionControllerTest extends BaseControllerTest {
         given:
         def request = (AbstractConditionDto) condition
         def contextId = randomUUID().toString()
-        def response = mockMvc.perform(auth(post("/condition/${contextId}"))
+        def response = mockMvc.perform(auth(post("/condition/context/${contextId}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(request))
                 .accept(MediaType.APPLICATION_JSON))
         expect:
+        def strins = response.andReturn().response.contentAsString;
         response.andExpect(status()
                 .isOk())
                 .andExpect(jsonPath('$.id').isNotEmpty())
@@ -54,12 +54,12 @@ class ConditionControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath('$.nullValid').value(request.nullValid))
         where:
         condition                                                                    | _
-        fillCondition(new ArrayConditionDto(), [1, 2, 3], IN)                        | _
+        fillCondition(new ArrayConditionDto(), [1, 2, 3], IN) | _
         fillCondition(new ArrayConditionDto(), ["VALUE"], CONTAINS_ONLY)             | _
         fillCondition(new ArrayConditionDto(), ["VALUE_1", "VALUE_2"], CONTAINS_ANY) | _
         fillCondition(new ArrayConditionDto(), [1], CONTAINS_ALL)                    | _
         fillCondition(new SingleConditionDto(), 1, LTE)                              | _
-        fillCondition(new SingleConditionDto(), "1990-12-31", LT)                    | _
+        fillCondition(new SingleConditionDto(), "1990-12-31", LT) | _
         fillCondition(new SingleConditionDto(), 500, GTE)                            | _
         fillCondition(new SingleConditionDto(), 413, GT)                             | _
         fillCondition(new SingleConditionDto(), 1, LTE)                              | _
@@ -69,7 +69,7 @@ class ConditionControllerTest extends BaseControllerTest {
         given:
         def request = (AbstractConditionDto) condition
         def contextId = randomUUID().toString()
-        def response = mockMvc.perform(auth(post("/condition/${contextId}"))
+        def response = mockMvc.perform(auth(post("/condition/context/${contextId}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(request))
                 .accept(MediaType.APPLICATION_JSON))
@@ -83,26 +83,6 @@ class ConditionControllerTest extends BaseControllerTest {
     }
 
 
-    def "get condition by contextId: #contextId count should be #count"() {
-        given:
-        conditionManager.createAll(conditions, contextId)
-        def response = mockMvc.perform(auth(get("/condition/${contextId}").contentType(MediaType.APPLICATION_JSON)))
-        expect:
-        response.andExpect(status().isOk()).andExpect(jsonPath('$.*', hasSize(count)))
-        where:
-        conditions                                                                                                                                                                                    | contextId               | count
-        [fillCondition(new ArrayConditionDto(), [1, 2, 3], IN)]                                                                                                                                       | randomUUID().toString() | 1
-        [fillCondition(new ArrayConditionDto(), [2], CONTAINS_ONLY), fillCondition(new ArrayConditionDto(), [2], CONTAINS_ANY)]                                                                       | randomUUID().toString() | 2
-        [fillCondition(new GroupConditionDto(), ['values': [2], 'type': SEGMENT, 'conditions': [fillCondition(new ArrayConditionDto(), ['values': ["ad"], 'type': CONTAINS_ONLY, 'embedded': true])]])] | randomUUID().toString() | 1
-        [
-                fillCondition(new ArrayConditionDto(), [1, 2, 3], IN),
-                fillCondition(new ArrayConditionDto(), [1, 2, 3], CONTAINS_ANY),
-                fillCondition(new ArrayConditionDto(), [1, 2, 3], CONTAINS_ONLY),
-                fillCondition(new ArrayConditionDto(), ['values': [1, 2, 3], 'type': IN, 'embedded': true]),
-                fillCondition(new ArrayConditionDto(), ['values': [1, 2, 3], 'type': IN, 'embedded': true])
-        ]                                                                                                                                                                                             | randomUUID().toString() | 3
-    }
-
     def "delete condition"() {
         given:
         def id = createCondition(5)[0].id
@@ -113,31 +93,6 @@ class ConditionControllerTest extends BaseControllerTest {
         conditions.size() == 4
     }
 
-    def "delete condition with embedded condition"() {
-        given:
-        def conditions = [fillCondition(new GroupConditionDto(),
-                [fillCondition(new GroupConditionDto(),
-                        [fillCondition(new GroupConditionDto(),
-                                [
-                                        fillCondition(new GroupConditionDto(), [
-                                                fillCondition(new ArrayConditionDto(), [1], IN, true),
-                                                fillCondition(new ArrayConditionDto(), [2], IN, true)
-                                        ], SEGMENT, false),
-                                        fillCondition(new GroupConditionDto(), [
-                                                fillCondition(new ArrayConditionDto(), [3], IN, false),
-                                                fillCondition(new ArrayConditionDto(), [4], IN, false)
-                                        ], SEGMENT, true)
-                                ],
-                                SEGMENT, true)],
-                        SEGMENT, true)],
-                SEGMENT, false)]
-        def createdConditions = conditionManager.createAll(conditions, "32123")
-        mockMvc.perform(auth(delete("/condition/${createdConditions[0].id}").contentType(MediaType.APPLICATION_JSON)))
-        when:
-        def existedCondition = abstractConditionRepository.findAll()
-        then:
-        existedCondition.size() == 3
-    }
 
     private createCondition(int count) {
         return IntStream.range(0, count)

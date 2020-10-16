@@ -1,6 +1,6 @@
-package io.segmentme.core.service.dto.analysis.component;
+package io.segmentme.core.service.dto.analysis.conditions;
 
-import io.segmentme.core.service.dto.analysis.rule.SegmentDto;
+import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import lombok.*;
 
 import javax.validation.Valid;

@@ -2,7 +2,7 @@ package io.segmentme.core.service.rule;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.ContextSchema;
-import io.segmentme.core.db.domain.rule.Segment;
+import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.domain.workpsace.Workspace;
 import io.segmentme.core.db.repository.SegmentRepository;
 import io.segmentme.core.db.service.context.ContextSchemaService;

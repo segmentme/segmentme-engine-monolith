@@ -1,6 +1,6 @@
 package io.segmentme.core.db.repository;
 
-import io.segmentme.core.db.domain.rule.Segment;
+import io.segmentme.core.db.domain.segment.Segment;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

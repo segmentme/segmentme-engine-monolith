@@ -1,7 +1,7 @@
 package io.segmentme.core.api.resource;
 
 import io.segmentme.core.service.condition.ConditionManager;
-import io.segmentme.core.service.dto.analysis.component.AbstractConditionDto;
+import io.segmentme.core.service.dto.analysis.conditions.AbstractConditionDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

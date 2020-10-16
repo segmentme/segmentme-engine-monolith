@@ -1,4 +1,4 @@
-package io.segmentme.core.db.domain.rule;
+package io.segmentme.core.db.domain.segment;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package io.segmentme.core.db.domain.rule;
+package io.segmentme.core.db.domain.segment;
 
 import io.segmentme.core.db.config.mongo.CascadeSave;
 import io.segmentme.core.db.domain.condition.AbstractCondition;

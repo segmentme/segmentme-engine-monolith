@@ -1,7 +1,7 @@
 package io.segmentme.core.service.rule.common;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
-import io.segmentme.core.db.domain.rule.Segment;
+import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.condition.matcher.ConditionMatcher;
 import io.segmentme.core.service.dto.analysis.DebugResult;
@@ -21,23 +21,23 @@ public class SegmentAnalysisService {
 
     private final ConditionMatcher conditionMatcher;
 
-    public SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, Optional<Function<String, DebugResult>> debugWorm) {
-        return SegmentAnalysisResult.of(rule.getName(), rule.getId(), this.getRuleValueIfSatisfy(context, rule, debugWorm));
+    public SegmentAnalysisResult analyze(ContextValueHolder context, Segment segment, Optional<Function<String, DebugResult>> debugWorm) {
+        return SegmentAnalysisResult.of(segment.getName(), segment.getId(), this.getSegmentValueIfSatisfy(context, segment, debugWorm));
     }
 
-    final boolean isMatch(Segment rule, ContextValueHolder context, Optional<Function<String, DebugResult>> debugWorm) {
-        if (CollectionUtils.isEmpty(rule.getConditions())) {
+    final boolean isMatch(Segment segment, ContextValueHolder context, Optional<Function<String, DebugResult>> debugWorm) {
+        if (CollectionUtils.isEmpty(segment.getConditions())) {
             return true;
         }
 
-        return switch (rule.getAggregation()) {
-            case OR -> rule.getConditions().stream().anyMatch(condition -> match(condition, context, debugWorm));
-            case AND -> rule.getConditions().stream().allMatch(condition -> match(condition, context, debugWorm));
+        return switch (segment.getAggregation()) {
+            case OR -> segment.getConditions().stream().anyMatch(condition -> match(condition, context, debugWorm));
+            case AND -> segment.getConditions().stream().allMatch(condition -> match(condition, context, debugWorm));
         };
     }
 
-    private boolean getRuleValueIfSatisfy(ContextValueHolder context, Segment rule, Optional<Function<String, DebugResult>> debugWorm) {
-        return isMatch(rule, context, debugWorm) == rule.isMatchResult();
+    private boolean getSegmentValueIfSatisfy(ContextValueHolder context, Segment segment, Optional<Function<String, DebugResult>> debugWorm) {
+        return isMatch(segment, context, debugWorm) == segment.isMatchResult();
     }
 
     private boolean match(AbstractCondition condition, ContextValueHolder context, Optional<Function<String, DebugResult>> debugWorm) {

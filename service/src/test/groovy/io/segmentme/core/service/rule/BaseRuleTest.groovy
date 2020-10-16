@@ -2,16 +2,15 @@ package io.segmentme.core.service.rule
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.segmentme.core.db.domain.rule.AbstractAnalysisRule
-
+import io.segmentme.core.db.domain.segment.Segment
 import io.segmentme.core.db.domain.workpsace.Workspace
-import io.segmentme.core.service.dto.rule.SegmentAnalysisResult
 import io.segmentme.core.db.repository.SegmentRepository
 import io.segmentme.core.service.analysis.ContextValueHolder
 import io.segmentme.core.service.analysis.ContextValuesExtractorImpl
 import io.segmentme.core.service.common.BaseTestWithContext
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
+import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -51,30 +50,23 @@ abstract class BaseRuleTest extends BaseTestWithContext {
         context = contextValuesExtractor.extractValues(json, contextSchemaResolver.resolve(new Workspace().setConfiguration(defaultWorkspaceConfiguration()), json), defaultWorkspaceConfiguration())
     }
 
-    protected <T> T resultValue(String flagName, List<SegmentAnalysisResult> results) {
+    protected static SegmentAnalysisResult resultValue(String name, List<SegmentAnalysisResult> results) {
         return results.stream()
-                .filter(it -> it.getNames().contains(flagName))
+                .filter(it -> it.getName().contains(name))
                 .findFirst()
-                .map(it -> it.getValue())
-                .orElse(null) as T
+                .orElse(null)
     }
 
     def getContext() {
         return this.context
     }
 
-    protected getRule(String flagName) {
-        return resourceHolder.getRuleSchema().stream().filter(it -> match(it, flagName)).collect(Collectors.toList())
+    protected getSegment(String segmentName) {
+        return resourceHolder.getRuleSchema().stream().filter(it -> match(it, segmentName)).collect(Collectors.toList())
     }
 
-    boolean match(AbstractAnalysisRule rule, String flagName) {
-        boolean isExist = false
-        if (rule instanceof SimpleAnalysisRule) {
-            isExist = ((SimpleAnalysisRule) rule).getFlags().contains(flagName)
-        } else if (rule.getRuleType() == AbstractAnalysisRule.RuleType.PRECONDITION && !isExist) {
-            isExist = ((PreconditionAnalysisRule) rule).getAnalysisRules().stream().filter(it -> match(it, flagName)).findFirst().isPresent()
-        }
-        return isExist
+    static boolean match(Segment segment, String segmentName) {
+        return segment.getName().equalsIgnoreCase(segmentName)
     }
 }
 

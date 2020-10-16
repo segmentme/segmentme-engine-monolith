@@ -1,4 +1,4 @@
-package io.segmentme.core.service.dto.analysis.component;
+package io.segmentme.core.service.dto.analysis.conditions;
 
 import java.util.List;
 

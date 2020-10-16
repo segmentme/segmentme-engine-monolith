@@ -1,7 +1,7 @@
 package io.segmentme.core.service.converter;
 
-import io.segmentme.core.db.domain.rule.Segment;
-import io.segmentme.core.service.dto.analysis.rule.SegmentDto;
+import io.segmentme.core.db.domain.segment.Segment;
+import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import lombok.experimental.UtilityClass;
 
 import java.util.stream.Collectors;

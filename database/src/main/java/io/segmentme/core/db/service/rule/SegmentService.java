@@ -1,6 +1,6 @@
 package io.segmentme.core.db.service.rule;
 
-import io.segmentme.core.db.domain.rule.Segment;
+import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.repository.SegmentRepository;
 import io.segmentme.core.db.service.AbstractDatabaseService;
 import lombok.RequiredArgsConstructor;

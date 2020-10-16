@@ -1,7 +1,7 @@
 package io.segmentme.core.service.converter;
 
 import io.segmentme.core.db.domain.condition.*;
-import io.segmentme.core.service.dto.analysis.component.*;
+import io.segmentme.core.service.dto.analysis.conditions.*;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

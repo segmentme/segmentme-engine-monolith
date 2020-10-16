@@ -1,11 +1,11 @@
 package io.segmentme.core.service.rule;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
-import io.segmentme.core.db.domain.rule.Segment;
+import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.service.rule.SegmentService;
 import io.segmentme.core.service.condition.ConditionManager;
 import io.segmentme.core.service.converter.SegmentConverter;
-import io.segmentme.core.service.dto.analysis.rule.SegmentDto;
+import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

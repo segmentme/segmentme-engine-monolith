@@ -1,6 +1,6 @@
 package io.segmentme.core.api.resource;
 
-import io.segmentme.core.service.dto.analysis.rule.SegmentDto;
+import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import io.segmentme.core.service.rule.SegmentManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +12,8 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rule")
-public class AnalysisRuleController {
+@RequestMapping("/segment")
+public class SegmentController {
 
     private final SegmentManager segmentManager;
 
