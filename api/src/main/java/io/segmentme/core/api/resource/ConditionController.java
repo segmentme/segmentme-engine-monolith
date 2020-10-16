@@ -1,6 +1,6 @@
 package io.segmentme.core.api.resource;
 
-import io.segmentme.core.service.condition.ConditionManager;
+import io.segmentme.core.service.analysis.condition.ConditionManager;
 import io.segmentme.core.service.dto.analysis.conditions.AbstractConditionDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

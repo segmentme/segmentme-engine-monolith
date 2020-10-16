@@ -188,22 +188,46 @@
     "matchResult": true
   },
   {
+    "id": "1",
     "aggregation": "AND",
     "name": "SECOND_PHONE_CONTAINS_ONLY_SEGMENT",
     "conditions": [
       {
+        "id": "2",
         "type": "SEGMENT",
         "name": "SEGMENT_CONDITION",
         "matchResult": true,
         "segment":   {
+          "id": "3",
           "aggregation": "AND",
           "name": "USER EMAIL IN SEGMENT",
           "conditions": [
             {
+              "id": "4",
               "type": "IN",
               "criteria": "user.email",
               "value": [
                 "test@email.com"
+              ],
+              "nullValid": false,
+              "matchResult": true
+            },
+            {
+              "id": "6",
+              "type": "IN",
+              "criteria": "user.email",
+              "value": [
+                "2222222222222222"
+              ],
+              "nullValid": false,
+              "matchResult": false
+            },
+            {
+              "id": "7",
+              "type": "IN",
+              "criteria": "user.unknownProperty",
+              "value": [
+                "test@email1.com"
               ],
               "nullValid": false,
               "matchResult": true
