@@ -62,7 +62,7 @@ abstract class BaseRuleTest extends BaseTestWithContext {
     }
 
     protected getSegment(String segmentName) {
-        return resourceHolder.getRuleSchema().stream().filter(it -> match(it, segmentName)).collect(Collectors.toList())
+        return resourceHolder.getSegments().stream().filter(it -> match(it, segmentName)).collect(Collectors.toList())
     }
 
     static boolean match(Segment segment, String segmentName) {
