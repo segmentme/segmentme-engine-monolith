@@ -1,5 +1,6 @@
 package io.segmentme.core.service.dto.analysis;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ public class AnalysisResult {
 
     private List<SegmentAnalysisResult> segmentAnalysisResults;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, DebugResult>  debugState;
 
 }

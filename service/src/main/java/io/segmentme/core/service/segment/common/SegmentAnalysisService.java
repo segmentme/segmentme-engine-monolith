@@ -1,4 +1,4 @@
-package io.segmentme.core.service.rule.common;
+package io.segmentme.core.service.segment.common;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.segment.Segment;

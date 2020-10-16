@@ -7,6 +7,8 @@ public class DebugResult {
 
     private String conditionId;
 
+    private String conditionName;
+
     private boolean conditionMatchResult;
 
     private boolean matchResult;

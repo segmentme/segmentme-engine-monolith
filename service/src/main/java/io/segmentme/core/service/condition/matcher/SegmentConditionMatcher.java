@@ -4,7 +4,7 @@ import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.SegmentCondition;
 import io.segmentme.core.service.dto.analysis.DebugResult;
 import io.segmentme.core.service.analysis.ContextValueHolder;
-import io.segmentme.core.service.rule.common.SegmentAnalysisService;
+import io.segmentme.core.service.segment.common.SegmentAnalysisService;
 import lombok.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

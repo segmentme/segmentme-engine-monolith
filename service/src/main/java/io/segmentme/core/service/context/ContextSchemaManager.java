@@ -19,7 +19,7 @@ import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import io.segmentme.core.service.exception.ContextSchemaManagerException;
 import io.segmentme.core.service.exception.ContextSchemaValidationException;
 import io.segmentme.core.service.exception.error.ContextMangerErrors;
-import io.segmentme.core.service.rule.SegmentManager;
+import io.segmentme.core.service.segment.SegmentManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

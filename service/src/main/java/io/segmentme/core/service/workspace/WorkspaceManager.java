@@ -6,7 +6,7 @@ import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.context.ContextSchemaManager;
 import io.segmentme.core.service.converter.WorkspaceHolderConverter;
 import io.segmentme.core.service.dto.WorkspaceHolder;
-import io.segmentme.core.service.rule.SegmentManager;
+import io.segmentme.core.service.segment.SegmentManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;

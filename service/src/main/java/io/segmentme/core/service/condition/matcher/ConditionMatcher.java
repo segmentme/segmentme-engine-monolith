@@ -25,7 +25,9 @@ public class ConditionMatcher {
 
         var result = conditionMatchResult == condition.isMatchResult();
 
-        debugWorm.map(it -> it.apply(condition.getContextId())).ifPresent(it -> it.setMatchResult(result).setConditionMatchResult(conditionMatchResult));
+        debugWorm.map(it -> it.apply(condition.getContextId())).ifPresent(it ->
+                it.setMatchResult(result).setConditionMatchResult(conditionMatchResult).setConditionName(condition.getName())
+        );
 
         return result;
     }

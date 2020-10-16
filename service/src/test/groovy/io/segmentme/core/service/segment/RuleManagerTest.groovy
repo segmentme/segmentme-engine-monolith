@@ -1,4 +1,4 @@
-package io.segmentme.core.service.rule
+package io.segmentme.core.service.segment
 
 
 import com.fasterxml.jackson.databind.ObjectMapper

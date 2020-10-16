@@ -5,7 +5,7 @@ import io.segmentme.core.db.domain.condition.SegmentCondition;
 import io.segmentme.core.db.service.condition.ConditionService;
 import io.segmentme.core.service.converter.ConditionConverter;
 import io.segmentme.core.service.dto.analysis.conditions.AbstractConditionDto;
-import io.segmentme.core.service.rule.SegmentManager;
+import io.segmentme.core.service.segment.SegmentManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;

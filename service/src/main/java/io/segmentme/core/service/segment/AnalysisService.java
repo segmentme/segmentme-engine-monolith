@@ -1,4 +1,4 @@
-package io.segmentme.core.service.rule;
+package io.segmentme.core.service.segment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.db.domain.context.ContextSchema;
@@ -10,7 +10,7 @@ import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.ContextValuesExtractor;
 import io.segmentme.core.service.dto.analysis.*;
-import io.segmentme.core.service.rule.common.SegmentAnalysisService;
+import io.segmentme.core.service.segment.common.SegmentAnalysisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

@@ -21,7 +21,6 @@ abstract class SimpleConditionMatcher<T extends SimpleCondition<?>> extends Abst
         } catch (ClassCastException ex) {
             log.warn("Unable cast property {} in context {} ,because {}", condition.getCriteria(), context, ex.getMessage());
             debugWorm.map(it -> it.apply(condition.getContextId())).ifPresent(it -> it.setCriteria(condition.getCriteria()).setErrorMessage(ex.getMessage()));
-            throw ex;
         } catch (Exception ex) {
             log.warn("Unable to resolve property {} in context {} ,because {}", condition.getCriteria(), context, ex.getMessage());
             debugWorm.map(it -> it.apply(condition.getContextId())).ifPresent(it -> it.setCriteria(condition.getCriteria()).setErrorMessage(ex.getMessage()));
