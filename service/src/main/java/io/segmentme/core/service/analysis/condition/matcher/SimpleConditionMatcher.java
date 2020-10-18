@@ -20,6 +20,7 @@ abstract class SimpleConditionMatcher<T extends SimpleCondition<?>> extends Abst
         } catch (ClassCastException ex) {
             log.warn("Unable cast property {} in context {} ,because {}", condition.getCriteria(), context, ex.getMessage());
             Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
+            return !condition.isMatchResult();
         } catch (Exception ex) {
             log.warn("Unable to resolve property {} in context {} ,because {}", condition.getCriteria(), context, ex.getMessage());
             Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
@@ -31,6 +32,12 @@ abstract class SimpleConditionMatcher<T extends SimpleCondition<?>> extends Abst
             return false;
         }
 
-        return match(condition, propertyValue);
+        try {
+          return match(condition, propertyValue);
+        } catch (Exception ex) {
+            log.warn("Can't match property {} in context {} , because {}", condition.getCriteria(), context, ex.getMessage());
+            Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
+            return !condition.isMatchResult();
+        }
     }
 }

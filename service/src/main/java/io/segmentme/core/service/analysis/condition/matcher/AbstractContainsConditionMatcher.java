@@ -8,9 +8,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,7 +23,7 @@ public abstract class AbstractContainsConditionMatcher extends AbstractCondition
         } catch (ClassCastException ex) {
             log.warn("Unable cast property {} in context {} ,because {}", condition.getCriteria(), context, ex.getMessage());
             Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
-            throw ex;
+            return !condition.isMatchResult();
         } catch (Exception ex) {
             log.warn("Unable to resolve property {} in context {} ,because {}", condition.getCriteria(), context, ex.getMessage());
             Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
@@ -37,14 +35,22 @@ public abstract class AbstractContainsConditionMatcher extends AbstractCondition
             return false;
         }
 
-        Comparable<Object> objectComparable = propertyValue.stream().findFirst().get();
+        try {
 
-        List<Comparable<Object>> castedConditionValues = condition.getValue()
-            .stream()
-            .map(conditionValue -> castJsonProperty(conditionValue, objectComparable))
-            .collect(Collectors.toList());
+            Comparable<Object> objectComparable = propertyValue.stream().findFirst().get();
 
-        return match(propertyValue, castedConditionValues);
+            List<Comparable<Object>> castedConditionValues = condition.getValue()
+                    .stream()
+                    .map(conditionValue -> castJsonProperty(conditionValue, objectComparable))
+                    .collect(Collectors.toList());
+
+            return match(propertyValue, castedConditionValues);
+            
+        } catch (Exception ex) {
+            log.warn("Can't match property {} in context {} , because {}", condition.getCriteria(), context, ex.getMessage());
+            Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
+            return !condition.isMatchResult();
+        }
     }
 
     abstract boolean match(Collection<Comparable<Object>> propertyValue, List<Comparable<Object>> castedConditionValues);

@@ -225,9 +225,9 @@
             {
               "id": "7",
               "type": "IN",
-              "criteria": "user.unknownProperty",
+              "criteria": "user.birthDate",
               "value": [
-                "test@email1.com"
+                "123123dsadasd34q2213123213"
               ],
               "nullValid": false,
               "matchResult": true

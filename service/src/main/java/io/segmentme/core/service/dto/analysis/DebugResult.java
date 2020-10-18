@@ -25,5 +25,4 @@ public class DebugResult {
     private ContextSchema.InlineType criteriaType;
 
     private Object value;
-
 }

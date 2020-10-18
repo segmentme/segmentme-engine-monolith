@@ -4,7 +4,7 @@
     "firstName": "TestFirstName",
     "email": "test@email.com",
     "age": 40,
-    "birthDate": "22-10-1980",
+    "birthDate": "1966-06-06T00:00:00Z",
     "details": {
       "registeredDate": "2000-06-06T00:00:00Z",
       "address": [

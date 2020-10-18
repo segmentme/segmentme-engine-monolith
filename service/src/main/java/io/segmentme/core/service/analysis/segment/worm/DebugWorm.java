@@ -49,8 +49,8 @@ public class DebugWorm implements BiConsumer<AbstractCondition, Object> {
             String clearPath = criteria.replaceAll(ARRAY_INDEX_CLEANER, StringUtils.EMPTY);
 
             debugResult.setValue(CriteriaValueLocator.getCriteriaValue(criteria, contextValueHolder));
+            debugResult.setCriteria(criteria);
             debugResult.setCriteriaType(contextValueHolder.getSchema().getInlinePath().get(clearPath));
-
         }
 
 
