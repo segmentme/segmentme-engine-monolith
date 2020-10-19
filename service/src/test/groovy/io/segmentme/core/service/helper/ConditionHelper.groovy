@@ -10,28 +10,16 @@ class ConditionHelper {
         condition.criteria = "root.field.exist"
 
         condition.type = type
-        condition.name = UUID.randomUUID().toString()
         condition.description = UUID.randomUUID().toString()
         condition.matchResult = true
-        condition.embedded = isEmbedded
-
-        if (condition instanceof AbstractCondition) {
-            condition.contextId == UUID.randomUUID().toString()
-        }
         return condition
     }
 
     static def fillCondition(Object condition, Map args = [:]) {
         condition.type = args["type"]
-        condition.name = args["name"]
         condition.description = args["description"] ?: UUID.randomUUID().toString()
         condition.criteria = args["criteria"]
         condition.matchResult = args["matchResult"] ?: true
-        condition.embedded = args["embedded"] ?: false
-
-        if (condition instanceof AbstractCondition) {
-            condition.contextId == args["contextId"] ?: UUID.randomUUID().toString()
-        }
         return condition
     }
 }

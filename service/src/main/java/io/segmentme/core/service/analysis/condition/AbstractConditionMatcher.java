@@ -1,4 +1,4 @@
-package io.segmentme.core.service.analysis.condition.matcher;
+package io.segmentme.core.service.analysis.condition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
@@ -40,13 +40,13 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
             return !condition.isMatchResult();
         }
 
-        Boolean aBoolean = checkForNullValid(condition, actualValue);
-        if (aBoolean != null) {
-            return aBoolean;
-        }
         try {
-            return match(getExpectedValue(condition, actualValue), (P) actualValue);
-        } catch (Exception ex) {
+            Boolean aBoolean = checkForNullValid(condition, actualValue);
+            if (aBoolean != null) {
+                return aBoolean;
+            }
+            return match(getExpectedValue(condition, actualValue), actualValue);
+        }  catch (Exception ex) {
             log.warn("Can't match property {} in context {} , because {}", condition.getCriteria(), context, ex.getMessage());
             Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
             return !condition.isMatchResult();

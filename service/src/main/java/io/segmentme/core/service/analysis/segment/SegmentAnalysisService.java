@@ -3,7 +3,7 @@ package io.segmentme.core.service.analysis.segment;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.service.analysis.ContextValueHolder;
-import io.segmentme.core.service.analysis.condition.matcher.ConditionMatcher;
+import io.segmentme.core.service.analysis.condition.ConditionMatcher;
 import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
 import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
 import lombok.RequiredArgsConstructor;

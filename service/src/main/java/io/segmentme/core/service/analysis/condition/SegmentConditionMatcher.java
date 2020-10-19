@@ -1,8 +1,9 @@
-package io.segmentme.core.service.analysis.condition.matcher;
+package io.segmentme.core.service.analysis.condition;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.SegmentCondition;
 import io.segmentme.core.db.domain.segment.Segment;
+import io.segmentme.core.db.repository.SegmentRepository;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.segment.SegmentAnalysisService;
 import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
@@ -24,6 +25,8 @@ public class SegmentConditionMatcher extends AbstractConditionMatcher<SegmentCon
 
     private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.SEGMENT;
 
+    private final SegmentRepository analysisRuleRepository;
+
     @Lazy
     private final ConditionMatcher conditionMatcher;
 
@@ -33,9 +36,12 @@ public class SegmentConditionMatcher extends AbstractConditionMatcher<SegmentCon
 
     @Override
     public boolean match(SegmentCondition condition, ContextValueHolder context, WormConsumer worm) {
-        boolean conditionMatchResult = analysisRuleService.analyze(context, condition.getSegment(), worm).isValue();
+        var segment = analysisRuleRepository.findById(condition.getValue())
+                .orElseThrow(() -> new RuntimeException(String.format("Segment with id %s doesn't exist", condition.getValue())));
 
-        boolean result = conditionMatchResult == condition.isMatchResult();
+        var conditionMatchResult = analysisRuleService.analyze(context, segment, worm).isValue();
+
+        var result = conditionMatchResult == condition.isMatchResult();
 
         Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, conditionMatchResult));
 

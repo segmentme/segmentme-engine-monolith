@@ -17,16 +17,16 @@ import java.util.function.BiConsumer;
 @Data
 @Slf4j
 public class DebugWorm implements BiConsumer<AbstractCondition, Object> {
-    private Map<String, DebugResult> debugResultMap = new HashMap<>();
+    private Map<Integer, DebugResult> debugResultMap = new HashMap<>();
     private final ContextValueHolder contextValueHolder;
     private final String ARRAY_INDEX_CLEANER = "\\[[0-9]+]";
 
     @Override
     public void accept(AbstractCondition condition, Object result) {
-        var identifier = Optional.ofNullable(condition.getId()).orElse(condition.getName());
 
-        var debugResult = debugResultMap.computeIfAbsent(identifier, key -> new DebugResult());
-        debugResult.setConditionId(condition.getId()).setConditionName(condition.getName());
+        //TODO need to change: search by hash
+
+        var debugResult = debugResultMap.computeIfAbsent(condition.hashCode(), key -> new DebugResult());
 
         if (result instanceof Exception) {
             debugResult.setErrorMessage(((Exception) result).getMessage());
@@ -37,8 +37,7 @@ public class DebugWorm implements BiConsumer<AbstractCondition, Object> {
 
         if (condition instanceof SegmentCondition) {
             SegmentCondition segmentCondition = (SegmentCondition) condition;
-            debugResult.setSegmentId(segmentCondition.getSegment().getId());
-            debugResult.setSegmentName(segmentCondition.getSegment().getName());
+            debugResult.setSegmentId(segmentCondition.getValue());
             if (result instanceof Boolean) {
                 debugResult.setFinalMatchResult((Boolean) result);
             }

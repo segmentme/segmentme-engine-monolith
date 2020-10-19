@@ -2,11 +2,19 @@ package io.segmentme.core.service.analysis.segment
 
 class SegmentTest extends BaseRuleTest {
 
+    def setup() {
+        saveAllSegments()
+    }
+
+    def cleanup() {
+        deleteAllSegments()
+    }
+
     def "analyse segment #name - should be #isMatch"() {
         given:
-        def segments = getSegment(name)
+        def segment = getSegmentsByName(name)
         and:
-        def result = analysisService.analyze(context, segments)
+        def result = analysisService.analyze(context, Arrays.asList(segment))
         expect:
         def singleResult = resultValue(name, result)
         singleResult.value == isMatch
@@ -25,18 +33,20 @@ class SegmentTest extends BaseRuleTest {
         "FIRST_POSTAL_CODE_CONTAINS_ONLY"    | true
         "NOT_FIRST_POSTAL_CODE_CONTAINS_ANY" | false
         "SECOND_PHONE_CONTAINS_ONLY"         | true
-        "SECOND_PHONE_CONTAINS_ONLY_SEGMENT" | true
+        "SECOND_PHONE_CONTAINS_ONLY_SEGMENT" | false
     }
 
 
     def "debug segment #name - should be #isMatch"() {
         given:
-        def segment = getSegment(name).get(0)
-        segment.setId(UUID.randomUUID().toString())
+        def segment = getSegmentsByName(name)
         and:
         def result = analysisService.debug(context, segment)
         expect:
         result.debugState != null
+        result.debugState.size() == 3
+        def error = result.debugState.values().stream().filter(it -> it.getErrorMessage() != null).findFirst().get();
+        error.criteria == "user.date"
         where:
         name                                 | isMatch
         "SECOND_PHONE_CONTAINS_ONLY_SEGMENT" | true

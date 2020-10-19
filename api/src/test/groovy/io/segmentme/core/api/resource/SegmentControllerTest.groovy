@@ -3,7 +3,7 @@ package io.segmentme.core.api.resource
 import com.fasterxml.jackson.databind.JsonNode
 import io.segmentme.core.api.common.BaseControllerTest
 import io.segmentme.core.db.domain.workpsace.Workspace
-import io.segmentme.core.db.repository.AbstractConditionRepository
+
 import io.segmentme.core.db.repository.SegmentRepository
 import io.segmentme.core.service.analysis.ContextValueHolder
 import io.segmentme.core.service.analysis.ContextValuesExtractorImpl
@@ -36,9 +36,6 @@ class SegmentControllerTest extends BaseControllerTest {
     @Autowired
     private SegmentRepository analysisRuleRepository
 
-    @Autowired
-    private AbstractConditionRepository abstractConditionRepository
-
     @Value("classpath:rules/schema.json")
     protected Resource schema
 
@@ -54,7 +51,6 @@ class SegmentControllerTest extends BaseControllerTest {
     private ContextValueHolder context
 
     def cleanup() {
-        abstractConditionRepository.deleteAll()
         analysisRuleRepository.deleteAll()
         def json = objectMapper.readValue(schema.getInputStream(), JsonNode.class)
         context = contextValuesExtractor.extractValues(json, contextSchemaResolver.resolve(new Workspace().setConfiguration(defaultWorkspaceConfiguration()), json), defaultWorkspaceConfiguration())
@@ -62,7 +58,7 @@ class SegmentControllerTest extends BaseControllerTest {
 
     def "save segment with segmentCondition with name: #name"() {
         given:
-        def ruleToSave = getSegment(name);
+        def ruleToSave = getSegment(name)
         def response = mockMvc.perform(auth(post("/segment/${randomUUID().toString()}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(ruleToSave))
@@ -78,8 +74,6 @@ class SegmentControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath('$.conditions', hasSize(ruleToSave.conditions.size())))
                 .andExpect(jsonPath('$.conditions[0].type').value("SEGMENT"))
                 .andExpect(jsonPath('$.conditions[0].name').value("SEGMENT_CONDITION"))
-                .andExpect(jsonPath('$.conditions[0].segment.conditions[0].type').value("IN"))
-                .andExpect(jsonPath('$.conditions[0].segment.conditions[0].criteria').value("user.email"))
         where:
         name                                 | _
         "SECOND_PHONE_CONTAINS_ONLY_SEGMENT" | _

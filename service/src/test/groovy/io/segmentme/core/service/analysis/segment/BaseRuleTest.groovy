@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 
-import java.util.stream.Collectors
-
 import static io.segmentme.core.service.helper.WorkspaceConfigurationHelper.defaultWorkspaceConfiguration
 
 abstract class BaseRuleTest extends BaseTestWithContext {
@@ -40,8 +38,8 @@ abstract class BaseRuleTest extends BaseTestWithContext {
     @Autowired
     private ContextSchemaResolver contextSchemaResolver
 
-    @SpringBean
-    protected SegmentRepository analysisRuleRepository = Mock(SegmentRepository.class)
+    @Autowired
+    protected SegmentRepository analysisRuleRepository;
 
     private ContextValueHolder context
 
@@ -61,9 +59,18 @@ abstract class BaseRuleTest extends BaseTestWithContext {
         return this.context
     }
 
-    protected getSegment(String segmentName) {
-        return resourceHolder.getSegments().stream().filter(it -> match(it, segmentName)).collect(Collectors.toList())
+    protected saveAllSegments() {
+        analysisRuleRepository.saveAll(resourceHolder.getSegments())
     }
+
+    protected deleteAllSegments() {
+        analysisRuleRepository.deleteAll()
+    }
+
+    protected getSegmentsByName(String name) {
+        return analysisRuleRepository.findAll().stream().filter(it -> it.getName().equals(name)).findFirst().orElse(null)
+    }
+
 
     static boolean match(Segment segment, String segmentName) {
         return segment.getName().equalsIgnoreCase(segmentName)

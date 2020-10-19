@@ -1,7 +1,7 @@
-package io.segmentme.core.service.analysis.condition.matcher;
+package io.segmentme.core.service.analysis.condition;
 
-import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.ArrayCondition;
+import io.segmentme.core.db.domain.condition.AbstractCondition;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 

@@ -3,7 +3,6 @@ package io.segmentme.core.service.analysis.segment;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.service.rule.SegmentService;
-import io.segmentme.core.service.analysis.condition.ConditionManager;
 import io.segmentme.core.service.converter.SegmentConverter;
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +19,6 @@ import java.util.stream.Collectors;
 public class SegmentManager {
 
     private final SegmentService segmentService;
-
-    private final ConditionManager conditionManager;
 
     public SegmentDto save(SegmentDto rule, String contextId, String integrationPointKey) {
         Segment analysisRule = SegmentConverter.of(rule, contextId, integrationPointKey);
@@ -47,13 +44,7 @@ public class SegmentManager {
     }
 
     public void delete(String ruleId) {
-        segmentService.findById(ruleId).ifPresent(it -> {
-            Set<Segment> rulesToDelete = new HashSet<>(Collections.singletonList(it));
-
-            List<AbstractCondition> conditions = rulesToDelete.stream().map(Segment::getConditions).flatMap(Collection::stream).collect(Collectors.toList());
-            conditionManager.deleteEmbeddedConditions(conditions);
-            segmentService.delete(it);
-        });
+        segmentService.deleteById(ruleId);
     }
 
     public void unlinkFromIntegrationPoint(String integrationPointKey) {
@@ -67,6 +58,5 @@ public class SegmentManager {
         List<Segment> contextRules = segmentService.findByContextId(contextId);
         contextRules.forEach(it -> it.setContextId(null));
         segmentService.update(contextRules);
-
     }
 }

@@ -12,7 +12,7 @@ import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.ContextValuesExtractor;
-import io.segmentme.core.service.analysis.condition.ConditionManager;
+import io.segmentme.core.service.analysis.CriteriaValueLocator;
 import io.segmentme.core.service.analysis.segment.SegmentManager;
 import io.segmentme.core.service.converter.ContextSchemaConverter;
 import io.segmentme.core.service.dto.context.ContextSchemaHolder;
@@ -43,8 +43,6 @@ public class ContextSchemaManager {
     private final WorkspaceService workspaceService;
 
     private final SegmentManager segmentManager;
-
-    private final ConditionManager conditionManager;
 
     private final ContextValuesExtractor contextValuesExtractor;
 
@@ -123,11 +121,8 @@ public class ContextSchemaManager {
     }
 
     public void deleteContextSchema(String contextSchemaId) {
-
         contextSchemaService.deleteById(contextSchemaId);
         segmentManager.unlinkFromContext(contextSchemaId);
-        conditionManager.unlinkFromContextId(contextSchemaId);
-
     }
 
     public ContextSchemaHolder getById(String contextSchemaId) {

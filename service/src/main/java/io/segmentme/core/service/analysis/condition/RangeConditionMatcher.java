@@ -1,4 +1,4 @@
-package io.segmentme.core.service.analysis.condition.matcher;
+package io.segmentme.core.service.analysis.condition;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.RangeCondition;

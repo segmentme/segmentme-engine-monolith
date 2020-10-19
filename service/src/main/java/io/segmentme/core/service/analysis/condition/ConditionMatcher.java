@@ -1,13 +1,11 @@
-package io.segmentme.core.service.analysis.condition.matcher;
+package io.segmentme.core.service.analysis.condition;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,7 +30,7 @@ public class ConditionMatcher {
     }
 
     @SuppressWarnings("unchecked")
-    private Matcher<AbstractCondition> findMatcher(AbstractCondition.ConditionType type) {
+    private Matcher<AbstractCondition> findMatcher(io.segmentme.core.db.domain.condition.AbstractCondition.ConditionType type) {
         Matcher<? extends AbstractCondition> matcher = conditionServices.computeIfAbsent(type, key -> {
             throw new IllegalStateException("Unknown condition service type " + key);
         });

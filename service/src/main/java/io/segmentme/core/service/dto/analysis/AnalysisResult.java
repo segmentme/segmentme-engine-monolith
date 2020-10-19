@@ -14,6 +14,6 @@ public class AnalysisResult {
     private List<SegmentAnalysisResult> segmentAnalysisResults;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Map<String, DebugResult>  debugState;
+    private Map<Integer, DebugResult>  debugState;
 
 }

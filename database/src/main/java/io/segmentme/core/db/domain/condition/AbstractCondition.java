@@ -7,12 +7,9 @@ import io.segmentme.core.db.domain.context.DbObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 
 @Data
-@Document("condition")
-@EqualsAndHashCode(callSuper = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes(value = {
         @Type(name = "IN", value = ArrayCondition.class),
@@ -26,9 +23,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
         @Type(name = "CONTAINS_ANY", value = ArrayCondition.class),
         @Type(name = "CONTAINS_ONLY", value = ArrayCondition.class)
 })
-public abstract class AbstractCondition extends DbObject {
-
-    private String name;
+public abstract class AbstractCondition {
 
     private String criteria;
 
@@ -37,11 +32,6 @@ public abstract class AbstractCondition extends DbObject {
     private ConditionType type;
 
     private boolean matchResult = true;
-
-    private boolean embedded;
-
-    @Indexed
-    private String contextId;
 
     public enum ConditionType {
         IN, RANGE, GT, GTE, LT, LTE, SEGMENT, CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY

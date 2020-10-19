@@ -66,7 +66,7 @@
       {
         "type": "LT",
         "criteria": "user.birthDate",
-        "value": "22-10-1982",
+        "value": "1961-06-06T00:00:00Z",
         "nullValid": false,
         "matchResult": true
       }
@@ -80,7 +80,7 @@
       {
         "type": "LTE",
         "criteria": "user.birthDate",
-        "value": "22-10-1980",
+        "value": "1961-06-06T00:00:00Z",
         "nullValid": false,
         "matchResult": true
       }
@@ -193,48 +193,35 @@
     "name": "SECOND_PHONE_CONTAINS_ONLY_SEGMENT",
     "conditions": [
       {
-        "id": "2",
         "type": "SEGMENT",
-        "name": "SEGMENT_CONDITION",
         "matchResult": true,
-        "segment":   {
-          "id": "3",
-          "aggregation": "AND",
-          "name": "USER EMAIL IN SEGMENT",
-          "conditions": [
-            {
-              "id": "4",
-              "type": "IN",
-              "criteria": "user.email",
-              "value": [
-                "test@email.com"
-              ],
-              "nullValid": false,
-              "matchResult": true
-            },
-            {
-              "id": "6",
-              "type": "IN",
-              "criteria": "user.email",
-              "value": [
-                "2222222222222222"
-              ],
-              "nullValid": false,
-              "matchResult": false
-            },
-            {
-              "id": "7",
-              "type": "IN",
-              "criteria": "user.birthDate",
-              "value": [
-                "123123dsadasd34q2213123213"
-              ],
-              "nullValid": false,
-              "matchResult": true
-            }
-          ],
-          "matchResult": true
-        }
+        "value": "3"
+      }
+    ],
+    "matchResult": true
+  },
+  {
+    "id": "3",
+    "aggregation": "AND",
+    "name": "USER EMAIL IN SEGMENT",
+    "conditions": [
+      {
+        "type": "IN",
+        "criteria": "user.email",
+        "value": [
+          "test@email.com"
+        ],
+        "nullValid": false,
+        "matchResult": true
+      },
+      {
+        "type": "IN",
+        "criteria": "user.date",
+        "value": [
+          "123123dsadasd34q2213123213"
+        ],
+        "nullValid": false,
+        "matchResult": true
       }
     ],
     "matchResult": true
