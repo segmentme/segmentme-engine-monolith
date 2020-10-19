@@ -11,11 +11,18 @@ class RangeConditionMatcher extends SimpleConditionMatcher<RangeCondition> {
 
     private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.RANGE;
 
+
     @Override
-    protected boolean match(RangeCondition condition, Comparable<Object> value) {
+    protected Comparable<Object> getExpectedValue(RangeCondition condition, Comparable<Object> actualValue) {
         RangeCondition.RangeValue rangeValue = condition.getValue();
-        Comparable<Object> first = castJsonProperty(rangeValue.getMin(), value);
-        Comparable<Object> last = castJsonProperty(rangeValue.getMax(), value);
-        return value.compareTo(first) >= 0 && value.compareTo(last) <= 0;
+        Comparable<Object> first = castJsonProperty(rangeValue.getMin(), actualValue);
+        Comparable<Object> last = castJsonProperty(rangeValue.getMax(), actualValue);
+        return new RangeCondition.RangeValue().setMin(first).setMax(last);
+    }
+
+    @Override
+    boolean match(Comparable<Object> expected, Comparable<Object> actual) {
+        RangeCondition.RangeValue rangeValue = (RangeCondition.RangeValue) expected;
+        return actual.compareTo(rangeValue.getMin()) >= 0 && actual.compareTo(rangeValue.getMax()) <= 0;
     }
 }

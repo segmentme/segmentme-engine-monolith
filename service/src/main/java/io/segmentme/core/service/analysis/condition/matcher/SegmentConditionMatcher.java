@@ -2,6 +2,7 @@ package io.segmentme.core.service.analysis.condition.matcher;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.SegmentCondition;
+import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.segment.SegmentAnalysisService;
 import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
@@ -19,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class SegmentConditionMatcher extends AbstractConditionMatcher<SegmentCondition> {
+public class SegmentConditionMatcher extends AbstractConditionMatcher<SegmentCondition, Segment, String> {
 
     private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.SEGMENT;
 
@@ -40,5 +41,20 @@ public class SegmentConditionMatcher extends AbstractConditionMatcher<SegmentCon
 
         return result;
 
+    }
+
+    @Override
+    protected Segment getExpectedValue(SegmentCondition condition, String actualValue) {
+        return null;
+    }
+
+    @Override
+    Boolean checkForNullValid(SegmentCondition condition, String value) {
+        return null;
+    }
+
+    @Override
+    boolean match(Segment expected, String actual) {
+        return false;
     }
 }

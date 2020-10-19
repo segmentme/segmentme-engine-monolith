@@ -15,6 +15,23 @@ public abstract class AbstractManagerException extends RuntimeException {
 
     private String code;
 
+    public AbstractManagerException() {
+
+    }
+
+    public AbstractManagerException(String code) {
+        setCode(code);
+    }
+
+    public AbstractManagerException(Throwable cause, String code) {
+        super(cause);
+        setCode(code);
+    }
+
+    public AbstractManagerException(Throwable cause) {
+        super(cause);
+    }
+
     public AbstractManagerException setCode(String code) {
         this.code = code;
         this.severity = Errors.getSeverity(code);

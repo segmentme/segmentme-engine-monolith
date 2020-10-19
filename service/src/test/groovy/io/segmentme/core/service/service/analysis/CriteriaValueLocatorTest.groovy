@@ -5,6 +5,8 @@ import io.segmentme.core.service.analysis.ContextValuesExtractorImpl
 import io.segmentme.core.service.analysis.CriteriaValueLocator
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
+import io.segmentme.core.service.exception.CriteriaValueLocatorException
+import io.segmentme.core.service.exception.error.CriteriaValueLocatorErrors
 import spock.lang.Specification
 
 import java.time.*
@@ -29,12 +31,17 @@ class CriteriaValueLocatorTest extends Specification {
         def json = resourceHolder.getValidJsonPayloadConfiguration()
         def result = new ContextValuesExtractorImpl().extractValues(json, schema, defaultWorkspaceConfiguration())
         expect:
-        def value = CriteriaValueLocator.getCriteriaValue(criteria, result)
-        if (expectedValue instanceof Collection) {
-            assert (value as Collection) == expectedValue
-        } else {
-            assert value == expectedValue
+        try {
+            def value = CriteriaValueLocator.getCriteriaValue(criteria, result)
+            if (expectedValue instanceof Collection) {
+                assert (value as Collection) == expectedValue
+            } else {
+                assert value == expectedValue
+            }
+        } catch (Throwable ex) {
+            assert ex == expectedValue
         }
+
         where:
         criteria                                    || expectedValue
         "user.email"                                || "vladislavkondratenko@coherentsolutions.com"
@@ -65,7 +72,7 @@ class CriteriaValueLocatorTest extends Specification {
         "objectArrays[1].subObjects.subObjectId[0]" || ["id3"]
         "objectArrays[0].subObjects.array[0]"       || ["a1"]
         "objectArrays[0].subObjects[0].array"       || ["a1", "a2", "a3"]
-        "unknownvalue"                              || null
-        "objectArrays[3].subObjects.subObjectId[0]" || null
+        "unknownvalue"                              || new CriteriaValueLocatorException("unknownvalue", null, CriteriaValueLocatorErrors.CRITERIA_NOT_FOUND)
+        "objectArrays[3].subObjects.subObjectId[0]" || new CriteriaValueLocatorException("objectArrays.subObjects.subObjectId", new IndexOutOfBoundsException(3), CriteriaValueLocatorErrors.UNEXPECTED_LOCATOR_ERROR)
     }
 }

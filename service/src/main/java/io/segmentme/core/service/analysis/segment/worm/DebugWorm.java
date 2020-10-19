@@ -4,13 +4,14 @@ import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.SegmentCondition;
 import io.segmentme.core.db.domain.condition.SimpleCondition;
 import io.segmentme.core.service.analysis.ContextValueHolder;
-import io.segmentme.core.service.analysis.CriteriaValueLocator;
 import io.segmentme.core.service.dto.analysis.DebugResult;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 @Data
@@ -48,9 +49,10 @@ public class DebugWorm implements BiConsumer<AbstractCondition, Object> {
             String criteria = simpleCondition.getCriteria();
             String clearPath = criteria.replaceAll(ARRAY_INDEX_CLEANER, StringUtils.EMPTY);
 
-            debugResult.setValue(CriteriaValueLocator.getCriteriaValue(criteria, contextValueHolder));
-            debugResult.setCriteria(criteria);
+            debugResult.setValue(contextValueHolder.getValue(criteria));
             debugResult.setCriteriaType(contextValueHolder.getSchema().getInlinePath().get(clearPath));
+            debugResult.setCriteria(criteria);
+
         }
 
 

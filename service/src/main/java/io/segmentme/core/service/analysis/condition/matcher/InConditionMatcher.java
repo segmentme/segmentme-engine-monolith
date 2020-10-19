@@ -5,14 +5,29 @@ import io.segmentme.core.db.domain.condition.ArrayCondition;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Getter
 @Service
-class InConditionMatcher extends SimpleConditionMatcher<ArrayCondition> {
+class InConditionMatcher extends AbstractConditionMatcher<ArrayCondition, List<Object>, Comparable<Object>> {
 
     private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.IN;
 
     @Override
-    public boolean match(ArrayCondition condition, Comparable<Object> value) {
-        return condition.getValue().stream().map(it -> castJsonProperty(it, value)).anyMatch(it -> it.compareTo(value) == 0);
+    protected List<Object> getExpectedValue(ArrayCondition condition, Comparable<Object> actualValue) {
+        return condition.getValue();
+    }
+
+    @Override
+    Boolean checkForNullValid(ArrayCondition condition, Comparable<Object> value) {
+        if (value != null) {
+            return null;
+        }
+        return condition.isNullValid();
+    }
+
+    @Override
+    boolean match(List<Object> expected, Comparable<Object> actual) {
+        return expected.stream().map(it -> castJsonProperty(it, actual)).anyMatch(it -> it.compareTo(actual) == 0);
     }
 }

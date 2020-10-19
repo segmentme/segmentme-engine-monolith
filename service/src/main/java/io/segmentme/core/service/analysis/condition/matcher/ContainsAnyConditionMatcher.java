@@ -1,12 +1,13 @@
 package io.segmentme.core.service.analysis.condition.matcher;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.List;
 
 @Data
 @Slf4j
@@ -17,8 +18,9 @@ public class ContainsAnyConditionMatcher extends AbstractContainsConditionMatche
 
     private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.CONTAINS_ANY;
 
+
     @Override
-    boolean match(Collection<Comparable<Object>> propertyValue, List<Comparable<Object>> castedConditionValues) {
-        return propertyValue.stream().anyMatch(it -> castedConditionValues.stream().anyMatch(it::equals));
+    boolean match(Collection<Comparable<Object>> expected, Collection<Comparable<Object>> actual) {
+        return actual.stream().anyMatch(it -> expected.stream().anyMatch(it::equals));
     }
 }

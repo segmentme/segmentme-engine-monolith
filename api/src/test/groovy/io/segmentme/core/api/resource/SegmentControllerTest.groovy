@@ -7,17 +7,15 @@ import io.segmentme.core.db.repository.AbstractConditionRepository
 import io.segmentme.core.db.repository.SegmentRepository
 import io.segmentme.core.service.analysis.ContextValueHolder
 import io.segmentme.core.service.analysis.ContextValuesExtractorImpl
+import io.segmentme.core.service.analysis.segment.SegmentManager
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
 import io.segmentme.core.service.dto.analysis.conditions.ArrayConditionDto
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto
-import io.segmentme.core.service.rule.SegmentManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
-
-import java.util.stream.Collectors
 
 import static io.segmentme.core.db.domain.condition.AbstractCondition.ConditionType.IN
 import static io.segmentme.core.service.helper.ConditionHelper.fillCondition

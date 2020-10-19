@@ -12,7 +12,7 @@ class LteConditionMatcher extends SimpleConditionMatcher<SingleCondition> {
     private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.LTE;
 
     @Override
-    protected boolean match(SingleCondition condition, Comparable<Object> value) {
-        return value.compareTo(castJsonProperty(condition.getValue(), value)) <= 0;
+    boolean match(Comparable<Object> expected, Comparable<Object> actual) {
+        return actual.compareTo(expected) <= 0;
     }
 }

@@ -1,63 +1,35 @@
 package io.segmentme.core.service.analysis.condition.matcher;
 
 import io.segmentme.core.db.domain.condition.ArrayCondition;
-import io.segmentme.core.service.analysis.ContextValueHolder;
-import io.segmentme.core.service.analysis.CriteriaValueLocator;
-import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.*;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class AbstractContainsConditionMatcher extends AbstractConditionMatcher<ArrayCondition> {
+public abstract class AbstractContainsConditionMatcher extends AbstractConditionMatcher<ArrayCondition, Collection<Comparable<Object>>, Collection<Comparable<Object>>> {
+
 
     @Override
-    public boolean match(ArrayCondition condition, ContextValueHolder context, WormConsumer worm) {
-        Collection<Comparable<Object>> propertyValue = null;
+    protected Collection<Comparable<Object>> getExpectedValue(ArrayCondition condition, Collection<Comparable<Object>> actualValue) {
+        Comparable<Object> objectComparable = actualValue.stream().findFirst().get();
 
-        try {
-            propertyValue = getCollection(condition.getCriteria(), context);
-        } catch (ClassCastException ex) {
-            log.warn("Unable cast property {} in context {} ,because {}", condition.getCriteria(), context, ex.getMessage());
-            Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
-            return !condition.isMatchResult();
-        } catch (Exception ex) {
-            log.warn("Unable to resolve property {} in context {} ,because {}", condition.getCriteria(), context, ex.getMessage());
-            Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
-        }
-
-        if (CollectionUtils.isEmpty(propertyValue) && condition.isNullValid()) {
-            return true;
-        } else if (CollectionUtils.isEmpty(propertyValue) && !condition.isNullValid()) {
-            return false;
-        }
-
-        try {
-
-            Comparable<Object> objectComparable = propertyValue.stream().findFirst().get();
-
-            List<Comparable<Object>> castedConditionValues = condition.getValue()
-                    .stream()
-                    .map(conditionValue -> castJsonProperty(conditionValue, objectComparable))
-                    .collect(Collectors.toList());
-
-            return match(propertyValue, castedConditionValues);
-            
-        } catch (Exception ex) {
-            log.warn("Can't match property {} in context {} , because {}", condition.getCriteria(), context, ex.getMessage());
-            Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
-            return !condition.isMatchResult();
-        }
+        return condition.getValue()
+            .stream()
+            .map(conditionValue -> castJsonProperty(conditionValue, objectComparable))
+            .collect(Collectors.toList());
     }
 
-    abstract boolean match(Collection<Comparable<Object>> propertyValue, List<Comparable<Object>> castedConditionValues);
+    @Override
+    Boolean checkForNullValid(ArrayCondition condition, Collection<Comparable<Object>> value) {
+        boolean empty = CollectionUtils.isEmpty(value);
 
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
-    private Collection<Comparable<Object>> getCollection(String propertyName, ContextValueHolder context) {
-        return (Collection<Comparable<Object>>) CriteriaValueLocator.getCriteriaValue(propertyName, context);
+        if (!empty) {
+            return null;
+        }
+
+
+        return condition.isNullValid();
     }
 }

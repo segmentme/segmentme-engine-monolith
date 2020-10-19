@@ -30,6 +30,8 @@ public abstract class AbstractCondition extends DbObject {
 
     private String name;
 
+    private String criteria;
+
     private String description;
 
     private ConditionType type;

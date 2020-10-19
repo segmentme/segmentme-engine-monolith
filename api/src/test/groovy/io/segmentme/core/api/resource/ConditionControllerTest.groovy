@@ -2,7 +2,7 @@ package io.segmentme.core.api.resource
 
 import io.segmentme.core.api.common.BaseControllerTest
 import io.segmentme.core.db.repository.AbstractConditionRepository
-import io.segmentme.core.service.condition.ConditionManager
+import io.segmentme.core.service.analysis.condition.ConditionManager
 import io.segmentme.core.service.dto.analysis.conditions.AbstractConditionDto
 import io.segmentme.core.service.dto.analysis.conditions.ArrayConditionDto
 import io.segmentme.core.service.dto.analysis.conditions.SingleConditionDto
