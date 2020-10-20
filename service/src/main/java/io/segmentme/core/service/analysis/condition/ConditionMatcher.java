@@ -18,15 +18,20 @@ public class ConditionMatcher {
     }
 
     public boolean match(AbstractCondition condition, ContextValueHolder context, WormConsumer worm) {
-        var matcher = findMatcher(condition.getType());
+        return Optional.ofNullable(worm.findResultInCache(condition))
+                .orElseGet(() -> {
+                    var matcher = findMatcher(condition.getType());
 
-        var conditionMatchResult = matcher.match(condition, context, worm);
+                    var conditionMatchResult = matcher.match(condition, context, worm);
 
-        var result = conditionMatchResult == condition.isMatchResult();
+                    var result = conditionMatchResult == condition.isMatchResult();
 
-        Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, conditionMatchResult));
+                    worm.accept(condition, conditionMatchResult);
 
-        return result;
+                    worm.addToCache(condition, result);
+
+                    return result;
+                });
     }
 
     @SuppressWarnings("unchecked")

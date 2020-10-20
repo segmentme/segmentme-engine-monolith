@@ -46,20 +46,21 @@ public class AnalysisService {
     public AnalysisResult debug(ContextValueHolder context, Segment segment) {
 
         DebugWorm worm = new DebugWorm(context);
-        SegmentAnalysisResult result = analyze(context, segment, WormConsumer.of(Collections.singletonList(worm)));
+        SegmentAnalysisResult result = analyze(context, segment, new WormConsumer(Collections.singletonList(worm)));
 
         return AnalysisResult.of(Arrays.asList(result), worm.getDebugResultMap());
     }
 
     public List<SegmentAnalysisResult> analyze(ContextValueHolder context, List<Segment> rules) {
-        return rules.stream().map(it -> this.analyze(context, it, null)).collect(Collectors.toList());
+        var wormConsumer = new WormConsumer();
+        return rules.stream().map(it -> this.analyze(context, it, wormConsumer)).collect(Collectors.toList());
     }
 
     public List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload) {
         Workspace workspace = workspaceService.findByIntegrationPointKey(integrationPointKey).orElseThrow(() -> new IllegalArgumentException("Workspace not found"));
         List<ContextSchema> schemas = contextSchemaService.findByIntegrationPointKeys(Collections.singletonList(integrationPointKey), false);
 
-        List<Segment> segments = analysisRuleRepository.findByIntegrationPointKeyAndEmbeddedIsFalse(integrationPointKey);
+        List<Segment> segments = analysisRuleRepository.findByIntegrationPointKey(integrationPointKey);
         if (StringUtils.isNoneBlank(contextId)) {
             schemas = schemas.stream().filter(it -> it.getId().equalsIgnoreCase(contextId)).findFirst().map(Collections::singletonList).orElseThrow(() -> new IllegalArgumentException("Context not found"));
             segments = segments.stream().filter(it -> it.getContextId().equalsIgnoreCase(contextId)).collect(Collectors.toList());

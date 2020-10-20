@@ -194,34 +194,31 @@
     "conditions": [
       {
         "type": "SEGMENT",
-        "matchResult": true,
-        "value": "3"
-      }
-    ],
-    "matchResult": true
-  },
-  {
-    "id": "3",
-    "aggregation": "AND",
-    "name": "USER EMAIL IN SEGMENT",
-    "conditions": [
-      {
-        "type": "IN",
-        "criteria": "user.email",
-        "value": [
-          "test@email.com"
-        ],
-        "nullValid": false,
-        "matchResult": true
-      },
-      {
-        "type": "IN",
-        "criteria": "user.date",
-        "value": [
-          "123123dsadasd34q2213123213"
-        ],
-        "nullValid": false,
-        "matchResult": true
+        "value": {
+          "aggregation": "AND",
+          "name": "USER EMAIL IN SEGMENT",
+          "conditions": [
+            {
+              "type": "IN",
+              "criteria": "user.email",
+              "value": [
+                "test@email.com"
+              ],
+              "nullValid": false,
+              "matchResult": true
+            },
+            {
+              "type": "IN",
+              "criteria": "user.date",
+              "value": [
+                "123123dsadasd34q2213123213"
+              ],
+              "nullValid": false,
+              "matchResult": true
+            }
+          ],
+          "matchResult": true
+        }
       }
     ],
     "matchResult": true

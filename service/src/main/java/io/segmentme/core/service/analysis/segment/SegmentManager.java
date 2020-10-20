@@ -1,6 +1,5 @@
 package io.segmentme.core.service.analysis.segment;
 
-import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.service.rule.SegmentService;
 import io.segmentme.core.service.converter.SegmentConverter;
@@ -9,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 

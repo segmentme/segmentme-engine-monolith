@@ -2,15 +2,12 @@ package io.segmentme.core.service.analysis.condition;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.SegmentCondition;
-import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.repository.SegmentRepository;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.segment.SegmentAnalysisService;
 import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -34,15 +31,17 @@ public class SegmentConditionMatcher implements Matcher<SegmentCondition> {
 
     @Override
     public boolean match(SegmentCondition condition, ContextValueHolder context, WormConsumer worm) {
-        var segment = analysisRuleRepository.findById(condition.getValue())
-                .orElseThrow(() -> new RuntimeException(String.format("Segment with id %s doesn't exist", condition.getValue())));
+        return Optional.ofNullable(worm.findResultInCache(condition))
+                .orElseGet(() -> {
+                    var conditionMatchResult = analysisRuleService.analyze(context, condition.getValue(), worm).isValue();
 
-        var conditionMatchResult = analysisRuleService.analyze(context, segment, worm).isValue();
+                    var result = conditionMatchResult == condition.isMatchResult();
 
-        var result = conditionMatchResult == condition.isMatchResult();
+                    worm.accept(condition, conditionMatchResult);
 
-        Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, conditionMatchResult));
+                    worm.addToCache(condition, result);
 
-        return result;
+                    return result;
+                });
     }
 }

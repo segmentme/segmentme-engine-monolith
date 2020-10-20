@@ -1,7 +1,9 @@
 package io.segmentme.core.service.converter;
 
 import io.segmentme.core.db.domain.condition.*;
+import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.service.dto.analysis.conditions.*;
+import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -37,18 +39,35 @@ public class ConditionConverter {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static AbstractCondition convertToEntity(SimpleCondition target, SimpleConditionDto source) {
-        return target.setValue(source.getValue())
+        Object conditionValue = source.getValue();
+
+        if (conditionValue instanceof SegmentDto) {
+            SegmentDto value = (SegmentDto) source.getValue();
+            conditionValue = SegmentConverter.of(value, null, null);
+        }
+
+        return target.setValue(conditionValue)
                 .setNullValid(source.isNullValid())
                 .setCriteria(source.getCriteria())
                 .setMatchResult(source.isMatchResult())
-                .setType(source.getType());
+                .setType(source.getType())
+                .setHash(String.valueOf(target.hashCode()));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static AbstractConditionDto convertToDto(SimpleConditionDto target, SimpleCondition source) {
-        return target.setValue(source.getValue()).setNullValid(source.isNullValid())
+        Object conditionValue = source.getValue();
+
+        if (conditionValue instanceof Segment) {
+            Segment value = (Segment) source.getValue();
+            conditionValue = SegmentConverter.of(value);
+        }
+
+        return target.setValue(conditionValue)
+                .setNullValid(source.isNullValid())
                 .setCriteria(source.getCriteria())
                 .setMatchResult(source.isMatchResult())
-                .setType(source.getType());
+                .setType(source.getType())
+                .setHash(source.getHash());
     }
 }

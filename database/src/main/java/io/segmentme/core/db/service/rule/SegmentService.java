@@ -20,11 +20,11 @@ public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepo
     }
 
     public List<Segment> findByIntegrationPointKey(String integrationPointKey) {
-        return repository.findByIntegrationPointKeyAndEmbeddedIsFalse(integrationPointKey);
+        return repository.findByIntegrationPointKey(integrationPointKey);
     }
 
     public List<Segment> findByContextId(String contextId) {
-        return repository.findByContextIdAndEmbeddedIsFalse(contextId);
+        return repository.findByContextId(contextId);
     }
 
     public void deleteAll(Collection<Segment> rules) {

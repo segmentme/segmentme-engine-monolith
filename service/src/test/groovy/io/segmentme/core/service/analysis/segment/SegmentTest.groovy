@@ -1,6 +1,7 @@
 package io.segmentme.core.service.analysis.segment
 
-import io.segmentme.core.db.domain.condition.RangeCondition
+import io.segmentme.core.db.domain.segment.Segment
+import io.segmentme.core.service.converter.SegmentConverter
 
 class SegmentTest extends BaseRuleTest {
 
@@ -14,9 +15,9 @@ class SegmentTest extends BaseRuleTest {
 
     def "analyse segment #name - should be #isMatch"() {
         given:
-        def segment = getSegmentsByName(name)
+        def segmentDto = SegmentConverter.of(getSegmentsByName(name))
         and:
-        def result = analysisService.analyze(context, Arrays.asList(segment))
+        def result = analysisService.analyze(context, Arrays.asList(SegmentConverter.of(segmentDto, null, null)))
         expect:
         def singleResult = resultValue(name, result)
         singleResult.value == isMatch
@@ -38,12 +39,27 @@ class SegmentTest extends BaseRuleTest {
         "SECOND_PHONE_CONTAINS_ONLY_SEGMENT" | false
     }
 
+    def "analyse segment cache #name - should be #isMatch"() {
+        given:
+        def segmentDto = SegmentConverter.of(getSegmentsByName(name))
+        and:
+        def result = analysisService.analyze(context, Arrays.asList(SegmentConverter.of(segmentDto, null, null), SegmentConverter.of(segmentDto, null, null)))
+        expect:
+        def singleResult = resultValue(name, result)
+        singleResult.value == isMatch
+        singleResult.name == name
+        where:
+        name                                 | isMatch
+        "SECOND_PHONE_CONTAINS_ONLY_SEGMENT" | false
+    }
+
+
 
     def "debug segment #name - should be #isMatch"() {
         given:
-        def segment = getSegmentsByName(name)
+        def segmentDto = SegmentConverter.of(getSegmentsByName(name))
         and:
-        def result = analysisService.debug(context, segment)
+        def result = analysisService.debug(context, SegmentConverter.of(segmentDto, null, null))
         expect:
         result.debugState != null
         result.debugState.size() == 3

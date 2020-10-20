@@ -28,8 +28,6 @@ public class Segment extends DbObject {
     @Indexed
     private String contextId;
 
-    private boolean embedded;
-
     public enum AggregationType {
         AND,
         OR

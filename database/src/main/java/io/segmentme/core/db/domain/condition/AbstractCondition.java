@@ -3,10 +3,7 @@ package io.segmentme.core.db.domain.condition;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.segmentme.core.db.domain.context.DbObject;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 
 @Data
@@ -30,6 +27,8 @@ public abstract class AbstractCondition {
     private ConditionType type;
 
     private boolean matchResult = true;
+
+    private String hash;
 
     public enum ConditionType {
         IN, RANGE, GT, GTE, LT, LTE, SEGMENT, CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY

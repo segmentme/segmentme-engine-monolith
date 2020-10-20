@@ -16,9 +16,9 @@ public abstract class AbstractContainsConditionMatcher extends AbstractCondition
         Comparable<Object> objectComparable = actualValue.stream().findFirst().get();
 
         return condition.getValue()
-            .stream()
-            .map(conditionValue -> castJsonProperty(conditionValue, objectComparable))
-            .collect(Collectors.toList());
+                .stream()
+                .map(conditionValue -> castJsonProperty(conditionValue, objectComparable))
+                .collect(Collectors.toList());
     }
 
     @Override

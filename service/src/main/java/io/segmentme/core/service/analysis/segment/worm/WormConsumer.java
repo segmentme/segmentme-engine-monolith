@@ -1,17 +1,31 @@
 package io.segmentme.core.service.analysis.segment.worm;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
-import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.*;
+import java.util.function.*;
 
-@AllArgsConstructor(staticName = "of")
-public class WormConsumer implements BiConsumer<AbstractCondition, Object> {
-    private final List<BiConsumer<AbstractCondition, Object>> worms;
+@NoArgsConstructor
+@AllArgsConstructor
+public class WormConsumer implements BiConsumer<AbstractCondition, Object>, WormCache {
+
+    private List<BiConsumer<AbstractCondition, Object>> worms = List.of();
+
+    private final Map<String, Boolean> conditionCacheResult = new HashMap<>();
 
     @Override
     public void accept(AbstractCondition abstractCondition, Object o) {
         worms.forEach(it -> it.accept(abstractCondition, o));
+    }
+
+    @Override
+    public Boolean findResultInCache(AbstractCondition condition) {
+        return conditionCacheResult.get(condition.getHash());
+    }
+
+    @Override
+    public void addToCache(AbstractCondition condition, boolean result) {
+        conditionCacheResult.put(condition.getHash(), result);
     }
 }

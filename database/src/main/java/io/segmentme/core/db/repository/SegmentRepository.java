@@ -7,9 +7,7 @@ import java.util.List;
 
 public interface SegmentRepository extends MongoRepository<Segment, String> {
 
-    List<Segment> findByIntegrationPointKey();
+    List<Segment> findByIntegrationPointKey(String integrationPointKey);
 
-    List<Segment> findByIntegrationPointKeyAndEmbeddedIsFalse(String integrationPointKey);
-
-    List<Segment> findByContextIdAndEmbeddedIsFalse(String contextId);
+    List<Segment> findByContextId(String contextId);
 }

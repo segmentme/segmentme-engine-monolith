@@ -9,15 +9,13 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 @Data
 @Slf4j
 public class DebugWorm implements BiConsumer<AbstractCondition, Object> {
-    private Map<Integer, DebugResult> debugResultMap = new HashMap<>();
+    private Map<String, DebugResult> debugResultMap = new LinkedHashMap<>();
     private final ContextValueHolder contextValueHolder;
     private final String ARRAY_INDEX_CLEANER = "\\[[0-9]+]";
 
@@ -26,7 +24,7 @@ public class DebugWorm implements BiConsumer<AbstractCondition, Object> {
 
         //TODO need to change: search by hash
 
-        var debugResult = debugResultMap.computeIfAbsent(condition.hashCode(), key -> new DebugResult());
+        var debugResult = debugResultMap.computeIfAbsent(condition.getHash(), key -> new DebugResult());
 
         if (result instanceof Exception) {
             debugResult.setErrorMessage(((Exception) result).getMessage());
@@ -37,7 +35,7 @@ public class DebugWorm implements BiConsumer<AbstractCondition, Object> {
 
         if (condition instanceof SegmentCondition) {
             SegmentCondition segmentCondition = (SegmentCondition) condition;
-            debugResult.setSegmentId(segmentCondition.getValue());
+            debugResult.setSegmentId(segmentCondition.getValue().getId());
             if (result instanceof Boolean) {
                 debugResult.setFinalMatchResult((Boolean) result);
             }

@@ -67,7 +67,7 @@ abstract class BaseRuleTest extends BaseTestWithContext {
         analysisRuleRepository.deleteAll()
     }
 
-    protected getSegmentsByName(String name) {
+    protected Segment getSegmentsByName(String name) {
         return analysisRuleRepository.findAll().stream().filter(it -> it.getName().equals(name)).findFirst().orElse(null)
     }
 
