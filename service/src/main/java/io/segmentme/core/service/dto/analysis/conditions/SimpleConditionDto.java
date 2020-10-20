@@ -13,6 +13,4 @@ public abstract class SimpleConditionDto<T> extends AbstractConditionDto {
 
     private boolean isNullValid;
 
-    @NotBlank
-    private String criteria;
 }

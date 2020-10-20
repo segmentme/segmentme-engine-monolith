@@ -30,7 +30,6 @@ class RuleManagerTest extends BaseTestWithContext {
         existedRules.size() == 1
         def rule = existedRules[0]
         rule.matchResult == source.matchResult
-        rule.embedded == source.embedded
         rule.aggregation == source.aggregation
         rule.conditions.size() == 1
         def convertedCondition = rule.conditions[0]

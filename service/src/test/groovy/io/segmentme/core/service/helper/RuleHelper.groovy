@@ -9,7 +9,6 @@ class RuleHelper {
         segment.name = args['name'] ?: UUID.randomUUID().toString()
         segment.conditions = args['conditions']
         segment.matchResult = args['matchResult'] ?: true
-        segment.embedded = args['embedded'] ?: false
         return segment
     }
 }

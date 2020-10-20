@@ -27,19 +27,11 @@ import javax.validation.constraints.NotBlank;
 })
 public abstract class AbstractConditionDto {
 
-    private String id;
-
-    @NotBlank
-    private String name;
-
-    private String description;
+    private String criteria;
 
     private AbstractCondition.ConditionType type;
 
     private boolean matchResult = true;
-
-    private boolean embedded;
-
 }
 
 

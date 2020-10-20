@@ -27,8 +27,6 @@ public abstract class AbstractCondition {
 
     private String criteria;
 
-    private String description;
-
     private ConditionType type;
 
     private boolean matchResult = true;

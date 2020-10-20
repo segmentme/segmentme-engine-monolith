@@ -11,7 +11,6 @@ class RangeConditionMatcher extends SimpleConditionMatcher<RangeCondition> {
 
     private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.RANGE;
 
-
     @Override
     protected Comparable<Object> getExpectedValue(RangeCondition condition, Comparable<Object> actualValue) {
         RangeCondition.RangeValue rangeValue = condition.getValue();
@@ -23,6 +22,6 @@ class RangeConditionMatcher extends SimpleConditionMatcher<RangeCondition> {
     @Override
     boolean match(Comparable<Object> expected, Comparable<Object> actual) {
         RangeCondition.RangeValue rangeValue = (RangeCondition.RangeValue) expected;
-        return actual.compareTo(rangeValue.getMin()) >= 0 && actual.compareTo(rangeValue.getMax()) <= 0;
+        return rangeValue.compareTo(actual) == 0;
     }
 }

@@ -5,6 +5,4 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SegmentCondition extends SimpleCondition<String> {
-
-}
+public class SegmentCondition extends SimpleCondition<String> {}

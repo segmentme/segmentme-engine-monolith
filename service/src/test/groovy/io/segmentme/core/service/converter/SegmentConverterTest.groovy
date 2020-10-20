@@ -21,7 +21,6 @@ class SegmentConverterTest extends Specification {
         expect:
         def target = isDto ? SegmentConverter.of(source, randomUUID().toString(), randomUUID().toString()) : SegmentConverter.of(source)
         target.matchResult == source.matchResult
-        target.embedded == source.embedded
         target.aggregation == source.aggregation
         target.conditions.size() == 1
         def convertedCondition = target.conditions[0]

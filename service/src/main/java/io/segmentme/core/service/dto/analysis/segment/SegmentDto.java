@@ -24,6 +24,4 @@ public class SegmentDto {
 
     private boolean matchResult;
 
-    private boolean embedded;
-
 }

@@ -1,5 +1,7 @@
 package io.segmentme.core.service.analysis.segment
 
+import io.segmentme.core.db.domain.condition.RangeCondition
+
 class SegmentTest extends BaseRuleTest {
 
     def setup() {

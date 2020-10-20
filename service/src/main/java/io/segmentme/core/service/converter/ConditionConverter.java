@@ -7,8 +7,8 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ConditionConverter {
 
-    public AbstractCondition of(AbstractConditionDto source, String contextId) {
-        return convertToEntity(source, contextId);
+    public AbstractCondition of(AbstractConditionDto source) {
+        return convertToEntity(source);
     }
 
     public AbstractConditionDto of(AbstractCondition source) {
@@ -25,23 +25,22 @@ public class ConditionConverter {
         };
     }
 
-    private AbstractCondition convertToEntity(AbstractConditionDto source, String contextId) {
+    private AbstractCondition convertToEntity(AbstractConditionDto source) {
         return switch (source.getType()) {
-            case CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY, IN -> convertToEntity(new ArrayCondition(), (ArrayConditionDto) source, contextId);
-            case LTE, LT, GTE, GT -> convertToEntity(new SingleCondition(), (SingleConditionDto) source, contextId);
-            case RANGE -> convertToEntity(new RangeCondition(), (RangeConditionDto) source, contextId);
-            case SEGMENT -> convertToEntity(new SegmentCondition(), (SegmentConditionDto) source, contextId);
+            case CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY, IN -> convertToEntity(new ArrayCondition(), (ArrayConditionDto) source);
+            case LTE, LT, GTE, GT -> convertToEntity(new SingleCondition(), (SingleConditionDto) source);
+            case RANGE -> convertToEntity(new RangeCondition(), (RangeConditionDto) source);
+            case SEGMENT -> convertToEntity(new SegmentCondition(), (SegmentConditionDto) source);
             default -> throw new IllegalArgumentException("Unknown condition type " + source.getType());
         };
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static AbstractCondition convertToEntity(SimpleCondition target, SimpleConditionDto source, String contextId) {
+    private static AbstractCondition convertToEntity(SimpleCondition target, SimpleConditionDto source) {
         return target.setValue(source.getValue())
                 .setNullValid(source.isNullValid())
                 .setCriteria(source.getCriteria())
                 .setMatchResult(source.isMatchResult())
-                .setDescription(source.getDescription())
                 .setType(source.getType());
     }
 
@@ -50,7 +49,6 @@ public class ConditionConverter {
         return target.setValue(source.getValue()).setNullValid(source.isNullValid())
                 .setCriteria(source.getCriteria())
                 .setMatchResult(source.isMatchResult())
-                .setDescription(source.getDescription())
                 .setType(source.getType());
     }
 }

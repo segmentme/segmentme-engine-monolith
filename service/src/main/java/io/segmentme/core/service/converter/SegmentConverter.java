@@ -14,10 +14,9 @@ public class SegmentConverter {
                 .setContextId(contextId)
                 .setIntegrationPointKey(integrationPointKey)
                 .setName(source.getName())
-                .setEmbedded(source.isEmbedded())
                 .setAggregation(source.getAggregation())
                 .setMatchResult(source.isMatchResult())
-                .setConditions(source.getConditions().stream().map(it -> ConditionConverter.of(it, contextId)).collect(Collectors.toList()))
+                .setConditions(source.getConditions().stream().map(ConditionConverter::of).collect(Collectors.toList()))
                 .setId(source.getId());
     }
 
@@ -25,7 +24,6 @@ public class SegmentConverter {
         return new SegmentDto()
                 .setId(source.getId())
                 .setName(source.getName())
-                .setEmbedded(source.isEmbedded())
                 .setAggregation(source.getAggregation())
                 .setMatchResult(source.isMatchResult())
                 .setConditions(source.getConditions().stream().map(ConditionConverter::of).collect(Collectors.toList()));
