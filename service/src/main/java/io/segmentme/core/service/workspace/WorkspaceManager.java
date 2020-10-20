@@ -3,32 +3,36 @@ package io.segmentme.core.service.workspace;
 import io.segmentme.core.db.domain.user.User;
 import io.segmentme.core.db.domain.workpsace.*;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
+import io.segmentme.core.service.analysis.segment.SegmentManager;
 import io.segmentme.core.service.context.ContextSchemaManager;
 import io.segmentme.core.service.converter.WorkspaceHolderConverter;
 import io.segmentme.core.service.dto.WorkspaceHolder;
-import io.segmentme.core.service.analysis.segment.SegmentManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Comparator;
 import java.util.UUID;
+
+import static io.segmentme.core.db.domain.workpsace.WorkspaceConfiguration.DEFAULT_DATE_PATTERNS;
 
 @Service
 @RequiredArgsConstructor
 public class WorkspaceManager {
-    public static final List<String> DEFAULT_DATE_PATTERNS = Arrays.asList(
-        DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.getPattern(),
-        DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern(),
-        DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern() + "'Z'",
-        DateFormatUtils.ISO_8601_EXTENDED_DATE_FORMAT.getPattern(),
-        DateFormatUtils.ISO_8601_EXTENDED_DATE_FORMAT.getPattern() + "'Z'",
-        DateFormatUtils.ISO_8601_EXTENDED_TIME_TIME_ZONE_FORMAT.getPattern(),
-        DateFormatUtils.SMTP_DATETIME_FORMAT.getPattern());
-
     private static final String DEFAULT = "Default";
+    public static final Comparator<String> DATE_COMPARATOR = (o1, o2) -> {
+
+        if (DEFAULT_DATE_PATTERNS.contains(o1) && DEFAULT_DATE_PATTERNS.contains(o2)) {
+            return DEFAULT_DATE_PATTERNS.indexOf(o1) - DEFAULT_DATE_PATTERNS.indexOf(o2);
+        } else if (DEFAULT_DATE_PATTERNS.contains(o1)) {
+            return 1;
+        } else if (DEFAULT_DATE_PATTERNS.contains(o2)) {
+            return -1;
+        }
+
+        return 1;
+    };
 
     private final WorkspaceService workspaceService;
 
@@ -95,7 +99,10 @@ public class WorkspaceManager {
     }
 
     public void updateConfiguration(String id, WorkspaceConfiguration workspaceConfiguration) {
+        workspaceConfiguration.getKnownDateFormats().sort(DATE_COMPARATOR);
         workspaceService.findById(id).map(it -> it.setConfiguration(workspaceConfiguration))
             .ifPresent(workspaceService::update);
     }
+
 }
+
