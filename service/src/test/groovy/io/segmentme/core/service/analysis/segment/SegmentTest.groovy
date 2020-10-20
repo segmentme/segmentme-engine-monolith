@@ -1,6 +1,7 @@
 package io.segmentme.core.service.analysis.segment
 
-import io.segmentme.core.db.domain.condition.RangeCondition
+
+import io.segmentme.core.service.analysis.segment.worm.StatisticWorm
 
 class SegmentTest extends BaseRuleTest {
 
@@ -16,7 +17,7 @@ class SegmentTest extends BaseRuleTest {
         given:
         def segment = getSegmentsByName(name)
         and:
-        def result = analysisService.analyze(context, Arrays.asList(segment))
+        def result = analysisService.analyze(context, Arrays.asList(segment), new StatisticWorm())
         expect:
         def singleResult = resultValue(name, result)
         singleResult.value == isMatch

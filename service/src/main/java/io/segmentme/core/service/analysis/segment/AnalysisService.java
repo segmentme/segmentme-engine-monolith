@@ -9,13 +9,16 @@ import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.ContextValuesExtractor;
+import io.segmentme.core.service.analysis.segment.worm.DebugWorm;
+import io.segmentme.core.service.analysis.segment.worm.StatisticWorm;
+import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
 import io.segmentme.core.service.dto.analysis.AnalysisResult;
 import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
-import io.segmentme.core.service.analysis.segment.worm.DebugWorm;
-import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
+import io.segmentme.core.service.dto.statistic.StatisticLogEntry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -38,6 +41,8 @@ public class AnalysisService {
 
     private final WorkspaceService workspaceService;
 
+    private ApplicationEventPublisher applicationEventPublisher;
+
 
     public AnalysisResult debug(ContextValueHolder context, String segmentId) {
         return debug(context, analysisRuleRepository.findById(segmentId).get());
@@ -51,11 +56,17 @@ public class AnalysisService {
         return AnalysisResult.of(Arrays.asList(result), worm.getDebugResultMap());
     }
 
-    public List<SegmentAnalysisResult> analyze(ContextValueHolder context, List<Segment> rules) {
-        return rules.stream().map(it -> this.analyze(context, it, null)).collect(Collectors.toList());
+    public List<SegmentAnalysisResult> analyze(ContextValueHolder context, List<Segment> rules, StatisticWorm statisticWorm) {
+        WormConsumer worm = WormConsumer.of(Arrays.asList(statisticWorm));
+        return rules.stream().map(it -> this.analyze(context, it, worm)).collect(Collectors.toList());
     }
 
     public List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload) {
+        StatisticLogEntry statisticLogEntry = new StatisticLogEntry();
+        StatisticWorm worm = new StatisticWorm();
+        long analyzeStartTime = System.currentTimeMillis();
+
+        statisticLogEntry.setIntegrationPointKey(integrationPointKey);
         Workspace workspace = workspaceService.findByIntegrationPointKey(integrationPointKey).orElseThrow(() -> new IllegalArgumentException("Workspace not found"));
         List<ContextSchema> schemas = contextSchemaService.findByIntegrationPointKeys(Collections.singletonList(integrationPointKey), false);
 
@@ -63,13 +74,25 @@ public class AnalysisService {
         if (StringUtils.isNoneBlank(contextId)) {
             schemas = schemas.stream().filter(it -> it.getId().equalsIgnoreCase(contextId)).findFirst().map(Collections::singletonList).orElseThrow(() -> new IllegalArgumentException("Context not found"));
             segments = segments.stream().filter(it -> it.getContextId().equalsIgnoreCase(contextId)).collect(Collectors.toList());
+        } else {
+            schemas = Arrays.asList(null);
         }
 
         List<Segment> finalSegments = segments;
-        return schemas.stream()
-            .map(it -> contextValuesExtractor.extractValues(payload, it, workspace.getConfiguration()))
-            .map(it -> this.analyze(it, finalSegments))
-            .flatMap(List::stream).collect(Collectors.toList());
+        try {
+            List<SegmentAnalysisResult> segmentAnalysisResults = schemas.stream()
+                .map(it -> contextValuesExtractor.extractValues(payload, it, workspace.getConfiguration()))
+                .peek(statisticLogEntry::setContextValueHolder)
+                .map(it -> this.analyze(it, finalSegments, worm))
+                .flatMap(List::stream).collect(Collectors.toList());
+            statisticLogEntry.setSegmentAnalysisResults(segmentAnalysisResults);
+            return segmentAnalysisResults;
+        } finally {
+            statisticLogEntry.setAnalyzedSegments(segments);
+            statisticLogEntry.setConditionResults(worm.getStatisticMap());
+            statisticLogEntry.setAnalysisTime(System.currentTimeMillis() - analyzeStartTime);
+            applicationEventPublisher.publishEvent(statisticLogEntry);
+        }
     }
 
     private SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, WormConsumer worm) {
