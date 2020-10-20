@@ -68,12 +68,9 @@ class SegmentControllerTest extends BaseControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath('$.id').isNotEmpty())
                 .andExpect(jsonPath('$.aggregation').value(ruleToSave.aggregation.name()))
-                .andExpect(jsonPath('$.embedded').value(ruleToSave.embedded))
                 .andExpect(jsonPath('$.matchResult').value(ruleToSave.matchResult))
                 .andExpect(jsonPath('$.name').value(ruleToSave.name))
                 .andExpect(jsonPath('$.conditions', hasSize(ruleToSave.conditions.size())))
-                .andExpect(jsonPath('$.conditions[0].type').value("SEGMENT"))
-                .andExpect(jsonPath('$.conditions[0].name').value("SEGMENT_CONDITION"))
         where:
         name                                 | _
         "SECOND_PHONE_CONTAINS_ONLY_SEGMENT" | _
@@ -92,7 +89,6 @@ class SegmentControllerTest extends BaseControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath('$.id').isNotEmpty())
                 .andExpect(jsonPath('$.aggregation').value(ruleToSave.aggregation.name()))
-                .andExpect(jsonPath('$.embedded').value(ruleToSave.embedded))
                 .andExpect(jsonPath('$.matchResult').value(ruleToSave.matchResult))
                 .andExpect(jsonPath('$.name').value(ruleToSave.name))
                 .andExpect(jsonPath('$.conditions', hasSize(ruleToSave.conditions.size())))
