@@ -19,9 +19,7 @@ import java.util.Optional;
 @Data
 @Component
 @RequiredArgsConstructor
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
-public class SegmentConditionMatcher extends AbstractConditionMatcher<SegmentCondition, Segment, String> {
+public class SegmentConditionMatcher implements Matcher<SegmentCondition> {
 
     private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.SEGMENT;
 
@@ -46,21 +44,5 @@ public class SegmentConditionMatcher extends AbstractConditionMatcher<SegmentCon
         Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, conditionMatchResult));
 
         return result;
-
-    }
-
-    @Override
-    protected Segment getExpectedValue(SegmentCondition condition, String actualValue) {
-        return null;
-    }
-
-    @Override
-    Boolean checkForNullValid(SegmentCondition condition, String value) {
-        return null;
-    }
-
-    @Override
-    boolean match(Segment expected, String actual) {
-        return false;
     }
 }
