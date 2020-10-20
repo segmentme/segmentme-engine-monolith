@@ -83,4 +83,8 @@ public class CriteriaValueLocator {
         }
         return currentPosition;
     }
+
+    public static String cleanPath(String path) {
+        return path.replaceAll(ARRAY_INDEX_CLEANER, StringUtils.EMPTY);
+    }
 }

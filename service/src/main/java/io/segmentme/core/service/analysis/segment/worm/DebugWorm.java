@@ -7,17 +7,19 @@ import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.dto.analysis.DebugResult;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.*;
 import java.util.function.BiConsumer;
+
+import static io.segmentme.core.service.analysis.CriteriaValueLocator.cleanPath;
 
 @Data
 @Slf4j
 public class DebugWorm implements BiConsumer<AbstractCondition, Object> {
     private Map<String, DebugResult> debugResultMap = new LinkedHashMap<>();
     private final ContextValueHolder contextValueHolder;
-    private final String ARRAY_INDEX_CLEANER = "\\[[0-9]+]";
 
     @Override
     public void accept(AbstractCondition condition, Object result) {
@@ -44,10 +46,9 @@ public class DebugWorm implements BiConsumer<AbstractCondition, Object> {
             debugResult.setFinalMatchResult(simpleCondition.isMatchResult() == debugResult.isConditionMatchResult());
 
             String criteria = simpleCondition.getCriteria();
-            String clearPath = criteria.replaceAll(ARRAY_INDEX_CLEANER, StringUtils.EMPTY);
 
             debugResult.setValue(contextValueHolder.getValue(criteria));
-            debugResult.setCriteriaType(contextValueHolder.getSchema().getInlinePath().get(clearPath));
+            debugResult.setCriteriaType(contextValueHolder.getSchema().getInlinePath().get(cleanPath(criteria)));
             debugResult.setCriteria(criteria);
 
         }

@@ -4,32 +4,29 @@ import io.segmentme.core.db.domain.condition.AbstractCondition;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
+
+import static io.segmentme.core.service.dto.statistic.StatisticLogEntry.ConditionStatisticEntry;
 
 @Data
 @Slf4j
 public class StatisticWorm implements BiConsumer<AbstractCondition, Object> {
-    private Map<String, ConditionStatisticEntry> debugResultMap = new HashMap<>();
+    private Map<String, ConditionStatisticEntry> statisticMap = new HashMap<>();
 
     @Override
     public void accept(AbstractCondition condition, Object result) {
 
-        var statisticEntry = debugResultMap.computeIfAbsent(condition.getHash(), key -> new ConditionStatisticEntry());
+        var statisticEntry = statisticMap.computeIfAbsent(condition.getHash(), key -> new ConditionStatisticEntry());
 
-        statisticEntry.numOfInvocation++;
         if (result instanceof Exception) {
-            statisticEntry.errors.add(((Exception) result).getMessage());
+            statisticEntry.setErrors(((Exception) result).getMessage());
             return;
         }
-        statisticEntry.positiveResult = Objects.equals(condition.isMatchResult(), result);
+        statisticEntry.setResult(Objects.equals(condition.isMatchResult(), result));
     }
 
-    @Data
-    public static class ConditionStatisticEntry {
-        int numOfInvocation;
-        boolean positiveResult;
 
-        Set<String> errors = new HashSet<>();
-    }
 }
