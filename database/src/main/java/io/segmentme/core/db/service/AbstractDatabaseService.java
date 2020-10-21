@@ -35,4 +35,8 @@ public abstract class AbstractDatabaseService<E extends DbObject, R extends Mong
         repository.delete(entity);
     }
 
+    public void deleteAll(Collection<E> entity) {
+        repository.deleteAll(entity);
+    }
+
 }

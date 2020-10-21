@@ -10,6 +10,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @EnableMongoRepositories(basePackages = "io.segmentme.core")
 @EnableConfigurationProperties
+@EnableMongoAuditing
 public class DbConfiguration {
 
     private final ObjectMapper objectMapper;

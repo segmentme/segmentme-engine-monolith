@@ -104,6 +104,10 @@ public class WorkspaceFacade {
     }
 
     public void updateWorkspace(String userId, String workspaceId, WorkspaceDetails workspaceDetails) {
-        workspaceManager.updateConfiguration(workspaceId,new WorkspaceHolder().setName(workspaceDetails.getName()).setWorkspaceConfiguration(workspaceDetails.getConfiguration()));
+        workspaceManager.updateConfiguration(workspaceId, new WorkspaceHolder().setName(workspaceDetails.getName()).setWorkspaceConfiguration(workspaceDetails.getConfiguration()));
+    }
+
+    public void removeWorkspace(String id, String workspaceId) {
+        workspaceManager.removeWorkspace(workspaceId);
     }
 }

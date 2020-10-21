@@ -63,4 +63,10 @@ public class WorkspaceController {
         workspaceFacade.removeIntegrationPoint(currentUser.getId(), workspaceId, key);
     }
 
+    @DeleteMapping("/{workspaceId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteWorkspace(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId) {
+        workspaceFacade.removeWorkspace(currentUser.getId(), workspaceId);
+    }
+
 }
