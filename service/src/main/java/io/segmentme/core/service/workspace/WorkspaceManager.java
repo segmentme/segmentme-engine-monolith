@@ -98,11 +98,19 @@ public class WorkspaceManager {
         return new IntegrationPoint().setKey(UUID.randomUUID().toString().replaceAll("-", StringUtils.EMPTY));
     }
 
-    public void updateConfiguration(String id, WorkspaceConfiguration workspaceConfiguration) {
-        workspaceConfiguration.getKnownDateFormats().sort(DATE_COMPARATOR);
-        workspaceService.findById(id).map(it -> it.setConfiguration(workspaceConfiguration))
+    public void updateConfiguration(String id, WorkspaceHolder holder) {
+        holder.getWorkspaceConfiguration().getKnownDateFormats().sort(DATE_COMPARATOR);
+        workspaceService.findById(id)
+            .map(it -> {
+                    it.setConfiguration(holder.getWorkspaceConfiguration());
+                    it.setName(holder.getName());
+                    it.getUserProfiles().forEach(profile -> profile.setWorkspaceName(holder.getName()));
+                    return it;
+                }
+            )
             .ifPresent(workspaceService::update);
     }
+
 
 }
 

@@ -51,7 +51,7 @@ public class WorkspaceFacade {
     }
 
     public void updateConfiguration(String userId, String workspaceId, WorkspaceConfiguration workspaceConfiguration) {
-        workspaceManager.updateConfiguration(workspaceId, workspaceConfiguration);
+        workspaceManager.updateConfiguration(workspaceId, new WorkspaceHolder().setWorkspaceConfiguration(workspaceConfiguration));
     }
 
     public void updateIntegrationPoint(String userId, String workspaceId, IntegrationPoint integrationPoint) {
@@ -101,5 +101,9 @@ public class WorkspaceFacade {
             log.error("Unable to create date time formatter for pattern {}", format, ex);
         }
         return Optional.empty();
+    }
+
+    public void updateWorkspace(String userId, String workspaceId, WorkspaceDetails workspaceDetails) {
+        workspaceManager.updateConfiguration(workspaceId,new WorkspaceHolder().setName(workspaceDetails.getName()).setWorkspaceConfiguration(workspaceDetails.getConfiguration()));
     }
 }
