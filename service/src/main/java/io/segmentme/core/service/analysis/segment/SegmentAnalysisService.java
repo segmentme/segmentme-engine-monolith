@@ -4,8 +4,8 @@ import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.condition.ConditionMatcher;
+import io.segmentme.core.service.analysis.segment.worm.Worm;
 import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
-import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -18,11 +18,11 @@ public class SegmentAnalysisService {
 
     private final ConditionMatcher conditionMatcher;
 
-    public SegmentAnalysisResult analyze(ContextValueHolder context, Segment segment, WormConsumer worm) {
+    public SegmentAnalysisResult analyze(ContextValueHolder context, Segment segment, Worm<Object> worm) {
         return SegmentAnalysisResult.of(segment.getName(), segment.getId(), this.getSegmentValueIfSatisfy(context, segment, worm));
     }
 
-    final boolean isMatch(Segment segment, ContextValueHolder context, WormConsumer worm) {
+    final boolean isMatch(Segment segment, ContextValueHolder context, Worm<Object> worm) {
         if (CollectionUtils.isEmpty(segment.getConditions())) {
             return true;
         }
@@ -33,11 +33,11 @@ public class SegmentAnalysisService {
         };
     }
 
-    private boolean getSegmentValueIfSatisfy(ContextValueHolder context, Segment segment, WormConsumer worm) {
+    private boolean getSegmentValueIfSatisfy(ContextValueHolder context, Segment segment, Worm<Object> worm) {
         return isMatch(segment, context, worm) == segment.isMatchResult();
     }
 
-    private boolean match(AbstractCondition condition, ContextValueHolder context, WormConsumer worm) {
+    private boolean match(AbstractCondition condition, ContextValueHolder context, Worm<Object> worm) {
         return conditionMatcher.match(condition, context, worm);
     }
 }

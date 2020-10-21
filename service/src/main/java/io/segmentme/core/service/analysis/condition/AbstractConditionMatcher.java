@@ -3,7 +3,7 @@ package io.segmentme.core.service.analysis.condition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.service.analysis.ContextValueHolder;
-import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
+import io.segmentme.core.service.analysis.segment.worm.Worm;
 import io.segmentme.core.service.exception.CriteriaValueLocatorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +29,14 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
     public abstract AbstractCondition.ConditionType getType();
 
 
-    public boolean match(T condition, ContextValueHolder context, WormConsumer worm) {
+    public boolean match(T condition, ContextValueHolder context, Worm<Object> worm) {
         P actualValue = null;
 
         try {
             actualValue = getProperty(condition.getCriteria(), context);
         } catch (CriteriaValueLocatorException ex) {
             log.warn("Unable to locate property {} in context {}, because {}", condition.getCriteria(), context, ex.getMessage());
-            Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
+            Optional.ofNullable(worm).ifPresent(it -> it.apply(condition, ex));
             return !condition.isMatchResult();
         }
 
@@ -46,9 +46,9 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
                 return aBoolean;
             }
             return match(getExpectedValue(condition, actualValue), actualValue);
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             log.warn("Can't match property {} in context {} , because {}", condition.getCriteria(), context, ex.getMessage());
-            Optional.ofNullable(worm).ifPresent(it -> it.accept(condition, ex));
+            Optional.ofNullable(worm).ifPresent(it -> it.apply(condition, ex));
             return !condition.isMatchResult();
         }
     }
