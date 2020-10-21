@@ -4,7 +4,7 @@ import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.domain.statistic.StatisticLog;
-import io.segmentme.core.db.service.rule.SegmentService;
+import io.segmentme.core.db.service.segment.SegmentService;
 import io.segmentme.core.db.service.statistic.StatisticService;
 import io.segmentme.core.service.dto.statistic.StatisticLogEntry;
 import lombok.Data;

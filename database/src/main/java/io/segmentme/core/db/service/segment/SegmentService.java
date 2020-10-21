@@ -1,4 +1,4 @@
-package io.segmentme.core.db.service.rule;
+package io.segmentme.core.db.service.segment;
 
 import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.repository.SegmentRepository;

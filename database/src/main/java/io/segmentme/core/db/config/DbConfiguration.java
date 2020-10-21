@@ -2,10 +2,12 @@ package io.segmentme.core.db.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Order(1)
 @Configuration
 @RequiredArgsConstructor
 @EnableMongoRepositories(basePackages = "io.segmentme.core")
@@ -37,16 +40,16 @@ public class DbConfiguration {
         List<Converter<?, ?>> converters = new ArrayList<>();
         converters.add(new JsonNodeToDocumentConverter());
         converters.add(new DocumentToJsonNodeConverter());
-
         return new MongoCustomConversions(converters);
     }
 
     @Bean
-    public MappingMongoConverter mongoConverter(MongoDatabaseFactory mongoFactory, MongoMappingContext mongoMappingContext) throws Exception {
+    public MappingMongoConverter mongoConverter(MongoDatabaseFactory mongoFactory, MongoMappingContext mongoMappingContext, MongoCustomConversions customConversions) throws Exception {
         DbRefResolver dbRefResolver = new DefaultDbRefResolver(mongoFactory);
         MappingMongoConverter mongoConverter = new MappingMongoConverter(dbRefResolver, mongoMappingContext);
         mongoConverter.setMapKeyDotReplacement("#");
         mongoConverter.afterPropertiesSet();
+        mongoConverter.setCustomConversions(customConversions);
         return mongoConverter;
     }
 

@@ -3,6 +3,8 @@ package io.segmentme.core.api.common
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.segmentme.core.api.config.AuthUser
 import io.segmentme.core.service.common.BaseTestWithContext
+import io.segmentme.core.service.configuration.test.ResourceHolder
+import io.segmentme.core.service.dto.analysis.segment.SegmentDto
 import lombok.SneakyThrows
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,6 +27,9 @@ class BaseControllerTest extends BaseTestWithContext {
     @SpringBean
     protected AuthenticationManager authenticationManager = Mock()
 
+    @Autowired
+    protected ResourceHolder resourceHolder
+
     @SneakyThrows
     protected String serializeToJson(Object o) {
         return objectMapper.writeValueAsString(o)
@@ -41,5 +46,13 @@ class BaseControllerTest extends BaseTestWithContext {
 
     private String uuid() {
         return UUID.randomUUID().toString()
+    }
+
+    protected SegmentDto getSegment(String segmentName) {
+        return resourceHolder.getSegmentsDto()
+                .stream()
+                .filter(it -> it.getName().equalsIgnoreCase(segmentName))
+                .findFirst()
+                .get()
     }
 }

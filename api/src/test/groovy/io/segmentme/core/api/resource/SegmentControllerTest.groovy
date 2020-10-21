@@ -112,12 +112,4 @@ class SegmentControllerTest extends BaseControllerTest {
         segment                                                                                                  | _
         ['value': true, 'name': '', 'conditions': List.of(fillCondition(new ArrayConditionDto(), ['type': IN]))] | _
     }
-
-    protected getSegment(String segmentName) {
-        return resourceHolder.getSegmentsDto().stream().filter(it -> match(it, segmentName)).findFirst().get()
-    }
-
-    static boolean match(SegmentDto segment, String segmentName) {
-        return segment.getName().equalsIgnoreCase(segmentName)
-    }
 }

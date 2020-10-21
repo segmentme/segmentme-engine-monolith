@@ -1,7 +1,7 @@
 package io.segmentme.core.service.analysis.segment;
 
 import io.segmentme.core.db.domain.segment.Segment;
-import io.segmentme.core.db.service.rule.SegmentService;
+import io.segmentme.core.db.service.segment.SegmentService;
 import io.segmentme.core.service.converter.SegmentConverter;
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import lombok.RequiredArgsConstructor;
