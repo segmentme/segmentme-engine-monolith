@@ -10,7 +10,8 @@
           "test@email.com"
         ],
         "nullValid": false,
-        "matchResult": true
+        "matchResult": true,
+        "hash": "41254sasda"
       }
     ],
     "matchResult": true
@@ -26,7 +27,8 @@
           "test@email.com"
         ],
         "nullValid": false,
-        "matchResult": false
+        "matchResult": false,
+        "hash": "12321321421"
       }
     ],
     "matchResult": true
@@ -40,7 +42,8 @@
         "criteria": "user.age",
         "value": 38,
         "nullValid": false,
-        "matchResult": true
+        "matchResult": true,
+        "hash": "124125124"
       }
     ],
     "matchResult": true
@@ -54,7 +57,8 @@
         "criteria": "user.age",
         "value": 40,
         "nullValid": false,
-        "matchResult": true
+        "matchResult": true,
+        "hash": "sdase32sadd12"
       }
     ],
     "matchResult": true
@@ -68,7 +72,8 @@
         "criteria": "user.birthDate",
         "value": "1961-06-06T00:00:00Z",
         "nullValid": false,
-        "matchResult": true
+        "matchResult": true,
+        "hash": "1212asdxac23"
       }
     ],
     "matchResult": true
@@ -82,7 +87,8 @@
         "criteria": "user.birthDate",
         "value": "1961-06-06T00:00:00Z",
         "nullValid": false,
-        "matchResult": true
+        "matchResult": true,
+        "hash": "askdoask23"
       }
     ],
     "matchResult": true
@@ -99,7 +105,8 @@
           "max": "2000-06-07T00:00:00Z"
         },
         "nullValid": false,
-        "matchResult": true
+        "matchResult": true,
+        "hash": "aspdlplk23o1213"
       }
     ],
     "matchResult": true
@@ -116,7 +123,8 @@
           "max": "2000-06-07T00:00:00Z"
         },
         "nullValid": false,
-        "matchResult": false
+        "matchResult": false,
+        "hash": "1243123acabsa"
       }
     ],
     "matchResult": true
@@ -134,7 +142,8 @@
           220015
         ],
         "nullValid": false,
-        "matchResult": true
+        "matchResult": true,
+        "hash": "65hgtw324326a"
       }
     ],
     "matchResult": true
@@ -150,7 +159,8 @@
           220015
         ],
         "nullValid": false,
-        "matchResult": true
+        "matchResult": true,
+        "hash": "jjgfd5642w2"
       }
     ],
     "matchResult": true
@@ -166,7 +176,8 @@
           44423
         ],
         "nullValid": false,
-        "matchResult": true
+        "matchResult": true,
+        "hash": "123214123vdfassafd"
       }
     ],
     "matchResult": true
@@ -182,7 +193,8 @@
           "(29)9999999"
         ],
         "nullValid": false,
-        "matchResult": true
+        "matchResult": true,
+        "hash": "235bhdxfj534578"
       }
     ],
     "matchResult": true
@@ -194,6 +206,7 @@
     "conditions": [
       {
         "type": "SEGMENT",
+        "hash": "rtfgvbsdfbn56me67",
         "value": {
           "aggregation": "AND",
           "name": "USER EMAIL IN SEGMENT",
@@ -205,7 +218,18 @@
                 "test@email.com"
               ],
               "nullValid": false,
-              "matchResult": true
+              "matchResult": true,
+              "hash": "dsaf423qv4324"
+            },
+            {
+              "type": "IN",
+              "criteria": "user.email",
+              "value": [
+                "test@email.com"
+              ],
+              "nullValid": false,
+              "matchResult": true,
+              "hash": "dsaf423qv4324"
             },
             {
               "type": "IN",
@@ -214,7 +238,8 @@
                 "123123dsadasd34q2213123213"
               ],
               "nullValid": false,
-              "matchResult": true
+              "matchResult": true,
+              "hash": "sdafsadd43wb32423"
             }
           ],
           "matchResult": true

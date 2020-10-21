@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @Document(collection = "segment")
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "conditions")
 public class Segment extends DbObject {
 
     private AggregationType aggregation;

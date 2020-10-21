@@ -51,7 +51,7 @@ public class ConditionConverter {
                 .setCriteria(source.getCriteria())
                 .setMatchResult(source.isMatchResult())
                 .setType(source.getType())
-                .setHash(String.valueOf(target.hashCode()));
+                .setHash(source.getHash());
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -6,7 +6,7 @@ import io.segmentme.core.db.domain.condition.AbstractCondition;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 
 
 @Data
@@ -32,13 +32,9 @@ public abstract class AbstractConditionDto {
 
     private boolean matchResult = true;
 
-    @JsonIgnore
+    @NotEmpty
     private String hash;
 
-    @JsonProperty
-    public String getHash() {
-        return hash;
-    }
 }
 
 

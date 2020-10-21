@@ -5,13 +5,13 @@ import io.segmentme.core.db.domain.condition.SegmentCondition;
 import io.segmentme.core.db.repository.SegmentRepository;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.segment.SegmentAnalysisService;
-import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
+import io.segmentme.core.service.analysis.segment.worm.Worm;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.util.function.Function;
 
 @Data
 @Component
@@ -30,18 +30,15 @@ public class SegmentConditionMatcher implements Matcher<SegmentCondition> {
 
 
     @Override
-    public boolean match(SegmentCondition condition, ContextValueHolder context, WormConsumer worm) {
-        return Optional.ofNullable(worm.findResultInCache(condition))
-                .orElseGet(() -> {
-                    var conditionMatchResult = analysisRuleService.analyze(context, condition.getValue(), worm).isValue();
+    public boolean match(SegmentCondition condition, ContextValueHolder context, Worm<Object> worm) {
+        return worm.computeResult(condition.getHash(), matchFunction(condition, context, worm)) == condition.isMatchResult();
+    }
 
-                    var result = conditionMatchResult == condition.isMatchResult();
-
-                    worm.accept(condition, conditionMatchResult);
-
-                    worm.addToCache(condition, result);
-
-                    return result;
-                });
+    private Function<String, Boolean> matchFunction(SegmentCondition condition, ContextValueHolder context, Worm<Object> worm) {
+        return hash -> {
+            var conditionMatchResult = analysisRuleService.analyze(context, condition.getValue(), worm).isValue();
+            worm.apply(condition, conditionMatchResult);
+            return conditionMatchResult;
+        };
     }
 }

@@ -19,7 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,11 +50,11 @@ public class AnalysisService {
         DebugWorm worm = new DebugWorm(context);
         SegmentAnalysisResult result = analyze(context, segment, WormConsumer.of(Collections.singletonList(worm)));
 
-        return AnalysisResult.of(Arrays.asList(result), worm.getDebugResultMap());
+        return AnalysisResult.of(Collections.singletonList(result), worm.getDebugResultMap());
     }
 
     public List<SegmentAnalysisResult> analyze(ContextValueHolder context, List<Segment> rules, StatisticWorm statisticWorm) {
-        WormConsumer worm = WormConsumer.of(Arrays.asList(statisticWorm));
+        WormConsumer worm = WormConsumer.of(Collections.singletonList(statisticWorm));
         return rules.stream().map(it -> this.analyze(context, it, worm)).collect(Collectors.toList());
     }
 
@@ -91,7 +92,8 @@ public class AnalysisService {
         }
     }
 
-    private SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, WormConsumer worm) {
-        return segmentAnalysisService.analyze(context, rule, worm);
+    @SuppressWarnings({"unchecked"})
+    private SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, Worm<?> worm) {
+        return segmentAnalysisService.analyze(context, rule, (Worm<Object>) worm);
     }
 }

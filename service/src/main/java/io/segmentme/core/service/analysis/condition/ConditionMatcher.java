@@ -2,10 +2,12 @@ package io.segmentme.core.service.analysis.condition;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.service.analysis.ContextValueHolder;
-import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
+import io.segmentme.core.service.analysis.segment.worm.Worm;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -17,21 +19,17 @@ public class ConditionMatcher {
         conditionServices = services.stream().collect(Collectors.toMap(Matcher::getType, it -> it));
     }
 
-    public boolean match(AbstractCondition condition, ContextValueHolder context, WormConsumer worm) {
-        return Optional.ofNullable(worm.findResultInCache(condition))
-                .orElseGet(() -> {
-                    var matcher = findMatcher(condition.getType());
+    public boolean match(AbstractCondition condition, ContextValueHolder context, Worm<Object> worm) {
+        return worm.computeResult(condition.getHash(), matchFunction(condition, context, worm)) == condition.isMatchResult();
+    }
 
-                    var conditionMatchResult = matcher.match(condition, context, worm);
-
-                    var result = conditionMatchResult == condition.isMatchResult();
-
-                    worm.accept(condition, conditionMatchResult);
-
-                    worm.addToCache(condition, result);
-
-                    return result;
-                });
+    private Function<String, Boolean> matchFunction(AbstractCondition condition, ContextValueHolder context, Worm<Object> worm) {
+        return hash -> {
+            var matcher = findMatcher(condition.getType());
+            var conditionMatchResult = matcher.match(condition, context, worm);
+            worm.apply(condition, conditionMatchResult);
+            return conditionMatchResult;
+        };
     }
 
     @SuppressWarnings("unchecked")
