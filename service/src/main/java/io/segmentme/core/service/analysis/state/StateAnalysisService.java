@@ -62,8 +62,11 @@ public class StateAnalysisService {
         statisticLogEntry.setContextValueHolder(contextValueHolder);
 
         try {
-            return analysisService.analyze(contextValueHolder, state.getSegment(), worm);
+            SegmentAnalysisResult result = analysisService.analyze(contextValueHolder, state.getSegment(), worm);
+            statisticLogEntry.setSegmentAnalysisResults(List.of(result));
+            return result;
         } finally {
+            statisticLogEntry.setIntegrationPointKey(state.getIntegrationPointKey());
             statisticLogEntry.setAnalyzedSegments(List.of(state.getSegment()));
             statisticLogEntry.setConditionResults(statisticWorm.getStatisticMap());
             statisticLogEntry.setAnalysisTime(System.currentTimeMillis() - analyzeStartTime);
