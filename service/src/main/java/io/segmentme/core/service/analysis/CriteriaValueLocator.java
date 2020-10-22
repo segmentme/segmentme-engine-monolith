@@ -1,6 +1,8 @@
 package io.segmentme.core.service.analysis;
 
 import io.segmentme.core.db.domain.context.ContextSchema;
+import io.segmentme.core.service.exception.CriteriaValueLocatorException;
+import io.segmentme.core.service.exception.error.CriteriaValueLocatorErrors;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,12 +25,16 @@ public class CriteriaValueLocator {
 
         Object o = context.getValues().get(clearPath);
 
+        if (o == null && !context.getValues().containsKey(clearPath)) {
+            throw new CriteriaValueLocatorException(clearPath, null, CriteriaValueLocatorErrors.CRITERIA_NOT_FOUND);
+        }
+
         if (o instanceof List) {
             try {
                 return collectionValue((List<?>) o, path, clearPath, context.getSchema());
             } catch (Throwable ex) {
                 log.warn("Unable to get value for criteria {} ", path);
-                return null;
+                throw new CriteriaValueLocatorException(clearPath, ex, CriteriaValueLocatorErrors.UNEXPECTED_LOCATOR_ERROR);
             }
         }
         return o;
@@ -44,17 +50,17 @@ public class CriteriaValueLocator {
 
         if (!hasUnderlineCollections) {
             return Optional.ofNullable(currentPosition)
-                    .map(it -> Collections.singletonList((Object) collection.get(currentPosition.getValue())))
-                    .orElse((List<Object>) collection);
+                .map(it -> Collections.singletonList((Object) collection.get(currentPosition.getValue())))
+                .orElse((List<Object>) collection);
         }
 
         if (currentPosition == null) {
             return collection.stream().map(it -> (List<?>) it)
-                    .map(it -> collectionValue(it, path, clearPath, schema))
-                    .flatMap(Collection::stream).collect(Collectors.toList());
+                .map(it -> collectionValue(it, path, clearPath, schema))
+                .flatMap(Collection::stream).collect(Collectors.toList());
         }
 
-        return collectionValue(((List<?>) collection.get(currentPosition.getRight())), path, clearPath.substring(clearPath.indexOf(".")+1), schema);
+        return collectionValue(((List<?>) collection.get(currentPosition.getRight())), path, clearPath.substring(clearPath.indexOf(".") + 1), schema);
 
     }
 
@@ -66,15 +72,19 @@ public class CriteriaValueLocator {
         if (matcher.find()) {
             String[] node = path.split("\\.");
             currentPosition = Arrays.stream(node)
-                    .sequential()
-                    .filter(it -> it.matches(ARRAY_INDEX_PATTERN.pattern()))
-                    .map(ARRAY_INDEX_PATTERN::matcher)
-                    .peek(Matcher::find)
-                    .filter(it -> clearPath.contains(it.group(1)))
-                    .findFirst()
-                    .map(it -> new MutablePair<>(clearPath.substring(0, clearPath.lastIndexOf(it.group(1)) + it.group(1).length()), Integer.valueOf(it.group(2))))
-                    .orElse(null);
+                .sequential()
+                .filter(it -> it.matches(ARRAY_INDEX_PATTERN.pattern()))
+                .map(ARRAY_INDEX_PATTERN::matcher)
+                .peek(Matcher::find)
+                .filter(it -> clearPath.contains(it.group(1)))
+                .findFirst()
+                .map(it -> new MutablePair<>(clearPath.substring(0, clearPath.lastIndexOf(it.group(1)) + it.group(1).length()), Integer.valueOf(it.group(2))))
+                .orElse(null);
         }
         return currentPosition;
+    }
+
+    public static String cleanPath(String path) {
+        return path.replaceAll(ARRAY_INDEX_CLEANER, StringUtils.EMPTY);
     }
 }

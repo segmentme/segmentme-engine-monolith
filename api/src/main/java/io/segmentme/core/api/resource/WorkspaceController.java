@@ -42,6 +42,11 @@ public class WorkspaceController {
         workspaceFacade.updateConfiguration(currentUser.getId(), workspaceId, workspaceConfiguration);
     }
 
+    @PutMapping("/{workspaceId}")
+    public void updateWorkspaceConfiguration(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @RequestBody WorkspaceDetails workspaceDetails) {
+        workspaceFacade.updateWorkspace(currentUser.getId(), workspaceId, workspaceDetails);
+    }
+
     @PostMapping("/{workspaceId}/configuration/date-format/validate")
     public WorkspaceDatesValidationResponse validateWorkspaceConfiguration(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @RequestBody WorkspaceDatesValidationRequest validationRequest) {
         return workspaceFacade.validateDateFormats(currentUser.getId(), workspaceId, validationRequest);
@@ -56,6 +61,12 @@ public class WorkspaceController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteIntegrationPoint(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @PathVariable String key) {
         workspaceFacade.removeIntegrationPoint(currentUser.getId(), workspaceId, key);
+    }
+
+    @DeleteMapping("/{workspaceId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteWorkspace(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId) {
+        workspaceFacade.removeWorkspace(currentUser.getId(), workspaceId);
     }
 
 }

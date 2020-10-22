@@ -2,11 +2,9 @@ package io.segmentme.core.service.converter
 
 import io.segmentme.core.db.domain.condition.AbstractCondition.ConditionType
 import io.segmentme.core.db.domain.condition.ArrayCondition
-import io.segmentme.core.db.domain.condition.GroupCondition
 import io.segmentme.core.db.domain.condition.SingleCondition
-import io.segmentme.core.service.dto.component.ArrayConditionDto
-import io.segmentme.core.service.dto.component.GroupConditionDto
-import io.segmentme.core.service.dto.component.SingleConditionDto
+import io.segmentme.core.service.dto.analysis.conditions.ArrayConditionDto
+import io.segmentme.core.service.dto.analysis.conditions.SingleConditionDto
 import spock.lang.Specification
 
 import static io.segmentme.core.service.helper.ConditionHelper.fillCondition
@@ -17,12 +15,10 @@ class ConditionConverterTest extends Specification {
         given:
         def source = fillCondition(isDto ? new ArrayConditionDto() : new ArrayCondition(), values, type)
         expect:
-        def target = isDto ? ConditionConverter.of(source, UUID.randomUUID().toString()) : ConditionConverter.of(source)
-        target.name == source.name
+        def target = isDto ? ConditionConverter.of(source) : ConditionConverter.of(source)
         target.type == source.type
         target.value == source.value
         target.criteria == source.criteria
-        target.description == source.description
         target.matchResult == source.matchResult
         where:
         type                        | values                         | isDto
@@ -49,12 +45,10 @@ class ConditionConverterTest extends Specification {
         given:
         def source = fillCondition(isDto ? new SingleConditionDto() : new SingleCondition(), values, type)
         expect:
-        def target = isDto ? ConditionConverter.of(source, UUID.randomUUID().toString()) : ConditionConverter.of(source)
-        target.name == source.name
+        def target = isDto ? ConditionConverter.of(source) : ConditionConverter.of(source)
         target.type == source.type
         target.value == source.value
         target.criteria == source.criteria
-        target.description == source.description
         target.matchResult == source.matchResult
         where:
         type              | values       | isDto
@@ -66,28 +60,5 @@ class ConditionConverterTest extends Specification {
         ConditionType.LT  | "1990-12-31" | false
         ConditionType.GTE | 500          | false
         ConditionType.GT  | 413          | false
-    }
-
-
-    def "group condition dto converting: #type and val: #values isDto: #isDto"() {
-        given:
-        def source = fillCondition(isDto ? new GroupConditionDto() : new GroupCondition(), values, type)
-        expect:
-        def target = isDto ? ConditionConverter.of(source, UUID.randomUUID().toString()) : ConditionConverter.of(source)
-        target.name == source.name
-        target.type == source.type
-        target.description == source.description
-        target.matchResult == source.matchResult
-        target.aggregation == source.aggregation
-        where:
-        type                | values                                                                                                                          | isDto
-        ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN)]                                                                 | true
-        ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN), fillCondition(new SingleConditionDto(), 500, ConditionType.LT)] | true
-        ConditionType.GROUP | [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN), fillCondition(new SingleConditionDto(), 500, ConditionType.LT)] | true
-        ConditionType.GROUP | [fillCondition(new GroupConditionDto(), [fillCondition(new ArrayConditionDto(), [1], ConditionType.IN)], ConditionType.GROUP)]  | true
-        ConditionType.GROUP | [fillCondition(new ArrayCondition(), [1], ConditionType.IN)]                                                                    | false
-        ConditionType.GROUP | [fillCondition(new ArrayCondition(), [1], ConditionType.IN), fillCondition(new SingleCondition(), 500, ConditionType.LT)]       | false
-        ConditionType.GROUP | [fillCondition(new ArrayCondition(), [1], ConditionType.IN), fillCondition(new SingleCondition(), 500, ConditionType.LT)]       | false
-        ConditionType.GROUP | [fillCondition(new GroupCondition(), [fillCondition(new ArrayCondition(), [1], ConditionType.IN)], ConditionType.GROUP)]        | false
     }
 }

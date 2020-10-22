@@ -23,4 +23,6 @@ public class Workspace extends DbObject {
     @CascadeSave
     private List<UserProfile> userProfiles;
 
+    private boolean isDefault;
+
 }

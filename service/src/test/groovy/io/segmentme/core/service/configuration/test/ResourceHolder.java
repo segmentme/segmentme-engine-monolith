@@ -3,7 +3,8 @@ package io.segmentme.core.service.configuration.test;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.segmentme.core.db.domain.rule.AbstractAnalysisRule;
+import io.segmentme.core.db.domain.segment.Segment;
+import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import lombok.Data;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,8 +41,14 @@ public class ResourceHolder {
     }
 
     @SneakyThrows
-    public List<AbstractAnalysisRule<?>> getRuleSchema() {
-        return OBJECT_MAPPER.readValue(ruleSchema.getInputStream(), new TypeReference<List<AbstractAnalysisRule<?>>>() {});
+    public List<Segment> getSegments() {
+        return OBJECT_MAPPER.readValue(ruleSchema.getInputStream(), new TypeReference<>() {});
+    }
+
+
+    @SneakyThrows
+    public List<SegmentDto> getSegmentsDto() {
+        return OBJECT_MAPPER.readValue(ruleSchema.getInputStream(), new TypeReference<>() {});
     }
 
     @SneakyThrows

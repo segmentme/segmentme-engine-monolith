@@ -13,13 +13,12 @@ import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.ContextValuesExtractor;
 import io.segmentme.core.service.analysis.CriteriaValueLocator;
-import io.segmentme.core.service.condition.ConditionManager;
+import io.segmentme.core.service.analysis.segment.SegmentManager;
 import io.segmentme.core.service.converter.ContextSchemaConverter;
 import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import io.segmentme.core.service.exception.ContextSchemaManagerException;
 import io.segmentme.core.service.exception.ContextSchemaValidationException;
 import io.segmentme.core.service.exception.error.ContextMangerErrors;
-import io.segmentme.core.service.rule.RuleManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -43,9 +42,7 @@ public class ContextSchemaManager {
 
     private final WorkspaceService workspaceService;
 
-    private final RuleManager ruleManager;
-
-    private final ConditionManager conditionManager;
+    private final SegmentManager segmentManager;
 
     private final ContextValuesExtractor contextValuesExtractor;
 
@@ -124,11 +121,8 @@ public class ContextSchemaManager {
     }
 
     public void deleteContextSchema(String contextSchemaId) {
-
         contextSchemaService.deleteById(contextSchemaId);
-        ruleManager.unlinkFromContext(contextSchemaId);
-        conditionManager.unlinkFromContextId(contextSchemaId);
-
+        segmentManager.unlinkFromContext(contextSchemaId);
     }
 
     public ContextSchemaHolder getById(String contextSchemaId) {
@@ -138,7 +132,7 @@ public class ContextSchemaManager {
     private Map<String, Object> getNodeValues(ContextSchema contextSchema, ContextValueHolder payload) {
         return contextSchema.getInlinePath().entrySet().stream()
             .filter(it -> it.getValue().getRootType() != SchemaNodeType.OBJECT && it.getValue().getSubType() != SchemaNodeType.OBJECT)
-            .collect(HashMap::new, (m, v) -> m.put(v.getKey(), CriteriaValueLocator.getCriteriaValue(v.getKey(), payload)), HashMap::putAll);
+            .collect(HashMap::new, (m, v) -> m.put(v.getKey(), payload.getValue(v.getKey())), HashMap::putAll);
     }
 
 }

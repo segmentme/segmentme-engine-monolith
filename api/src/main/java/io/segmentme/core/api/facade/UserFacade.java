@@ -27,11 +27,18 @@ public class UserFacade {
 
     private UserDetails getUserDetails(UserHolder createdUser) {
         List<UserProfile> userProfiles = userProfileManager.getUserProfiles(createdUser.getId());
+        List<WorkspaceProfile> workspaceProfiles = userProfiles.stream()
+            .map(this::convertToWorkspaceProfile)
+            .map(it -> it.setActive(it.getWorkspaceId().equals(createdUser.getLastActiveWorkspace()))).collect(Collectors.toList());
+
+        if (workspaceProfiles.stream().noneMatch(WorkspaceProfile::isActive)) {
+            WorkspaceProfile workspaceProfile = workspaceProfiles.get(0);
+            workspaceProfile.setActive(true);
+            userManager.switchWorkspace(createdUser.getId(), workspaceProfile.getWorkspaceId());
+        }
         return new UserDetails()
             .setUserBasicInfo(convertToBasicUserInfo(createdUser))
-            .setProfiles(userProfiles.stream()
-                .map(this::convertToWorkspaceProfile)
-                .map(it -> it.setActive(it.getWorkspaceId().equals(createdUser.getLastActiveWorkspace()))).collect(Collectors.toList()));
+            .setProfiles(workspaceProfiles);
     }
 
     private UserBasicInfo convertToBasicUserInfo(UserHolder createdUser) {
