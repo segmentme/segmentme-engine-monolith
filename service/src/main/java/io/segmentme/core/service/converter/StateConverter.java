@@ -12,8 +12,7 @@ public class StateConverter {
                 .setName(target.getName())
                 .setSegment(SegmentConverter.of(target.getSegment(), null, null))
                 .setValue(target.getValue())
-                .setContextId(target.getContextId())
-                .setIntegrationPoint(target.getIntegrationPoint())
+                .setIntegrationPointKey(target.getIntegrationPointKey())
                 .setId(target.getId());
     }
 
@@ -22,8 +21,7 @@ public class StateConverter {
                 .setName(target.getName())
                 .setSegment(SegmentConverter.of(target.getSegment()))
                 .setValue(target.getValue())
-                .setContextId(target.getContextId())
-                .setIntegrationPoint(target.getIntegrationPoint())
+                .setIntegrationPointKey(target.getIntegrationPointKey())
                 .setId(target.getId());
     }
 }

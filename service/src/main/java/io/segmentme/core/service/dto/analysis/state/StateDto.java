@@ -15,9 +15,8 @@ public class StateDto {
     @NotEmpty
     private String name;
 
-    private String integrationPoint;
-
-    private String contextId;
+    @NotEmpty
+    private String integrationPointKey;
 
     @NotNull
     private JsonNode value;

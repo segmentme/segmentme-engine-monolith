@@ -21,13 +21,13 @@ public class StateManager {
 
     private final StateService stateService;
 
-    public StateDto create(String workspaceId, StateDto state) {
-        State newState = StateConverter.of(state).setWorkSpaceId(workspaceId);
+    public StateDto create(StateDto state) {
+        State newState = StateConverter.of(state);
         return StateConverter.of(stateService.create(newState));
     }
 
-    public List<StateDto> getByWorkspaceId(String workspaceId) {
-        return stateService.findByWorkspaceId(workspaceId)
+    public List<StateDto> getByIntegrationPointKey(String integrationPoint) {
+        return stateService.findByIntegrationPointKey(integrationPoint)
                 .stream()
                 .map(StateConverter::of)
                 .collect(Collectors.toList());
@@ -56,8 +56,7 @@ public class StateManager {
         return (State) state.setSegment(updatedState.getSegment())
                 .setValue(updatedState.getValue())
                 .setName(updatedState.getName())
-                .setContextId(updatedState.getContextId())
-                .setIntegrationPoint(updatedState.getIntegrationPoint())
+                .setIntegrationPointKey(updatedState.getIntegrationPointKey())
                 .setId(stateId);
     }
 }

@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotEmpty;
+
 @Data
 @Document("state")
 @EqualsAndHashCode(callSuper = true)
@@ -20,12 +22,6 @@ public class State extends DbObject {
     private Segment segment;
 
     @Indexed
-    private String workSpaceId;
-
-    @Indexed
-    private String integrationPoint;
-
-    @Indexed
-    private String contextId;
+    private String integrationPointKey;
 
 }
