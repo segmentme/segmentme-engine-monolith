@@ -12,4 +12,6 @@ public class WorkspaceProfile {
     private Role role;
 
     private boolean active;
+
+    private boolean isDefault;
 }

@@ -8,12 +8,7 @@ import io.segmentme.core.db.service.segment.SegmentService;
 import io.segmentme.core.db.service.statistic.StatisticService;
 import io.segmentme.core.service.dto.statistic.StatisticLogEntry;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,16 +16,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
-@Component
-@RequiredArgsConstructor
 public class StatisticManager {
 
     private final StatisticService statisticService;
 
-    private final SegmentService segmentService;
+    private SegmentService segmentService;
 
 
-    @Async
     @EventListener
     public void saveStatistic(StatisticLogEntry statisticLogEntry) {
         StatisticLog statisticLog = new StatisticLog();
@@ -49,9 +41,7 @@ public class StatisticManager {
 
     private List<StatisticLog.SegmentStatistic> getSegmentStatistics(StatisticLogEntry statisticLogEntry) {
         return statisticLogEntry.getAnalyzedSegments().stream()
-            .map(it -> new StatisticLog.SegmentStatistic().setId(it.getId())
-                    .setResult(statisticLogEntry.getSegmentAnalysisResults().stream().filter(result -> result.getSegmentId().equalsIgnoreCase(it.getId())).findFirst().get().isValue())
-                    .setConditionsHash(getSegmentConditions(it, new HashMap<>()))).collect(Collectors.toList());
+            .map(it -> new StatisticLog.SegmentStatistic().setId(it.getId()).setResult(statisticLogEntry.getSegmentAnalysisResults().stream().filter(result -> result.getSegmentId().equalsIgnoreCase(it.getId())).findFirst().get().isValue()).setConditionsHash(getSegmentConditions(it, new HashMap<>()))).collect(Collectors.toList());
     }
 
     private List<StatisticLog.ConditionStatistic> getConditionsBreakdown(StatisticLogEntry statisticLogEntry) {
