@@ -19,8 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -58,7 +57,15 @@ public class AnalysisService {
         return rules.stream().map(it -> this.analyze(context, it, worm)).collect(Collectors.toList());
     }
 
+    public List<SegmentAnalysisResult> analyze(String integrationPointKey, JsonNode payload, Segment segment){
+        return analyze(null, integrationPointKey, payload, List.of(segment));
+    }
+
     public List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload) {
+       return analyze(contextId, integrationPointKey, payload, analysisRuleRepository.findByIntegrationPointKey(integrationPointKey));
+    }
+
+    private List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload, List<Segment> segments){
         StatisticLogEntry statisticLogEntry = new StatisticLogEntry();
         StatisticWorm worm = new StatisticWorm();
         long analyzeStartTime = System.currentTimeMillis();
@@ -67,12 +74,12 @@ public class AnalysisService {
         Workspace workspace = workspaceService.findByIntegrationPointKey(integrationPointKey).orElseThrow(() -> new IllegalArgumentException("Workspace not found"));
         List<ContextSchema> schemas = contextSchemaService.findByIntegrationPointKeys(Collections.singletonList(integrationPointKey), false);
 
-        List<Segment> segments = analysisRuleRepository.findByIntegrationPointKey(integrationPointKey);
         if (StringUtils.isNoneBlank(contextId)) {
             schemas = schemas.stream().filter(it -> it.getId().equalsIgnoreCase(contextId)).findFirst().map(Collections::singletonList).orElseThrow(() -> new IllegalArgumentException("Context not found"));
             segments = segments.stream().filter(it -> it.getContextId().equalsIgnoreCase(contextId)).collect(Collectors.toList());
         } else {
-            schemas = Collections.emptyList();
+            schemas = new ArrayList<>();
+            schemas.add(null);
         }
 
         List<Segment> finalSegments = segments;
@@ -93,7 +100,7 @@ public class AnalysisService {
     }
 
     @SuppressWarnings({"unchecked"})
-    public SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, Worm<?> worm) {
+    private SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, Worm<?> worm) {
         return segmentAnalysisService.analyze(context, rule, (Worm<Object>) worm);
     }
 }

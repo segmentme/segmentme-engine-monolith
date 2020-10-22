@@ -11,6 +11,8 @@ public class SegmentAnalysisResult {
 
     private String segmentId;
 
+    private String hash;
+
     private boolean value;
 
 }

@@ -31,6 +31,8 @@ public class StatisticLog extends DbObject {
     public static class SegmentStatistic {
         private String id;
 
+        private String hash;
+
         private Map<String, Integer> conditionsHash;
 
         private boolean result;

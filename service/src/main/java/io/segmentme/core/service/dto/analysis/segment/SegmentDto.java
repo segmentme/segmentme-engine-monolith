@@ -19,6 +19,8 @@ public class SegmentDto {
     @NotEmpty
     private String name;
 
+    private String hash;
+
     @NotEmpty
     private List<AbstractConditionDto> conditions;
 

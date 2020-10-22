@@ -25,6 +25,8 @@ public class Segment extends DbObject {
 
     private boolean matchResult;
 
+    private String hash;
+
     @Indexed
     private String contextId;
 
