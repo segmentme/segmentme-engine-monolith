@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StateService extends AbstractDatabaseService<State, StateRepository> {
 
-    public List<State> findByWorkspaceId(String workspaceId) {
-        return repository.findByWorkSpaceId(workspaceId);
+    public List<State> findByIntegrationPointKey(String integrationPointKey) {
+        return repository.findByIntegrationPointKey(integrationPointKey);
     }
 }

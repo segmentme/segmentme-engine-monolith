@@ -93,7 +93,7 @@ public class AnalysisService {
     }
 
     @SuppressWarnings({"unchecked"})
-    private SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, Worm<?> worm) {
+    public SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, Worm<?> worm) {
         return segmentAnalysisService.analyze(context, rule, (Worm<Object>) worm);
     }
 }

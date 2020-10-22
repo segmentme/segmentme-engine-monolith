@@ -15,14 +15,14 @@ public class StateController {
 
     private final StateManager stateManager;
 
-    @PostMapping("/workspace/{workspaceId}")
-    public StateDto create(@PathVariable String workspaceId, @Valid @RequestBody StateDto state) {
-        return stateManager.create(workspaceId, state);
+    @PostMapping
+    public StateDto create(@Valid @RequestBody StateDto state) {
+        return stateManager.create(state);
     }
 
-    @GetMapping("/workspace/{workspaceId}")
-    public List<StateDto> getAllInWorkspace(@PathVariable String workspaceId) {
-        return stateManager.getByWorkspaceId(workspaceId);
+    @GetMapping("/integrationPointKey/{integrationPointKey}")
+    public List<StateDto> getAllInWorkspace(@PathVariable String integrationPointKey) {
+        return stateManager.getByIntegrationPointKey(integrationPointKey);
     }
 
     @GetMapping("/{stateId}")

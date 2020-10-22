@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface StateRepository extends MongoRepository<State, String> {
 
-    List<State> findByWorkSpaceId(String workspaceId);
+    List<State> findByIntegrationPointKey(String integrationPoint);
 }

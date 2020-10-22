@@ -41,16 +41,14 @@ class StateControllerTest extends BaseControllerTest {
     def 'create state with segment #segmentName'() {
         given:
         def stateDto = createState(getSegment(segmentName))
-        def workspaceId = randomUUID().toString()
         and:
-        def response = sendRequest(post("/state/workspace/${workspaceId}"), stateDto)
+        def response = sendRequest(post("/state"), stateDto)
         expect:
         response.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath('$.id').isNotEmpty())
                 .andExpect(jsonPath('$.name').value(stateDto.name))
-                .andExpect(jsonPath('$.contextId').value(stateDto.contextId))
-                .andExpect(jsonPath('$.integrationPoint').value(stateDto.integrationPoint))
+                .andExpect(jsonPath('$.integrationPoint').value(stateDto.integrationPointKey))
                 .andExpect(jsonPath('$.segment').isNotEmpty())
         where:
         segmentName                          | _
@@ -65,9 +63,8 @@ class StateControllerTest extends BaseControllerTest {
         given:
         def stateDto = createState(null)
         stateDto.setName(null).setValue(null)
-        def workspaceId = randomUUID().toString()
         and:
-        def response = sendRequest(post("/state/workspace/${workspaceId}"), stateDto)
+        def response = sendRequest(post("/state"), stateDto)
         expect:
         response.andExpect(status().isBadRequest())
                 .andDo(print())
@@ -83,7 +80,7 @@ class StateControllerTest extends BaseControllerTest {
 
     def 'update state for workplace'() {
         given:
-        def state = stateManager.create(randomUUID().toString(), createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")))
+        def state = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")))
         state.setName("UPDATED_NAME")
         when:
         def response = sendRequest(put("/state/${state.id}"), state)
@@ -92,14 +89,13 @@ class StateControllerTest extends BaseControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath('$.id').isNotEmpty())
                 .andExpect(jsonPath('$.name').value("UPDATED_NAME"))
-                .andExpect(jsonPath('$.contextId').value(state.contextId))
-                .andExpect(jsonPath('$.integrationPoint').value(state.integrationPoint))
+                .andExpect(jsonPath('$.integrationPoint').value(state.integrationPointKey))
                 .andExpect(jsonPath('$.segment').isNotEmpty())
     }
 
     def 'update state for workplace - validation error'() {
         given:
-        def state = stateManager.create(randomUUID().toString(), createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")))
+        def state = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")))
         state.setName(null)
         when:
         def response = sendRequest(put("/state/${state.id}"), state)
@@ -113,11 +109,10 @@ class StateControllerTest extends BaseControllerTest {
 
     def 'get states for workplace'() {
         given:
-        def workspaceId = randomUUID().toString()
-        stateManager.create(workspaceId, createState(getSegment("SECOND_PHONE_CONTAINS_ONLY")))
-        stateManager.create(workspaceId, createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")))
+        def firstState = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY")))
+        stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")).setIntegrationPointKey(firstState.integrationPointKey))
         when:
-        def response = sendRequest(get("/state/workspace/${workspaceId}"))
+        def response = sendRequest(get("/state/integrationPoint/${firstState.integrationPointKey}"))
         then:
         response.andExpect(status().isOk())
                 .andDo(print())
@@ -129,9 +124,8 @@ class StateControllerTest extends BaseControllerTest {
 
     def 'delete state'() {
         given:
-        def workspaceId = randomUUID().toString()
-        def firstSegment = stateManager.create(workspaceId, createState(getSegment("SECOND_PHONE_CONTAINS_ONLY")))
-        def secondSegment = stateManager.create(workspaceId, createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")))
+        def firstSegment = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY")))
+        def secondSegment = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")))
         when:
         def response = sendRequest(delete("/state/${secondSegment.id}"))
         then:
@@ -145,8 +139,7 @@ class StateControllerTest extends BaseControllerTest {
     private StateDto createState(SegmentDto segment) {
         return new StateDto()
                 .setName(randomUUID().toString())
-                .setContextId(randomUUID().toString())
-                .setIntegrationPoint(randomUUID().toString())
+                .setIntegrationPointKey(randomUUID().toString())
                 .setSegment(segment)
                 .setValue(objectMapper.convertValue(Map.of("name", "test"), JsonNode.class))
     }
