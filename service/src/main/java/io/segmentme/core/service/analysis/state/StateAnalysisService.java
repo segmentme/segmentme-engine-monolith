@@ -42,8 +42,9 @@ public class StateAnalysisService {
 
     public List<StateAnalysisResult> analyse(String integrationPointKey, JsonNode payload) {
         List<State> sates = stateService.findByIntegrationPointKey(integrationPointKey);
-        return sates.stream().map(it -> StateAnalysisResult.of(it.getName(), analyse(it, payload).isValue() ? it.getValue() : null))
-                .filter(it -> it.getValue() != null)
+        return sates.stream()
+                .filter(it -> analyse(it, payload).isValue())
+                .map(it -> StateAnalysisResult.of(it.getName(), it.getValue()))
                 .collect(Collectors.toList());
     }
 
