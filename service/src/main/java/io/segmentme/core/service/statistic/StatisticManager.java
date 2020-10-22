@@ -8,7 +8,10 @@ import io.segmentme.core.db.service.segment.SegmentService;
 import io.segmentme.core.db.service.statistic.StatisticService;
 import io.segmentme.core.service.dto.statistic.StatisticLogEntry;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,13 +19,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
+@Component
+@RequiredArgsConstructor
 public class StatisticManager {
 
     private final StatisticService statisticService;
 
-    private SegmentService segmentService;
+    private final SegmentService segmentService;
 
 
+    @Async
     @EventListener
     public void saveStatistic(StatisticLogEntry statisticLogEntry) {
         StatisticLog statisticLog = new StatisticLog();
