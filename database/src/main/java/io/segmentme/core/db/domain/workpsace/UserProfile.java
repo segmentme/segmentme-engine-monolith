@@ -21,4 +21,6 @@ public class UserProfile extends DbObject {
     private String workspaceName;
 
     private Role role;
+
+    private boolean isDefault;
 }

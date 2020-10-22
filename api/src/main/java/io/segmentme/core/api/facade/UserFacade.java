@@ -32,9 +32,10 @@ public class UserFacade {
             .map(it -> it.setActive(it.getWorkspaceId().equals(createdUser.getLastActiveWorkspace()))).collect(Collectors.toList());
 
         if (workspaceProfiles.stream().noneMatch(WorkspaceProfile::isActive)) {
-            WorkspaceProfile workspaceProfile = workspaceProfiles.get(0);
-            workspaceProfile.setActive(true);
-            userManager.switchWorkspace(createdUser.getId(), workspaceProfile.getWorkspaceId());
+            workspaceProfiles.stream().filter(WorkspaceProfile::isDefault).findFirst().ifPresent(it -> {
+                it.setActive(true);
+                userManager.switchWorkspace(createdUser.getId(), it.getWorkspaceId());
+            });
         }
         return new UserDetails()
             .setUserBasicInfo(convertToBasicUserInfo(createdUser))
@@ -47,6 +48,7 @@ public class UserFacade {
 
     private WorkspaceProfile convertToWorkspaceProfile(UserProfile userProfile) {
         return new WorkspaceProfile().setRole(userProfile.getRole())
+            .setDefault(userProfile.isDefault())
             .setWorkspaceId(userProfile.getWorkspaceId())
             .setWorkspaceName(userProfile.getWorkspaceName());
     }

@@ -58,7 +58,7 @@ public class WorkspaceManager {
         workspace.setName(name);
         workspace.setIntegrationPoints(Arrays.asList(generateIntegrationPoint().setName(DEFAULT)));
         workspace.setConfiguration(generateDefaultWorkspaceConfiguration());
-        workspace.setUserProfiles(Arrays.asList(new UserProfile().setWorkspaceName(name).setRole(Role.OWNER).setUserId(ownerId)));
+        workspace.setUserProfiles(Arrays.asList(new UserProfile().setWorkspaceName(name).setDefault(isDefault).setRole(Role.OWNER).setUserId(ownerId)));
         workspace.setDefault(isDefault);
         return WorkspaceHolderConverter.toHolder(workspaceService.create(workspace));
     }
