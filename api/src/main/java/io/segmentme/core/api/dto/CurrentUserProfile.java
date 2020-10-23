@@ -4,7 +4,7 @@ import io.segmentme.core.db.domain.workpsace.Role;
 import lombok.Data;
 
 @Data
-public class WorkspaceProfile {
+public class CurrentUserProfile {
     private String workspaceId;
 
     private String workspaceName;

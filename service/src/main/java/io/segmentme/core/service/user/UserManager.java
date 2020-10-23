@@ -13,6 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -64,5 +68,11 @@ public class UserManager {
             return;
         }
         createUser(holder);
+    }
+
+    public List<User> getByIds(List<String> userIds) {
+        return StreamSupport.stream(userService.findByIds(userIds).spliterator(), false)
+            .collect(Collectors.toList());
+
     }
 }

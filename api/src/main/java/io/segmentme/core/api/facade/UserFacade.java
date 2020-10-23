@@ -1,8 +1,8 @@
 package io.segmentme.core.api.facade;
 
+import io.segmentme.core.api.dto.CurrentUserProfile;
 import io.segmentme.core.api.dto.UserBasicInfo;
 import io.segmentme.core.api.dto.UserDetails;
-import io.segmentme.core.api.dto.WorkspaceProfile;
 import io.segmentme.core.db.domain.workpsace.UserProfile;
 import io.segmentme.core.service.dto.UserHolder;
 import io.segmentme.core.service.user.UserManager;
@@ -27,12 +27,12 @@ public class UserFacade {
 
     private UserDetails getUserDetails(UserHolder createdUser) {
         List<UserProfile> userProfiles = userProfileManager.getUserProfiles(createdUser.getId());
-        List<WorkspaceProfile> workspaceProfiles = userProfiles.stream()
+        List<CurrentUserProfile> workspaceProfiles = userProfiles.stream()
             .map(this::convertToWorkspaceProfile)
             .map(it -> it.setActive(it.getWorkspaceId().equals(createdUser.getLastActiveWorkspace()))).collect(Collectors.toList());
 
-        if (workspaceProfiles.stream().noneMatch(WorkspaceProfile::isActive)) {
-            workspaceProfiles.stream().filter(WorkspaceProfile::isDefault).findFirst().ifPresent(it -> {
+        if (workspaceProfiles.stream().noneMatch(CurrentUserProfile::isActive)) {
+            workspaceProfiles.stream().filter(CurrentUserProfile::isDefault).findFirst().ifPresent(it -> {
                 it.setActive(true);
                 userManager.switchWorkspace(createdUser.getId(), it.getWorkspaceId());
             });
@@ -46,8 +46,8 @@ public class UserFacade {
         return new UserBasicInfo().setEmail(createdUser.getEmail()).setId(createdUser.getId()).setName(createdUser.getName());
     }
 
-    private WorkspaceProfile convertToWorkspaceProfile(UserProfile userProfile) {
-        return new WorkspaceProfile().setRole(userProfile.getRole())
+    private CurrentUserProfile convertToWorkspaceProfile(UserProfile userProfile) {
+        return new CurrentUserProfile().setRole(userProfile.getRole())
             .setDefault(userProfile.isDefault())
             .setWorkspaceId(userProfile.getWorkspaceId())
             .setWorkspaceName(userProfile.getWorkspaceName());

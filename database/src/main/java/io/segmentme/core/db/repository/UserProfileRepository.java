@@ -8,4 +8,6 @@ import java.util.List;
 public interface UserProfileRepository extends MongoRepository<UserProfile, String> {
 
     List<UserProfile> findAllByUserId(String id);
+
+    List<UserProfile> getAllByWorkspaceId(String workspaceId);
 }

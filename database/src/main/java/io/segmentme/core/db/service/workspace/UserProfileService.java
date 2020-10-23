@@ -16,7 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserProfileService extends AbstractDatabaseService<UserProfile, UserProfileRepository> {
 
-    public List<UserProfile> getUserProfiles(String id){
+    public List<UserProfile> getUserProfiles(String id) {
         return repository.findAllByUserId(id);
+    }
+
+    public List<UserProfile> getWorkspaceProfiles(String workspaceId) {
+        return repository.getAllByWorkspaceId(workspaceId);
     }
 }

@@ -4,10 +4,15 @@ import io.segmentme.core.api.config.AuthUser;
 import io.segmentme.core.api.dto.WorkspaceDatesValidationRequest;
 import io.segmentme.core.api.dto.WorkspaceDatesValidationResponse;
 import io.segmentme.core.api.dto.WorkspaceDetails;
+import io.segmentme.core.api.dto.WorkspaceUserProfile;
+import io.segmentme.core.db.domain.user.User;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
+import io.segmentme.core.db.domain.workpsace.UserProfile;
 import io.segmentme.core.db.domain.workpsace.WorkspaceConfiguration;
 import io.segmentme.core.service.dto.WorkspaceHolder;
+import io.segmentme.core.service.user.UserManager;
 import io.segmentme.core.service.utils.DateResolver;
+import io.segmentme.core.service.workspace.UserProfileManager;
 import io.segmentme.core.service.workspace.WorkspaceManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -28,6 +30,10 @@ import java.util.stream.Collectors;
 public class WorkspaceFacade {
 
     private final WorkspaceManager workspaceManager;
+
+    private final UserProfileManager userProfileManager;
+
+    private final UserManager userManager;
 
     public WorkspaceDetails getWorkspaceDetails(String ownerId, String workspaceId) {
         return convertToWorkspaceDetails(workspaceManager.getWorkspace(workspaceId));
@@ -109,5 +115,16 @@ public class WorkspaceFacade {
 
     public void removeWorkspace(String id, String workspaceId) {
         workspaceManager.removeWorkspace(workspaceId);
+    }
+
+    public List<WorkspaceUserProfile> getWorkspaceProfiles(String workspaceId) {
+        List<UserProfile> workspaceProfiles = userProfileManager.getWorkspaceProfiles(workspaceId);
+        List<String> userIds = workspaceProfiles.stream().map(UserProfile::getUserId).collect(Collectors.toList());
+        Map<String, User> users = userManager.getByIds(userIds).stream().collect(Collectors.toMap(User::getId, u -> u));
+        return workspaceProfiles.stream().map(profile -> this.convertToWorkspaceProfile(profile, users.get(profile.getUserId()))).collect(Collectors.toList());
+    }
+
+    private WorkspaceUserProfile convertToWorkspaceProfile(UserProfile profile, User user) {
+        return new WorkspaceUserProfile().setEmail(user.getEmail()).setName(user.getName()).setProfileId(profile.getId()).setUserId(user.getId()).setRole(profile.getRole());
     }
 }

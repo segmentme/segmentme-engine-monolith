@@ -16,4 +16,8 @@ public class UserProfileManager {
         return userProfileService.getUserProfiles(userId);
     }
 
+    public List<UserProfile> getWorkspaceProfiles(String workspaceId) {
+        return userProfileService.getWorkspaceProfiles(workspaceId);
+    }
+
 }

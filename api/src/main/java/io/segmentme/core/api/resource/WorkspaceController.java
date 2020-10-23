@@ -4,6 +4,7 @@ import io.segmentme.core.api.config.AuthUser;
 import io.segmentme.core.api.dto.WorkspaceDatesValidationRequest;
 import io.segmentme.core.api.dto.WorkspaceDatesValidationResponse;
 import io.segmentme.core.api.dto.WorkspaceDetails;
+import io.segmentme.core.api.dto.WorkspaceUserProfile;
 import io.segmentme.core.api.facade.WorkspaceFacade;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.WorkspaceConfiguration;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -67,6 +70,12 @@ public class WorkspaceController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWorkspace(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId) {
         workspaceFacade.removeWorkspace(currentUser.getId(), workspaceId);
+    }
+
+
+    @GetMapping("/{workspaceId}/profiles")
+    public List<WorkspaceUserProfile> getWorkspaceList(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId) {
+        return workspaceFacade.getWorkspaceProfiles(workspaceId);
     }
 
 }

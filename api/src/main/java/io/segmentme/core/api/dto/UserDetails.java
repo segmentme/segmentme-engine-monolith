@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class UserDetails {
     private UserBasicInfo userBasicInfo;
-    private List<WorkspaceProfile> profiles;
+    private List<CurrentUserProfile> profiles;
 }
