@@ -11,6 +11,7 @@ import io.segmentme.core.db.domain.workpsace.WorkspaceConfiguration;
 import io.segmentme.core.service.workspace.WorkspaceManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +25,10 @@ public class WorkspaceController {
     private final WorkspaceFacade workspaceFacade;
 
     @GetMapping("/{workspaceId}")
+    @PreAuthorize("@workspaceSecurityService.isMyWorkspace(#workspaceId, #currentUser.id)")
     public WorkspaceDetails getWorkspace(@AuthenticationPrincipal AuthUser currentUser,
                                          @PathVariable String workspaceId) {
-        return workspaceFacade.getWorkspaceDetails(currentUser.getId(), workspaceId);
+        return workspaceFacade.getWorkspaceDetails(workspaceId);
     }
 
     @PostMapping
@@ -36,6 +38,7 @@ public class WorkspaceController {
     }
 
     @PostMapping("/{workspaceId}/integration-point")
+    @PreAuthorize("@workspaceSecurityService.isMyWorkspace(#workspaceId, #currentUser.id)")
     public IntegrationPoint createIntegrationPoint(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String workspaceId, @RequestParam String name) {
         return workspaceFacade.addIntegrationPoint(currentUser, workspaceId, name);
     }

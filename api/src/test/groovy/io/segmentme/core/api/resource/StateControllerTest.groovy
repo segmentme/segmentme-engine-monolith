@@ -3,11 +3,13 @@ package io.segmentme.core.api.resource
 import com.fasterxml.jackson.databind.JsonNode
 import io.segmentme.core.api.common.BaseControllerTest
 import io.segmentme.core.api.error.dto.ErrorType
+import io.segmentme.core.api.security.SecurityService
 import io.segmentme.core.db.repository.StateRepository
 import io.segmentme.core.service.analysis.state.StateManager
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto
 import io.segmentme.core.service.dto.analysis.state.StateDto
+import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
@@ -34,6 +36,13 @@ class StateControllerTest extends BaseControllerTest {
     @Autowired
     protected StateManager stateManager
 
+    @SpringBean
+    private SecurityService securityService = Mock(SecurityService.class)
+
+    def setup(){
+        securityService.isValidIntegrationPointKey(_, _) >> true
+    }
+
     def cleanup() {
         stateRepository.deleteAll()
     }
@@ -48,7 +57,7 @@ class StateControllerTest extends BaseControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath('$.id').isNotEmpty())
                 .andExpect(jsonPath('$.name').value(stateDto.name))
-                .andExpect(jsonPath('$.integrationPoint').value(stateDto.integrationPointKey))
+                .andExpect(jsonPath('$.integrationPointKey').value(stateDto.integrationPointKey))
                 .andExpect(jsonPath('$.segment').isNotEmpty())
         where:
         segmentName                          | _
@@ -89,7 +98,7 @@ class StateControllerTest extends BaseControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath('$.id').isNotEmpty())
                 .andExpect(jsonPath('$.name').value("UPDATED_NAME"))
-                .andExpect(jsonPath('$.integrationPoint').value(state.integrationPointKey))
+                .andExpect(jsonPath('$.integrationPointKey').value(state.integrationPointKey))
                 .andExpect(jsonPath('$.segment').isNotEmpty())
     }
 
@@ -112,7 +121,7 @@ class StateControllerTest extends BaseControllerTest {
         def firstState = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY")))
         stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")).setIntegrationPointKey(firstState.integrationPointKey))
         when:
-        def response = sendRequest(get("/state/integrationPoint/${firstState.integrationPointKey}"))
+        def response = sendRequest(get("/state/integrationPointKey/${firstState.integrationPointKey}"))
         then:
         response.andExpect(status().isOk())
                 .andDo(print())
