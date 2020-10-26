@@ -3,12 +3,10 @@ package io.segmentme.core.db.domain.context;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -31,7 +29,7 @@ public class ContextSchema extends DbObject {
 
 
     public String computeHash() {
-        return DigestUtils.sha256Hex(inlinePath.entrySet().stream().map(it -> it.getKey() + ":" + it.getValue().getRootType() + "," + it.getValue().getSubType()).collect(Collectors.joining()));
+        return String.valueOf(inlinePath.hashCode());
     }
 
     @Data
@@ -44,4 +42,5 @@ public class ContextSchema extends DbObject {
             return new InlineType(rootType, subType);
         }
     }
+
 }
