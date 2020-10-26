@@ -36,8 +36,11 @@ public class ContextSchemaFacade {
 
 
     public ContextSchemaValidationResult validate(String userId, String workspaceId, ContextSchemaValidationRequest request) {
-        ContextSchemaResolveResult originalSchema = this.resolve(userId, workspaceId, request.getRawPayload());
         ContextSchemaHolder updatedSchema = contextSchemaManager.resolveContextSchema(request.getRootNode());
+        if (request.getRawPayload() == null || request.getRawPayload().isNull()) {
+            return new ContextSchemaValidationResult().setValidationEntries(contextSchemaManager.validate(updatedSchema));
+        }
+        ContextSchemaResolveResult originalSchema = this.resolve(userId, workspaceId, request.getRawPayload());
 
 
         if (CollectionUtils.isNotEmpty(originalSchema.getValidationEntries())) {
