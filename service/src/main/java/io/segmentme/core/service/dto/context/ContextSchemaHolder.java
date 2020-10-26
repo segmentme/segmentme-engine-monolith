@@ -21,4 +21,6 @@ public class ContextSchemaHolder {
     private String rawPayload;
 
     private Map<String, Object> nodeValues;
+
+    private String hash;
 }

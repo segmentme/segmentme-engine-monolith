@@ -82,6 +82,7 @@ public class ContextSchemaFacade {
             .setNodeValues(holder.getNodeValues()).setInlinePath(holder.getInlinePath())
             .setId(holder.getId())
             .setIntegrationPointKey(holder.getIntegrationPointKey())
+            .setHash(holder.getHash())
             .setName(holder.getName());
     }
 
@@ -96,6 +97,7 @@ public class ContextSchemaFacade {
     private ContextSchemaBasicInfo convertToBasicDto(ContextSchemaHolder contextSchema) {
         return (ContextSchemaBasicInfo) new ContextSchemaBasicInfo()
             .setInlinePath(contextSchema.getInlinePath())
+            .setHash(contextSchema.getHash())
             .setIntegrationPointKey(contextSchema.getIntegrationPointKey())
             .setName(contextSchema.getName())
             .setId(contextSchema.getId());

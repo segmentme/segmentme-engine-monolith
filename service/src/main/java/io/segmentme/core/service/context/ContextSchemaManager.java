@@ -12,12 +12,10 @@ import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.ContextValuesExtractor;
-import io.segmentme.core.service.analysis.CriteriaValueLocator;
 import io.segmentme.core.service.analysis.segment.SegmentManager;
 import io.segmentme.core.service.converter.ContextSchemaConverter;
 import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import io.segmentme.core.service.exception.ContextSchemaManagerException;
-import io.segmentme.core.service.exception.ContextSchemaValidationException;
 import io.segmentme.core.service.exception.error.ContextMangerErrors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +54,6 @@ public class ContextSchemaManager {
         contextSchema.setIntegrationPointKey(integrationPointKey);
         contextSchema.setName(name);
         contextSchema.setRawPayload(rawPayload);
-        validateContextSchemaAndThrowAnError(contextSchema);
 
         if (StringUtils.isNoneBlank(rawPayload)) {
             try {
@@ -93,19 +90,14 @@ public class ContextSchemaManager {
     }
 
     public ContextSchemaHolder resolveContextSchema(SchemaNode rootNode) {
-        return ContextSchemaConverter.toHolder(contextSchemaResolver.resolve(rootNode));
+        ContextSchema resolve = contextSchemaResolver.resolve(rootNode);
+        ContextSchemaHolder contextSchemaHolder = ContextSchemaConverter.toHolder(resolve);
+        contextSchemaHolder.setHash(resolve.computeHash());
+        return contextSchemaHolder;
     }
 
     public List<ContextSchemaValidationService.SchemaValidationEntry> validate(ContextSchemaHolder contextSchema) {
         return validationService.validate(new ContextSchema().setRootNode(contextSchema.getRootNode()));
-    }
-
-    private void validateContextSchemaAndThrowAnError(ContextSchema contextSchema) {
-        List<ContextSchemaValidationService.SchemaValidationEntry> validationResult = validationService.validate(contextSchema);
-
-        if (validationResult.stream().anyMatch(it -> it.getSeverity() == SeverityLevel.CRITICAL)) {
-            throw new ContextSchemaValidationException().setSchemaValidationResult(validationResult);
-        }
     }
 
     public void unlinkFromIntegrationPoint(String integrationPointKey) {
@@ -129,10 +121,16 @@ public class ContextSchemaManager {
         return contextSchemaService.findById(contextSchemaId).map(ContextSchemaConverter::toHolder).orElse(null);
     }
 
+
     private Map<String, Object> getNodeValues(ContextSchema contextSchema, ContextValueHolder payload) {
         return contextSchema.getInlinePath().entrySet().stream()
             .filter(it -> it.getValue().getRootType() != SchemaNodeType.OBJECT && it.getValue().getSubType() != SchemaNodeType.OBJECT)
             .collect(HashMap::new, (m, v) -> m.put(v.getKey(), payload.getValue(v.getKey())), HashMap::putAll);
+    }
+
+
+    public ContextSchemaHolder findByHash(String integrationPointKey, String hash) {
+        return contextSchemaService.findByHashAndIntegrationPointKey(integrationPointKey, hash).map(ContextSchemaConverter::toHolder).orElse(null);
     }
 
 }

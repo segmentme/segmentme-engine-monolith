@@ -4,7 +4,9 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	compile 'org.apache.commons:commons-lang3'
 	compile 'org.springframework.boot:spring-boot-starter-validation'
-	testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.15'
+
+    testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 	testCompile 'org.springframework.boot:spring-boot-starter-web'
 }
 

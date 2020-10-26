@@ -12,17 +12,8 @@ public class ContextSchemaConverter {
             .setRootNode(contextSchema.getRootNode())
             .setRawPayload(contextSchema.getRawPayload())
             .setNodeValues(contextSchema.getNodeValues())
+            .setHash(contextSchema.getHash())
             .setIntegrationPointKey(contextSchema.getIntegrationPointKey());
-    }
-
-    public static ContextSchema toEntity(ContextSchemaHolder contextSchema) {
-
-        return (ContextSchema) new ContextSchema()
-            .setName(contextSchema.getName())
-            .setInlinePath(contextSchema.getInlinePath())
-            .setRootNode(contextSchema.getRootNode())
-            .setIntegrationPointKey(contextSchema.getIntegrationPointKey())
-            .setId(contextSchema.getId());
     }
 
 }
