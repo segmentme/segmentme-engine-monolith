@@ -16,7 +16,6 @@ public class UserController {
 
     private final UserFacade userFacade;
 
-
     @GetMapping
     public UserDetails getCurrentUserDetails(@AuthenticationPrincipal AuthUser authUser) {
         return userFacade.getUserDetails(authUser.getId());

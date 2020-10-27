@@ -35,7 +35,7 @@ public class WorkspaceFacade {
 
     private final UserManager userManager;
 
-    public WorkspaceDetails getWorkspaceDetails(String ownerId, String workspaceId) {
+    public WorkspaceDetails getWorkspaceDetails(String workspaceId) {
         return convertToWorkspaceDetails(workspaceManager.getWorkspace(workspaceId));
     }
 
