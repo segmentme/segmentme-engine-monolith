@@ -2,6 +2,7 @@ package io.segmentme.core.api.resource
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.segmentme.core.api.common.BaseControllerTest
+import io.segmentme.core.api.security.ContextSchemaSecurityService
 import io.segmentme.core.db.domain.workpsace.Workspace
 
 import io.segmentme.core.db.repository.SegmentRepository
@@ -12,6 +13,7 @@ import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.context.ContextSchemaResolver
 import io.segmentme.core.service.dto.analysis.conditions.ArrayConditionDto
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto
+import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
@@ -49,6 +51,13 @@ class SegmentControllerTest extends BaseControllerTest {
     protected ResourceHolder resourceHolder
 
     private ContextValueHolder context
+
+    @SpringBean
+    protected ContextSchemaSecurityService contextSchemaSecurityService = Mock(ContextSchemaSecurityService.class)
+
+    def setup(){
+        contextSchemaSecurityService.isManagedSchema(_ as String) >> true
+    }
 
     def cleanup() {
         analysisRuleRepository.deleteAll()

@@ -4,6 +4,7 @@ import io.segmentme.core.api.error.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,15 @@ public class ExceptionAdviceController {
     public ErrorMessage handleRuntimeError(RuntimeException ex) {
         log.error("Application Runtime Exception", ex);
         return new SimpleErrorDto(ex.getMessage());
+    }
+
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    @ExceptionHandler(AccessDeniedException.class)
+    public ErrorMessage handleAccessDeniedError(AccessDeniedException ex) {
+        log.warn("Access Denied Exception", ex);
+        return new SimpleErrorDto(ErrorType.AUTHENTICATION_ERROR, ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

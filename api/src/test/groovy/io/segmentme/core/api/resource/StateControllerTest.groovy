@@ -3,6 +3,7 @@ package io.segmentme.core.api.resource
 import com.fasterxml.jackson.databind.JsonNode
 import io.segmentme.core.api.common.BaseControllerTest
 import io.segmentme.core.api.error.dto.ErrorType
+import io.segmentme.core.api.security.ContextSchemaSecurityService
 import io.segmentme.core.api.security.SecurityService
 import io.segmentme.core.db.repository.StateRepository
 import io.segmentme.core.service.analysis.state.StateManager
@@ -39,8 +40,12 @@ class StateControllerTest extends BaseControllerTest {
     @SpringBean
     private SecurityService securityService = Mock(SecurityService.class)
 
+    @SpringBean
+    protected ContextSchemaSecurityService contextSchemaSecurityService = Mock(ContextSchemaSecurityService.class)
+
     def setup(){
         securityService.isValidIntegrationPointKey(_, _) >> true
+        contextSchemaSecurityService.isManagedSchema(_) >> true
     }
 
     def cleanup() {
