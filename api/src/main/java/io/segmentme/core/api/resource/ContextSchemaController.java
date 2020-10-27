@@ -5,6 +5,7 @@ import io.segmentme.core.api.config.AuthUser;
 import io.segmentme.core.api.dto.context.*;
 import io.segmentme.core.api.facade.ContextSchemaFacade;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,45 +14,49 @@ import java.util.List;
 @RestController
 @RequestMapping("/context-schema")
 @RequiredArgsConstructor
+@PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
 public class ContextSchemaController {
 
     private final ContextSchemaFacade contextSchemaFacade;
 
     @GetMapping
-    public List<ContextSchemaBasicInfo> getContextSchema(@AuthenticationPrincipal AuthUser authUser,
-                                                         @RequestParam String workspaceId,
+    public List<ContextSchemaBasicInfo> getContextSchema(@RequestParam String workspaceId,
                                                          @RequestParam(defaultValue = "true") boolean shortForm) {
-        return contextSchemaFacade.getByWorkspace(authUser.getId(), workspaceId, shortForm);
+        return contextSchemaFacade.getByWorkspace(workspaceId, shortForm);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteContextSchema(@AuthenticationPrincipal AuthUser authUser, @PathVariable String id) {
-        contextSchemaFacade.delete(authUser, id);
+    @PreAuthorize("@contextSchemaSecurityService.isMangedSchema(#id)")
+    public void deleteContextSchema(@PathVariable String id) {
+        contextSchemaFacade.delete(id);
     }
 
     @GetMapping("/{id}")
-    public ContextSchemaFullDetails getContexSchemaDetails(@AuthenticationPrincipal AuthUser authUser, @PathVariable String id) {
-        return contextSchemaFacade.getById(authUser, id);
+    @PreAuthorize("@contextSchemaSecurityService.isMangedSchema(#id)")
+    public ContextSchemaFullDetails getContexSchemaDetails(@PathVariable String id) {
+        return contextSchemaFacade.getById(id);
     }
 
     @PostMapping("/resolve")
-    public ContextSchemaResolveResult resolveContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody JsonNode payload) {
-        return contextSchemaFacade.resolve(authUser.getId(), workspaceId, payload);
+    public ContextSchemaResolveResult resolveContextSchema(@RequestParam String workspaceId, @RequestBody JsonNode payload) {
+        return contextSchemaFacade.resolve(workspaceId, payload);
     }
 
     @PostMapping("/validate")
     public ContextSchemaValidationResult validateContextSchema(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId,
                                                                @RequestBody ContextSchemaValidationRequest validationRequest) {
-        return contextSchemaFacade.validate(authUser.getId(), workspaceId, validationRequest);
+        return contextSchemaFacade.validate(workspaceId, validationRequest);
     }
 
     @PostMapping
+    @PreAuthorize("@securityService.isValidIntegrationPointKey(#contextSchemaCreateRequest.integrationPointKey, #authUser.id)")
     public ContextSchemaBasicInfo create(@AuthenticationPrincipal AuthUser authUser, @RequestParam String workspaceId, @RequestBody ContextSchemaCreateRequest contextSchemaCreateRequest) {
-        return contextSchemaFacade.create(authUser.getId(), workspaceId, contextSchemaCreateRequest);
+        return contextSchemaFacade.create(contextSchemaCreateRequest);
     }
 
     @PutMapping("/{id}")
-    public ContextSchemaBasicInfo update(@AuthenticationPrincipal AuthUser authUser, @PathVariable String id, @RequestBody ContextSchemaUpdateRequest payload) {
-        return contextSchemaFacade.update(authUser.getId(), id, payload);
+    @PreAuthorize("@contextSchemaSecurityService.isMangedSchema(#id)")
+    public ContextSchemaBasicInfo update(@PathVariable String id, @RequestBody ContextSchemaUpdateRequest payload) {
+        return contextSchemaFacade.update(id, payload);
     }
 }

@@ -22,12 +22,12 @@ import static io.segmentme.core.service.exception.error.ContextValidationErrors.
 public class ContextSchemaFacade {
     private final ContextSchemaManager contextSchemaManager;
 
-    public List<ContextSchemaBasicInfo> getByWorkspace(String userId, String workspaceId, boolean shortForm) {
+    public List<ContextSchemaBasicInfo> getByWorkspace(String workspaceId, boolean shortForm) {
         return contextSchemaManager.getAllByWorkspaceId(workspaceId, shortForm).stream()
             .map(this::convertToBasicDto).collect(Collectors.toList());
     }
 
-    public ContextSchemaResolveResult resolve(String userId, String workspaceId, JsonNode payload) {
+    public ContextSchemaResolveResult resolve(String workspaceId, JsonNode payload) {
         ContextSchemaHolder contextSchema = contextSchemaManager.resolveContextSchema(workspaceId, payload);
         return new ContextSchemaResolveResult()
             .setContextSchema(this.convertToFullDetailsDto(contextSchema))
@@ -35,12 +35,12 @@ public class ContextSchemaFacade {
     }
 
 
-    public ContextSchemaValidationResult validate(String userId, String workspaceId, ContextSchemaValidationRequest request) {
+    public ContextSchemaValidationResult validate(String workspaceId, ContextSchemaValidationRequest request) {
         ContextSchemaHolder updatedSchema = contextSchemaManager.resolveContextSchema(request.getRootNode());
         if (request.getRawPayload() == null || request.getRawPayload().isNull()) {
             return new ContextSchemaValidationResult().setValidationEntries(contextSchemaManager.validate(updatedSchema));
         }
-        ContextSchemaResolveResult originalSchema = this.resolve(userId, workspaceId, request.getRawPayload());
+        ContextSchemaResolveResult originalSchema = this.resolve(workspaceId, request.getRawPayload());
 
 
         if (CollectionUtils.isNotEmpty(originalSchema.getValidationEntries())) {
@@ -65,16 +65,16 @@ public class ContextSchemaFacade {
         return new ContextSchemaValidationResult().setValidationEntries(originalSchema.getValidationEntries());
     }
 
-    public ContextSchemaBasicInfo create(String id, String workspaceId, ContextSchemaCreateRequest request) {
+    public ContextSchemaBasicInfo create(ContextSchemaCreateRequest request) {
         ContextSchemaHolder contextSchemaHolder = contextSchemaManager.create(request.getIntegrationPointKey(), request.getRootNode(), request.getName(), request.getRawPayload());
         return this.convertToBasicDto(contextSchemaHolder);
     }
 
-    public void delete(AuthUser authUser, String contextSchemaId) {
+    public void delete(String contextSchemaId) {
         contextSchemaManager.deleteContextSchema(contextSchemaId);
     }
 
-    public ContextSchemaFullDetails getById(AuthUser authUser, String contextSchemaId) {
+    public ContextSchemaFullDetails getById(String contextSchemaId) {
         return convertToFullDetailsDto(contextSchemaManager.getById(contextSchemaId));
     }
 
@@ -89,7 +89,7 @@ public class ContextSchemaFacade {
             .setName(holder.getName());
     }
 
-    public ContextSchemaBasicInfo update(String id, String contextId, ContextSchemaUpdateRequest payload) {
+    public ContextSchemaBasicInfo update(String contextId, ContextSchemaUpdateRequest payload) {
         return convertToBasicDto(contextSchemaManager.updateContextSchema(contextId, new ContextSchemaHolder()
             .setName(payload.getName())
             .setIntegrationPointKey(payload.getIntegrationPointKey())

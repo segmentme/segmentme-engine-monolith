@@ -15,7 +15,7 @@ public class StateSecurityService {
 
     private final SecurityService securityService;
 
-    public boolean isValidState(String stateId, String userId) {
+    public boolean isManagedState(String stateId, String userId) {
         return stateService.findById(stateId)
                 .map(State::getIntegrationPointKey)
                 .map(it -> securityService.isValidIntegrationPointKey(it, userId))

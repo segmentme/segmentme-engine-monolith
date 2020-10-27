@@ -33,14 +33,14 @@ public class StateController {
     }
 
     @GetMapping("/{stateId}")
-    @PreAuthorize("@stateSecurityService.isValidState(#stateId, #currentUser.id)")
+    @PreAuthorize("@stateSecurityService.isManagedState(#stateId, #currentUser.id)")
     public StateDto getById(@AuthenticationPrincipal AuthUser currentUser,
                             @PathVariable String stateId) {
         return stateManager.getById(stateId);
     }
 
     @PutMapping("/{stateId}")
-    @PreAuthorize("@stateSecurityService.isValidState(#stateId, #currentUser.id)")
+    @PreAuthorize("@stateSecurityService.isManagedState(#stateId, #currentUser.id)")
     public StateDto update(@AuthenticationPrincipal AuthUser currentUser,
                            @PathVariable String stateId,
                            @Valid @RequestBody StateDto state) {
@@ -48,7 +48,7 @@ public class StateController {
     }
 
     @DeleteMapping("/{stateId}")
-    @PreAuthorize("@stateSecurityService.isValidState(#stateId, #currentUser.id)")
+    @PreAuthorize("@stateSecurityService.isManagedState(#stateId, #currentUser.id)")
     public void delete(@AuthenticationPrincipal AuthUser currentUser,
                        @PathVariable String stateId) {
         stateManager.delete(stateId);
