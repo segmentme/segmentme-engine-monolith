@@ -26,13 +26,13 @@ public class ContextSchemaController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@contextSchemaSecurityService.isMangedSchema(#id)")
+    @PreAuthorize("@contextSchemaSecurityService.isManagedSchema(#id)")
     public void deleteContextSchema(@PathVariable String id) {
         contextSchemaFacade.delete(id);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@contextSchemaSecurityService.isMangedSchema(#id)")
+    @PreAuthorize("@contextSchemaSecurityService.isManagedSchema(#id)")
     public ContextSchemaFullDetails getContexSchemaDetails(@PathVariable String id) {
         return contextSchemaFacade.getById(id);
     }
@@ -55,7 +55,7 @@ public class ContextSchemaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@contextSchemaSecurityService.isMangedSchema(#id)")
+    @PreAuthorize("@contextSchemaSecurityService.isManagedSchema(#id)")
     public ContextSchemaBasicInfo update(@PathVariable String id, @RequestBody ContextSchemaUpdateRequest payload) {
         return contextSchemaFacade.update(id, payload);
     }
