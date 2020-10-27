@@ -8,7 +8,7 @@ import java.util.Optional;
 @UtilityClass
 public class SecurityUtils {
 
-    public String currentId() {
+    public String currentUserId() {
         return Optional.ofNullable(currentUser())
                 .map(AuthUser::getId)
                 .orElseThrow(() -> new RuntimeException("Auth user id not found"));

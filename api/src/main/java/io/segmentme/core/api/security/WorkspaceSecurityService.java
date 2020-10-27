@@ -1,7 +1,7 @@
 package io.segmentme.core.api.security;
 
+import io.segmentme.core.api.config.SecurityUtils;
 import io.segmentme.core.db.domain.workpsace.UserProfile;
-import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.workspace.UserProfileManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +14,8 @@ public class WorkspaceSecurityService {
 
     private final UserProfileManager userProfileManager;
 
-    public boolean isMyWorkspace(String id, String userId){
-        return userProfileManager.getUserProfiles(userId)
+    public boolean isWorkspaceMember(String id){
+        return userProfileManager.getUserProfiles(SecurityUtils.currentUserId())
                 .stream()
                 .map(UserProfile::getWorkspaceId)
                 .map(it -> it.equalsIgnoreCase(id))
