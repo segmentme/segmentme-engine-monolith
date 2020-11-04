@@ -22,7 +22,11 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
     }
 
     protected P getProperty(String propertyName, ContextValueHolder context) {
-        return (P) context.getValue(propertyName);
+        return (P) getValue(propertyName, context);
+    }
+
+    protected Object getValue(String propertyName, ContextValueHolder context) {
+        return context.getValue(propertyName);
     }
 
 
