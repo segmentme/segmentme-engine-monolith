@@ -13,6 +13,7 @@ import io.segmentme.core.service.analysis.segment.worm.*;
 import io.segmentme.core.service.dto.analysis.AnalysisResult;
 import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
 import io.segmentme.core.service.dto.statistic.StatisticLogEntry;
+import io.segmentme.core.service.exception.ContextSchemaManagerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static io.segmentme.core.service.exception.error.ContextMangerErrors.INTEGRATION_POINT_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -50,6 +53,16 @@ public class AnalysisService {
         SegmentAnalysisResult result = analyze(context, segment, WormConsumer.of(Collections.singletonList(worm)));
 
         return AnalysisResult.of(Collections.singletonList(result), worm.getDebugResultMap());
+    }
+
+    public AnalysisResult debug(String integrationPointKey, String contextId, JsonNode payload, Segment segment){
+        ContextSchema schema = contextSchemaService.findByIdAndIntegrationPointKey(contextId, integrationPointKey)
+                .orElseThrow(() -> new ContextSchemaManagerException().setCode(INTEGRATION_POINT_NOT_FOUND));
+
+        Workspace workspace = workspaceService.findByIntegrationPointKey(integrationPointKey)
+                .orElseThrow(() -> new IllegalArgumentException("Workspace not found"));
+
+        return debug(contextValuesExtractor.extractValues(payload, schema, workspace.getConfiguration()), segment);
     }
 
     public List<SegmentAnalysisResult> analyze(ContextValueHolder context, List<Segment> rules, StatisticWorm statisticWorm) {

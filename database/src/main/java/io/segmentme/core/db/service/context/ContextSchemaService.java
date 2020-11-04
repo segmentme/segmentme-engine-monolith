@@ -20,6 +20,10 @@ public class ContextSchemaService extends AbstractDatabaseService<ContextSchema,
         return repository.findByIntegrationPointKeyAndHash(integrationPointKey, hash);
     }
 
+    public Optional<ContextSchema> findByIdAndIntegrationPointKey(String id, String integrationPointKey) {
+        return repository.findByIdAndIntegrationPointKey(id, integrationPointKey);
+    }
+
     public List<ContextSchema> findByIntegrationPointKeys(Collection<String> integrationPointKeys, boolean shortForm) {
         return shortForm ? repository.findShortFormByIntegrationPointKeyIn(integrationPointKeys) : repository.findByIntegrationPointKeyIn(integrationPointKeys);
     }
