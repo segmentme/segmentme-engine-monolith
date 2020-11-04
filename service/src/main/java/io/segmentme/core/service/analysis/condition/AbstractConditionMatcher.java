@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -19,7 +18,7 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
     @Autowired
     private ObjectMapper mapper;
 
-    private Class comparableValueClass ;
+    private Class<P> comparableValueClass;
 
     public AbstractConditionMatcher() {
         comparableValueClass = (Class) ((ParameterizedType) this.getAbstractConditionParameterizedType(this.getClass()).getActualTypeArguments()[2]).getRawType();
@@ -48,20 +47,7 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
 
 
     protected P getProperty(String propertyName, ContextValueHolder context) {
-        return castIfNecessary(getValue(propertyName, context));
-    }
-
-    private P castIfNecessary(Object value) {
-        if (!comparableValueClass.isAssignableFrom(List.class) && List.class.isAssignableFrom(value.getClass()) && ((List) value).size() == 1) {
-            return (P) ((List) value).get(0);
-        }
-
-        return (P) value;
-    }
-
-
-    protected Object getValue(String propertyName, ContextValueHolder context) {
-        return context.getValue(propertyName);
+        return context.getValue(propertyName, comparableValueClass);
     }
 
 
