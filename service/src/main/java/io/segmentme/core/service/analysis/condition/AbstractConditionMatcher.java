@@ -19,8 +19,11 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
     @Autowired
     private ObjectMapper mapper;
 
-    private Class<?> comparableValueClass = (Class<?>) ((ParameterizedType) this.getAbstractConditionParameterizedType(this.getClass()).getActualTypeArguments()[2]).getRawType();
+    private Class comparableValueClass ;
 
+    public AbstractConditionMatcher() {
+        comparableValueClass = (Class) ((ParameterizedType) this.getAbstractConditionParameterizedType(this.getClass()).getActualTypeArguments()[2]).getRawType();
+    }
 
     private ParameterizedType getAbstractConditionParameterizedType(Class<?> clazz) {
         Type genericSuperclass = clazz.getGenericSuperclass();
