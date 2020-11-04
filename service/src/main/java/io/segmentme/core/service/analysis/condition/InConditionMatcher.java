@@ -17,7 +17,7 @@ class InConditionMatcher extends AbstractConditionMatcher<ArrayCondition, List<O
     @Override
     protected Comparable<Object> getProperty(String propertyName, ContextValueHolder context) {
         Object value = super.getValue(propertyName, context);
-        if (List.class.isAssignableFrom(value.getClass()) && ((List) value).size() == 1) {
+        if (value instanceof List) {
             return ((List<Comparable<Object>>) value).get(0);
         }
         return (Comparable<Object>) value;
