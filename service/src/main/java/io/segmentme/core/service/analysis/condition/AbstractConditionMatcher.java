@@ -8,6 +8,9 @@ import io.segmentme.core.service.exception.CriteriaValueLocatorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -16,14 +19,43 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
     @Autowired
     private ObjectMapper mapper;
 
+    private Class<?> comparableValueClass = (Class<?>) ((ParameterizedType) this.getAbstractConditionParameterizedType(this.getClass()).getActualTypeArguments()[2]).getRawType();
+
+
+    private ParameterizedType getAbstractConditionParameterizedType(Class<?> clazz) {
+        Type genericSuperclass = clazz.getGenericSuperclass();
+        if (genericSuperclass instanceof ParameterizedType) {
+
+            ParameterizedType genericSuperclass1 = (ParameterizedType) genericSuperclass;
+            Class<?> rawType = (Class<?>) ((ParameterizedType) genericSuperclass).getRawType();
+            if (rawType.getGenericSuperclass() != Object.class) {
+                return getAbstractConditionParameterizedType(rawType);
+            }
+            return genericSuperclass1;
+        } else {
+            return getAbstractConditionParameterizedType((Class<?>) genericSuperclass);
+        }
+
+    }
+
     @SuppressWarnings("unchecked")
     protected Comparable<Object> castJsonProperty(Object conditionValue, Comparable<Object> value) {
         return (Comparable<Object>) (value.getClass() != conditionValue.getClass() ? mapper.convertValue(conditionValue, value.getClass()) : conditionValue);
     }
 
+
     protected P getProperty(String propertyName, ContextValueHolder context) {
-        return (P) getValue(propertyName, context);
+        return castIfNecessary(getValue(propertyName, context));
     }
+
+    private P castIfNecessary(Object value) {
+        if (!comparableValueClass.isAssignableFrom(List.class) && List.class.isAssignableFrom(value.getClass()) && ((List) value).size() == 1) {
+            return (P) ((List) value).get(0);
+        }
+
+        return (P) value;
+    }
+
 
     protected Object getValue(String propertyName, ContextValueHolder context) {
         return context.getValue(propertyName);

@@ -2,7 +2,6 @@ package io.segmentme.core.service.analysis.condition;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.ArrayCondition;
-import io.segmentme.core.service.analysis.ContextValueHolder;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +12,6 @@ import java.util.List;
 class InConditionMatcher extends AbstractConditionMatcher<ArrayCondition, List<Object>, Comparable<Object>> {
 
     private final AbstractCondition.ConditionType type = AbstractCondition.ConditionType.IN;
-
-    @Override
-    protected Comparable<Object> getProperty(String propertyName, ContextValueHolder context) {
-        Object value = super.getValue(propertyName, context);
-        if (List.class.isAssignableFrom(value.getClass()) && ((List) value).size() == 1) {
-            return ((List<Comparable<Object>>) value).get(0);
-        }
-        return (Comparable<Object>) value;
-    }
 
 
     @Override
