@@ -63,6 +63,7 @@ class CriteriaValueLocatorTest extends Specification {
         "objectArrays.dateTime"                     || [Instant.from(DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern() + "'Z'").withZone(ZoneId.systemDefault()).parse("2010-01-01T12:00:13Z"))]
         "objectArrays.subObjects.subObjectId"       || ["id1", "id2", "id3"]
         "objectArrays.numbersArray"                 || [1, 2, 3, 12, 23, 22.4]
+        "objectArrays.numbersArray[0]"              || [1]
         "objectArrays[0].numbersArray"              || [1, 2, 3]
         "objectArrays[0].numbersArray[1]"           || [2]
         "objectArrays[1].numbersArray[1]"           || [23]
