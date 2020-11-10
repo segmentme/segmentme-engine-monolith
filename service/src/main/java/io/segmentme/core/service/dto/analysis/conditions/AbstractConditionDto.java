@@ -32,8 +32,6 @@ public abstract class AbstractConditionDto {
 
     private boolean matchResult = true;
 
-    private boolean isValid = true;
-
     @NotEmpty
     private String hash;
 
