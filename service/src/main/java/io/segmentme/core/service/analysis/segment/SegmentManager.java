@@ -42,6 +42,10 @@ public class SegmentManager {
         return segmentService.findByContextId(contextId).stream().map(SegmentConverter::of).collect(Collectors.toList());
     }
 
+    public SegmentDto findById(String segmentId) {
+        return segmentService.findById(segmentId).map(SegmentConverter::of).get();
+    }
+
     public void delete(String ruleId) {
         segmentService.deleteById(ruleId);
     }

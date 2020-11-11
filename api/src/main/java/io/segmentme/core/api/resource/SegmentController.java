@@ -18,7 +18,7 @@ public class SegmentController {
 
     private final SegmentManager segmentManager;
 
-    @PostMapping("/{contextId}")
+    @PostMapping("/context/{contextId}")
     @PreAuthorize("@contextSchemaSecurityService.isManagedSchema(#contextId)")
     public SegmentDto save(@PathVariable String contextId, @RequestBody @Valid SegmentDto rule) {
         log.info("Request to create rule {} with contextId {}", rule, contextId);
@@ -28,14 +28,20 @@ public class SegmentController {
         return segmentManager.save(rule, contextId, null);
     }
 
-    @GetMapping("/{contextId}")
+    @GetMapping("/context/{contextId}")
     @PreAuthorize("@contextSchemaSecurityService.isManagedSchema(#contextId)")
     public List<SegmentDto> findByContextId(@PathVariable String contextId){
         log.info("Request to find rule for contextId {}", contextId);
         return segmentManager.findByContextId(contextId);
     }
 
-    @DeleteMapping("/{ruleId}")
+    @GetMapping("/{segmentId}")
+    public SegmentDto findById(@PathVariable String segmentId){
+        log.info("Request to find segment with id {}", segmentId);
+        return segmentManager.findById(segmentId);
+    }
+
+    @DeleteMapping("/{segmentId}")
     public void delete(@PathVariable String ruleId){
         log.info("Request to delete rule with id {}", ruleId);
         segmentManager.delete(ruleId);
