@@ -44,7 +44,6 @@ class CriteriaValueLocatorTest extends Specification {
 
         where:
         criteria                                    || expectedValue
-        "user.email"                                || "vladislavkondratenko@coherentsolutions.com"
         "user.name"                                 || "Vladislav"
         "user.numbersArray"                         || [12, 23, 22.4]
         "user.details.gender"                       || ""
@@ -63,7 +62,7 @@ class CriteriaValueLocatorTest extends Specification {
         "objectArrays.dateTime"                     || [Instant.from(DateTimeFormatter.ofPattern(ISO_8601_EXTENDED_DATETIME_FORMAT.getPattern() + "'Z'").withZone(ZoneId.systemDefault()).parse("2010-01-01T12:00:13Z"))]
         "objectArrays.subObjects.subObjectId"       || ["id1", "id2", "id3"]
         "objectArrays.numbersArray"                 || [1, 2, 3, 12, 23, 22.4]
-        "objectArrays.numbersArray[0]"              || [1]
+        "objectArrays.numbersArray[0]"              || [1, 12]
         "objectArrays[0].numbersArray"              || [1, 2, 3]
         "objectArrays[0].numbersArray[1]"           || [2]
         "objectArrays[1].numbersArray[1]"           || [23]
@@ -71,9 +70,8 @@ class CriteriaValueLocatorTest extends Specification {
         "objectArrays[0].subObjects.subObjectId"    || ["id1", "id2"]
         "objectArrays[0].subObjects.subObjectId[1]" || ["id2"]
         "objectArrays[1].subObjects.subObjectId[0]" || ["id3"]
-        "objectArrays[0].subObjects.array[0]"       || ["a1"]
+        "objectArrays[0].subObjects.array[0]"       || ["a1", "a4"]
         "objectArrays[0].subObjects[0].array"       || ["a1", "a2", "a3"]
         "unknownvalue"                              || new CriteriaValueLocatorException("unknownvalue", null, CriteriaValueLocatorErrors.CRITERIA_NOT_FOUND)
-        "objectArrays[3].subObjects.subObjectId[0]" || new CriteriaValueLocatorException("objectArrays.subObjects.subObjectId", new IndexOutOfBoundsException(3), CriteriaValueLocatorErrors.UNEXPECTED_LOCATOR_ERROR)
     }
 }

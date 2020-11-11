@@ -1,11 +1,9 @@
 package io.segmentme.core.service.analysis;
 
-import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.service.exception.CriteriaValueLocatorException;
 import io.segmentme.core.service.exception.error.CriteriaValueLocatorErrors;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 
@@ -13,6 +11,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @UtilityClass
 @Slf4j
@@ -31,7 +30,7 @@ public class CriteriaValueLocator {
 
         if (o instanceof List) {
             try {
-                return collectionValue((List<?>) o, path, clearPath, context.getSchema());
+                return getCollectionValue((List<?>) o, path, clearPath, null);
             } catch (Throwable ex) {
                 log.warn("Unable to get value for criteria {} ", path);
                 throw new CriteriaValueLocatorException(clearPath, ex, CriteriaValueLocatorErrors.UNEXPECTED_LOCATOR_ERROR);
@@ -40,29 +39,35 @@ public class CriteriaValueLocator {
         return o;
     }
 
-    private List<?> collectionValue(List<?> collection, String path, String clearPath, ContextSchema schema) {
-        if (CollectionUtils.isEmpty(collection)) {
-            return collection;
-        }
-        MutablePair<String, Integer> currentPosition = getElementIndexIfPossible(path, clearPath);
-
+    private List<?> getCollectionValue(List<?> collection, String path, String clearPath, Integer parentIndex) {
         boolean hasUnderlineCollections = collection.stream().anyMatch(it -> it instanceof Collection);
-
+        MutablePair<String, Integer> currentPosition = getElementIndexIfPossible(path, clearPath);
         if (!hasUnderlineCollections) {
-            return Optional.ofNullable(currentPosition)
-                .map(it -> Collections.singletonList((Object) collection.get(currentPosition.getValue())))
-                .orElse((List<Object>) collection);
-        }
+            Integer index = currentPosition == null ? parentIndex : currentPosition.getRight();
+            if (index == null) {
+                return collection;
+            } else {
+                if (collection.size() - 1 < index) {
+                    return null;
+                }
+                return Arrays.asList(collection.get(index));
+            }
+        } else {
+            String nextArray = currentPosition != null ? clearPath.replace(currentPosition.left, "") : clearPath;
+            if (StringUtils.isNotBlank(nextArray) && !Objects.equals(nextArray, clearPath)) {
+                if (collection.size() - 1 < currentPosition.getRight()) {
+                    return Collections.emptyList();
+                }
+                return Stream.of(collection.get(currentPosition.getRight()))
+                    .map(it -> getCollectionValue((List<?>) it, path, nextArray, null)).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
 
-        if (currentPosition == null) {
-            return collection.stream().map(it -> (List<?>) it)
-                .map(it -> collectionValue(it, path, clearPath, schema))
-                .flatMap(Collection::stream).collect(Collectors.toList());
+            }
+            Integer currentIndex = currentPosition != null ? currentPosition.getRight() : null;
+            return collection.stream().map(it -> getCollectionValue((List<?>) it, path, nextArray, currentIndex)).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
         }
-
-        return collectionValue(((List<?>) collection.get(currentPosition.getRight())), path, clearPath.substring(clearPath.indexOf(".") + 1), schema);
 
     }
+
 
     private MutablePair<String, Integer> getElementIndexIfPossible(String path, String clearPath) {
         Matcher matcher = ARRAY_INDEX_PATTERN.matcher(path);
