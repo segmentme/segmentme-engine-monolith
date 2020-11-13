@@ -16,7 +16,6 @@ public class SegmentDto {
     @NotNull
     private Segment.AggregationType aggregation;
 
-    @NotEmpty
     private String name;
 
     private String hash;
