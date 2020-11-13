@@ -20,6 +20,8 @@ public class SegmentDto {
 
     private String hash;
 
+    private String description;
+
     @NotEmpty
     private List<AbstractConditionDto> conditions;
 

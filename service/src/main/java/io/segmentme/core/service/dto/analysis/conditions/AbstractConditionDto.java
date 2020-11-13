@@ -31,6 +31,8 @@ public abstract class AbstractConditionDto {
     private AbstractCondition.ConditionType type;
 
     private boolean matchResult = true;
+    
+    private String description;
 
     @NotEmpty
     private String hash;

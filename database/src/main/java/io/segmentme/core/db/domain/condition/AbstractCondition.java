@@ -30,6 +30,8 @@ public abstract class AbstractCondition {
 
     private String hash;
 
+    private String description;
+
     public enum ConditionType {
         IN, RANGE, GT, GTE, LT, LTE, SEGMENT, CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY
     }

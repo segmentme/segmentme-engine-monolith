@@ -51,7 +51,8 @@ public class ConditionConverter {
                 .setCriteria(source.getCriteria())
                 .setMatchResult(source.isMatchResult())
                 .setType(source.getType())
-                .setHash(source.getHash());
+                .setHash(source.getHash())
+                .setDescription(source.getDescription());
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -68,6 +69,7 @@ public class ConditionConverter {
                 .setCriteria(source.getCriteria())
                 .setMatchResult(source.isMatchResult())
                 .setType(source.getType())
-                .setHash(source.getHash());
+                .setHash(source.getHash())
+                .setDescription(source.getDescription());
     }
 }

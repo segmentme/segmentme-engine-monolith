@@ -18,6 +18,8 @@ public class Segment extends DbObject {
 
     private String name;
 
+    private String description;
+
     @Indexed
     private String integrationPointKey;
 

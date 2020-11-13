@@ -20,6 +20,7 @@ public class SegmentConverter {
                 .setMatchResult(source.isMatchResult())
                 .setConditions(source.getConditions().stream().map(ConditionConverter::of).collect(Collectors.toList()))
                 .setHash(Optional.ofNullable(source.getHash()).orElseGet(() -> UUID.randomUUID().toString()))
+                .setDescription(source.getDescription())
                 .setId(source.getId());
     }
 
@@ -30,6 +31,7 @@ public class SegmentConverter {
                 .setHash(source.getHash())
                 .setAggregation(source.getAggregation())
                 .setMatchResult(source.isMatchResult())
+                .setDescription(source.getDescription())
                 .setConditions(source.getConditions().stream().map(ConditionConverter::of).collect(Collectors.toList()));
     }
 }
