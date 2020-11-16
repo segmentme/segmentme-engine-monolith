@@ -4,6 +4,7 @@ import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.service.dto.analysis.conditions.AbstractConditionDto;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -16,6 +17,7 @@ public class SegmentDto {
     @NotNull
     private Segment.AggregationType aggregation;
 
+    @NotBlank
     private String name;
 
     private String hash;
