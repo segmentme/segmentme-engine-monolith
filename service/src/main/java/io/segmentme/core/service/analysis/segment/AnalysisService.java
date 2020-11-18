@@ -9,7 +9,10 @@ import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.ContextValuesExtractor;
-import io.segmentme.core.service.analysis.segment.worm.*;
+import io.segmentme.core.service.analysis.segment.worm.DebugWorm;
+import io.segmentme.core.service.analysis.segment.worm.StatisticWorm;
+import io.segmentme.core.service.analysis.segment.worm.Worm;
+import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
 import io.segmentme.core.service.dto.analysis.AnalysisResult;
 import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
 import io.segmentme.core.service.dto.statistic.StatisticLogEntry;
@@ -20,7 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.segmentme.core.service.exception.error.ContextMangerErrors.INTEGRATION_POINT_NOT_FOUND;
@@ -55,12 +60,12 @@ public class AnalysisService {
         return AnalysisResult.of(Collections.singletonList(result), worm.getDebugResultMap());
     }
 
-    public AnalysisResult debug(String integrationPointKey, String contextId, JsonNode payload, Segment segment){
+    public AnalysisResult debug(String integrationPointKey, String contextId, JsonNode payload, Segment segment) {
         ContextSchema schema = contextSchemaService.findByIdAndIntegrationPointKey(contextId, integrationPointKey)
-                .orElseThrow(() -> new ContextSchemaManagerException().setCode(INTEGRATION_POINT_NOT_FOUND));
+            .orElseThrow(() -> new ContextSchemaManagerException().setCode(INTEGRATION_POINT_NOT_FOUND));
 
         Workspace workspace = workspaceService.findByIntegrationPointKey(integrationPointKey)
-                .orElseThrow(() -> new IllegalArgumentException("Workspace not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Workspace not found"));
 
         return debug(contextValuesExtractor.extractValues(payload, schema, workspace.getConfiguration()), segment);
     }
@@ -70,21 +75,22 @@ public class AnalysisService {
         return rules.stream().map(it -> this.analyze(context, it, worm)).collect(Collectors.toList());
     }
 
-    public List<SegmentAnalysisResult> analyze(String integrationPointKey, JsonNode payload, Segment segment){
+    public List<SegmentAnalysisResult> analyze(String integrationPointKey, JsonNode payload, Segment segment) {
         return analyze(null, integrationPointKey, payload, List.of(segment));
     }
 
     public List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload) {
-       return analyze(contextId, integrationPointKey, payload, analysisRuleRepository.findByIntegrationPointKey(integrationPointKey));
+        return analyze(contextId, integrationPointKey, payload, analysisRuleRepository.findByIntegrationPointKey(integrationPointKey));
     }
 
-    private List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload, List<Segment> segments){
+    private List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload, List<Segment> segments) {
         StatisticLogEntry statisticLogEntry = new StatisticLogEntry();
         StatisticWorm worm = new StatisticWorm();
         long analyzeStartTime = System.currentTimeMillis();
 
         statisticLogEntry.setIntegrationPointKey(integrationPointKey);
         Workspace workspace = workspaceService.findByIntegrationPointKey(integrationPointKey).orElseThrow(() -> new IllegalArgumentException("Workspace not found"));
+        statisticLogEntry.setWorkspaceId(workspace.getId());
         List<ContextSchema> schemas = contextSchemaService.findByIntegrationPointKeys(Collections.singletonList(integrationPointKey), false);
 
         if (StringUtils.isNoneBlank(contextId)) {
@@ -98,10 +104,10 @@ public class AnalysisService {
         List<Segment> finalSegments = segments;
         try {
             List<SegmentAnalysisResult> segmentAnalysisResults = schemas.stream()
-                    .map(it -> contextValuesExtractor.extractValues(payload, it, workspace.getConfiguration()))
-                    .peek(statisticLogEntry::setContextValueHolder)
-                    .map(it -> this.analyze(it, finalSegments, worm))
-                    .flatMap(List::stream).collect(Collectors.toList());
+                .map(it -> contextValuesExtractor.extractValues(payload, it, workspace.getConfiguration()))
+                .peek(statisticLogEntry::setContextValueHolder)
+                .map(it -> this.analyze(it, finalSegments, worm))
+                .flatMap(List::stream).collect(Collectors.toList());
             statisticLogEntry.setSegmentAnalysisResults(segmentAnalysisResults);
             return segmentAnalysisResults;
         } finally {

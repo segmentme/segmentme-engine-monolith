@@ -18,10 +18,12 @@ public class StatisticLogEntry {
     private ContextValueHolder contextValueHolder;
 
     private List<Segment> analyzedSegments;
+
     private List<SegmentAnalysisResult> segmentAnalysisResults;
 
     private Map<String, ConditionStatisticEntry> conditionResults = new HashMap<>();
 
+    private String workspaceId;
 
     @Data
     public static class ConditionStatisticEntry {

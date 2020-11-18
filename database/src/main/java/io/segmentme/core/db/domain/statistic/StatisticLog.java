@@ -27,6 +27,8 @@ public class StatisticLog extends DbObject {
 
     private Map<String, Object> nodeValues;
 
+    private String workspaceId;
+
     @Data
     public static class SegmentStatistic {
         private String id;
