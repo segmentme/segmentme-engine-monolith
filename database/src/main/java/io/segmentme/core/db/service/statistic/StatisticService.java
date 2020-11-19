@@ -27,7 +27,8 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
     public List<AggregatedAnalysisCount> getAnalysisCount(String workspaceId, int period) {
         LocalDateTime localDateTime = LocalDate.now().minus(period, ChronoUnit.DAYS).atTime(LocalTime.MIDNIGHT);
 
-        ProjectionOperation projectStage = Aggregation.project("workspaceId", "createdDate", "analysisTime")
+        ProjectionOperation projectStage = Aggregation
+            .project("workspaceId", "createdDate", "analysisTime","integrationPointKey")
             .and("createdDate").dateAsFormattedString("%Y-%m-%dT%H:00:00").as("dateHour");
 
         MatchOperation matchStage = Aggregation
@@ -36,10 +37,10 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
                 .and("createdDate")
                 .gte(localDateTime));
 
-        GroupOperation groupOperation = group("dateHour").count().as("count");
+        GroupOperation groupOperation = group("dateHour","integrationPointKey").count().as("count");
 
 
-        ProjectionOperation finalProjections = Aggregation.project("count").and("_id").as("dateTime");
+        ProjectionOperation finalProjections = Aggregation.project("count").and("_id.dateHour").as("dateTime").and("_id.integrationPointKey").as("integrationPointKey");
 
         TypedAggregation<StatisticLog> aggregation
             = new TypedAggregation<>(StatisticLog.class, projectStage, matchStage, groupOperation, finalProjections);

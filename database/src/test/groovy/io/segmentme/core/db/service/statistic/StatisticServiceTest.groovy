@@ -25,8 +25,8 @@ class StatisticServiceTest extends Specification {
         def datesToSave = [] as List<StatisticLog>
         String workspaceId = UUID.randomUUID().toString()
         for (int i = 0; i < 200; i++) {
-            datesToSave.add(new StatisticLog().setWorkspaceId(workspaceId).setAnalysisTime(RandomUtils.nextLong()))
-            datesToSave.add(new StatisticLog().setWorkspaceId(workspaceId).setAnalysisTime(RandomUtils.nextLong()))
+            datesToSave.add(new StatisticLog().setWorkspaceId(workspaceId).setIntegrationPointKey("a").setAnalysisTime(RandomUtils.nextLong()))
+            datesToSave.add(new StatisticLog().setWorkspaceId(workspaceId).setIntegrationPointKey("b").setAnalysisTime(RandomUtils.nextLong()))
 
         }
         repository.saveAll(datesToSave)

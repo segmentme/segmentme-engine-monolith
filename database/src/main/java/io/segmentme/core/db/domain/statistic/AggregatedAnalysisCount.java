@@ -8,5 +8,6 @@ import java.time.LocalDateTime;
 public class AggregatedAnalysisCount {
     private LocalDateTime dateTime;
     private int count;
+    private String integrationPointKey;
 
 }
