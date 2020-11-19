@@ -31,7 +31,7 @@ public class StatisticLog extends DbObject {
 
     @Data
     public static class SegmentStatistic {
-        private String id;
+        private String segmentId;
 
         private String hash;
 

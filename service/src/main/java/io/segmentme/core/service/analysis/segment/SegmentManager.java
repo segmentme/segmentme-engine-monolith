@@ -62,4 +62,5 @@ public class SegmentManager {
         contextRules.forEach(it -> it.setContextId(null));
         segmentService.update(contextRules);
     }
+
 }

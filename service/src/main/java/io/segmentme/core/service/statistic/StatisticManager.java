@@ -48,7 +48,7 @@ public class StatisticManager {
 
     private List<StatisticLog.SegmentStatistic> getSegmentStatistics(StatisticLogEntry statisticLogEntry) {
         return statisticLogEntry.getAnalyzedSegments().stream()
-            .map(it -> new StatisticLog.SegmentStatistic().setId(it.getId())
+            .map(it -> new StatisticLog.SegmentStatistic().setSegmentId(it.getId())
                 .setResult(statisticLogEntry.getSegmentAnalysisResults()
                     .stream()
                     .filter(result -> result.getHash().equalsIgnoreCase(it.getHash()))

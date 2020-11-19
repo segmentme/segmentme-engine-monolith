@@ -20,6 +20,27 @@ class StatisticServiceTest extends Specification {
     @Autowired
     private StatisticService statisticService;
 
+    def 'get segment count result '() {
+        given:
+        def datesToSave = [] as List<StatisticLog>
+        String workspaceId = UUID.randomUUID().toString()
+        for (int i = 0; i < 200; i++) {
+            datesToSave.add(new StatisticLog().setWorkspaceId(workspaceId).setSegmentStatistics(Arrays.asList(new StatisticLog.SegmentStatistic().setSegmentId("a").setResult(true))).setAnalysisTime(RandomUtils.nextLong()))
+            datesToSave.add(new StatisticLog().setWorkspaceId(workspaceId).setSegmentStatistics(Arrays.asList(new StatisticLog.SegmentStatistic().setSegmentId("b").setResult(true))).setAnalysisTime(RandomUtils.nextLong()))
+        }
+        repository.saveAll(datesToSave)
+        for (int i = 0; i < 200; i++) {
+            datesToSave[i].setCreatedDate(Instant.now().minus(i, ChronoUnit.DAYS))
+            datesToSave[i + 1].setCreatedDate(Instant.now().minus(i, ChronoUnit.HOURS))
+
+        }
+        when:
+        repository.saveAll(datesToSave)
+        then:
+        def found = statisticService.getSegmentStatistic(workspaceId, 1, 10);
+        !found.isEmpty()
+    }
+
     def 'get analysis count result '() {
         given:
         def datesToSave = [] as List<StatisticLog>
