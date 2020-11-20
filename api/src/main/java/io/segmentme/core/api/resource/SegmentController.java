@@ -39,8 +39,8 @@ public class SegmentController {
     }
 
     @DeleteMapping("/{segmentId}")
-    public void delete(@PathVariable String ruleId){
-        log.info("Request to delete rule with id {}", ruleId);
-        segmentManager.delete(ruleId);
+    public void delete(@PathVariable String segmentId){
+        log.info("Request to delete segment with id {}", segmentId);
+        segmentManager.delete(segmentId);
     }
 }
