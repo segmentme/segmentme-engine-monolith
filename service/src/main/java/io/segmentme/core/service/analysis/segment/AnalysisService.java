@@ -120,6 +120,9 @@ public class AnalysisService {
 
     @SuppressWarnings({"unchecked"})
     private SegmentAnalysisResult analyze(ContextValueHolder context, Segment rule, Worm<?> worm) {
-        return segmentAnalysisService.analyze(context, rule, (Worm<Object>) worm);
+        long startTime = System.currentTimeMillis();
+        SegmentAnalysisResult analyze = segmentAnalysisService.analyze(context, rule, (Worm<Object>) worm);
+        analyze.setAnalysisTime(System.currentTimeMillis() - startTime);
+        return analyze;
     }
 }

@@ -6,6 +6,7 @@ import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.domain.statistic.StatisticLog;
 import io.segmentme.core.db.service.segment.SegmentService;
 import io.segmentme.core.db.service.statistic.StatisticService;
+import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
 import io.segmentme.core.service.dto.statistic.StatisticLogEntry;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -48,13 +49,17 @@ public class StatisticManager {
 
     private List<StatisticLog.SegmentStatistic> getSegmentStatistics(StatisticLogEntry statisticLogEntry) {
         return statisticLogEntry.getAnalyzedSegments().stream()
-            .map(it -> new StatisticLog.SegmentStatistic().setSegmentId(it.getId())
-                .setResult(statisticLogEntry.getSegmentAnalysisResults()
+            .map(it -> {
+                SegmentAnalysisResult segmentAnalysisResult = statisticLogEntry.getSegmentAnalysisResults()
                     .stream()
                     .filter(result -> result.getHash().equalsIgnoreCase(it.getHash()))
                     .findFirst()
-                    .get().isValue())
-                .setConditionsHash(getSegmentConditions(it, new HashMap<>())))
+                    .get();
+                return new StatisticLog.SegmentStatistic().setSegmentId(it.getId())
+                    .setResult(segmentAnalysisResult.isValue())
+                    .setAnalysisTime(segmentAnalysisResult.getAnalysisTime())
+                    .setConditionsHash(getSegmentConditions(it, new HashMap<>()));
+            })
             .collect(Collectors.toList());
     }
 

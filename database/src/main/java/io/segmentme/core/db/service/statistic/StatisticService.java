@@ -69,10 +69,10 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
                 .and("createdDate")
                 .gte(localDateTime));
 
-        GroupOperation groupOperation = group("dateHour", "integrationPointKey").count().as("count");
+        GroupOperation groupOperation = group("dateHour", "integrationPointKey").count().as("count").sum("analysisTime").as("totalAnalysisTime");
 
 
-        ProjectionOperation finalProjections = Aggregation.project("count").and("_id.dateHour").as("dateTime").and("_id.integrationPointKey").as("integrationPointKey");
+        ProjectionOperation finalProjections = Aggregation.project("count", "totalAnalysisTime").and("_id.dateHour").as("dateTime").and("_id.integrationPointKey").as("integrationPointKey");
 
         TypedAggregation<StatisticLog> aggregation
             = new TypedAggregation<>(StatisticLog.class, projectStage, matchStage, groupOperation, finalProjections);

@@ -19,7 +19,7 @@ public class SegmentAnalysisService {
     private final ConditionMatcher conditionMatcher;
 
     public SegmentAnalysisResult analyze(ContextValueHolder context, Segment segment, Worm<Object> worm) {
-        return SegmentAnalysisResult.of(segment.getName(), segment.getId(), segment.getHash(), this.getSegmentValueIfSatisfy(context, segment, worm));
+        return SegmentAnalysisResult.of(segment.getName(), segment.getId(), segment.getHash(), this.getSegmentValueIfSatisfy(context, segment, worm), 0L);
     }
 
     final boolean isMatch(Segment segment, ContextValueHolder context, Worm<Object> worm) {

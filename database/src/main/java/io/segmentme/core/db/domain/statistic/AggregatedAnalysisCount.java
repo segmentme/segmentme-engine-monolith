@@ -9,5 +9,6 @@ public class AggregatedAnalysisCount {
     private LocalDateTime dateTime;
     private int count;
     private String integrationPointKey;
+    private long totalAnalysisTime;
 
 }

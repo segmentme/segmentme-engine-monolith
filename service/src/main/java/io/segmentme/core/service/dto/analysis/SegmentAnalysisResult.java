@@ -14,4 +14,6 @@ public class SegmentAnalysisResult {
     private String hash;
 
     private boolean value;
+
+    private long analysisTime;
 }
