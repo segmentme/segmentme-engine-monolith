@@ -20,12 +20,9 @@ public class SegmentController {
 
     @PostMapping("/context/{contextId}")
     @PreAuthorize("@contextSchemaSecurityService.isManagedSchema(#contextId)")
-    public SegmentDto save(@PathVariable String contextId, @RequestBody @Valid SegmentDto rule) {
+    public SegmentDto save(@PathVariable String contextId, @RequestParam(required = false) String integrationPointKey, @RequestBody @Valid SegmentDto rule) {
         log.info("Request to create rule {} with contextId {}", rule, contextId);
-
-        //TODO integration entry point shouldn't be null
-
-        return segmentManager.save(rule, contextId, null);
+        return segmentManager.save(rule, contextId, integrationPointKey);
     }
 
     @GetMapping("/context/{contextId}")
