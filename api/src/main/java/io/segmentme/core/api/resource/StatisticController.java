@@ -2,6 +2,7 @@ package io.segmentme.core.api.resource;
 
 import io.segmentme.core.api.dto.DashboardData;
 import io.segmentme.core.api.facade.WorkspaceFacade;
+import io.segmentme.core.db.domain.statistic.SegmentStatisticCount;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.service.statistic.StatisticService;
 import io.segmentme.core.service.analysis.segment.SegmentManager;
@@ -24,12 +25,17 @@ public class StatisticController {
 
 
     @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
+    @GetMapping("/{workspaceId}/segment-statistic-count")
+    public List<SegmentStatisticCount> getSegmentStatistic(@PathVariable String workspaceId, @RequestParam int period) {
+        return statisticService.getSegmentStatistic(workspaceId, period);
+    }
+
+    @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
     @GetMapping("/{workspaceId}/total-analysis-count")
-    public DashboardData getTotalAnalyticsCount(@PathVariable String workspaceId, @RequestParam int period, @RequestParam(defaultValue = "3") int limit) {
+    public DashboardData getTotalAnalyticsCount(@PathVariable String workspaceId, @RequestParam int period) {
         List<IntegrationPoint> integrationPoints = workspaceFacade.getWorkspaceDetails(workspaceId).getIntegrationPoints();
         return new DashboardData()
             .setAnalysisCount(statisticService.getAnalysisCount(workspaceId, period))
-            .setSegmentStatisticCount(statisticService.getSegmentStatistic(workspaceId, period, limit))
             .setSegments(integrationPoints.stream().map(it -> segmentManager.findByIntegrationPointKey(it.getKey())).flatMap(Collection::stream).map(this::toShortSegment).collect(Collectors.toList()))
             .setIntegrationPoints(integrationPoints);
     }

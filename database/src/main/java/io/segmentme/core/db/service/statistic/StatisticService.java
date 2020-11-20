@@ -26,7 +26,7 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
 
     private final MongoTemplate mongoTemplate;
 
-    public List<SegmentStatisticCount> getSegmentStatistic(String workspaceId, int period, int limit) {
+    public List<SegmentStatisticCount> getSegmentStatistic(String workspaceId, int period) {
         LocalDateTime localDateTime = LocalDate.now().minus(period, ChronoUnit.DAYS).atTime(LocalTime.MIDNIGHT);
         MatchOperation dateFilter = Aggregation
             .match(new Criteria("workspaceId")
@@ -43,13 +43,12 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
 
         MatchOperation trueSegmentFilter = Aggregation.match(new Criteria("segmentResult").is(true));
         GroupOperation groupBySegment = group("segmentId").count().as("count");
-        SortOperation sortOperation = Aggregation.sort(Sort.Direction.ASC, "count");
-        LimitOperation limitOperation = Aggregation.limit(limit);
+        SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC, "count");
 
         ProjectionOperation segmentCountProjection = Aggregation.project("count").and("_id").as("segmentId");
 
         TypedAggregation<StatisticLog> aggregation
-            = new TypedAggregation<>(StatisticLog.class, dateFilter, unwind, segmentInfo, trueSegmentFilter, groupBySegment, sortOperation, limitOperation, segmentCountProjection);
+            = new TypedAggregation<>(StatisticLog.class, dateFilter, unwind, segmentInfo, trueSegmentFilter, groupBySegment, sortOperation, segmentCountProjection);
 
         AggregationResults<SegmentStatisticCount> result = mongoTemplate.aggregate(aggregation, SegmentStatisticCount.class);
 
