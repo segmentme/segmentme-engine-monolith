@@ -1,4 +1,4 @@
-package io.segmentme.core.api.config;
+package io.segmentme.core.api.config.auth;
 
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import lombok.extern.slf4j.Slf4j;

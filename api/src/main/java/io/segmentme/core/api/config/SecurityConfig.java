@@ -1,7 +1,7 @@
-package io.segmentme.core.api.config.auth;
+package io.segmentme.core.api.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.segmentme.core.api.config.SdkSecurityFilter;
+import io.segmentme.core.api.config.auth.SdkSecurityFilter;
 import io.segmentme.core.api.error.dto.SimpleErrorDto;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import lombok.RequiredArgsConstructor;
