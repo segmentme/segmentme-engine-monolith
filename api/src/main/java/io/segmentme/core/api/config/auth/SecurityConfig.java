@@ -1,7 +1,9 @@
-package io.segmentme.core.api.config;
+package io.segmentme.core.api.config.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.segmentme.core.api.config.SdkSecurityFilter;
 import io.segmentme.core.api.error.dto.SimpleErrorDto;
+import io.segmentme.core.db.service.workspace.WorkspaceService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.CharEncoding;
@@ -17,6 +19,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -33,6 +37,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final ObjectMapper objectMapper;
 
     private final AuthenticationManager authenticationManager;
+
+    private final AntPathRequestMatcher IGNORED_PATH_MATCHER = new AntPathRequestMatcher("/sdk/**");
+
+    private final WorkspaceService workspaceService;
 
     @Bean
     public FilterRegistrationBean<?> filterRegistrationBean() {
@@ -51,16 +59,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().disable().authorizeRequests()
-            .mvcMatchers("/**").authenticated()
-            .and()
-            .exceptionHandling()
-            .accessDeniedHandler(accessDeniedHandler())
-            .authenticationEntryPoint(entryPointExceptionHandler())
-            .and()
-            .oauth2ResourceServer()
-            .accessDeniedHandler(accessDeniedHandler())
-            .authenticationEntryPoint(entryPointExceptionHandler())
-            .jwt().authenticationManager(authenticationManager);
+                .requestMatchers(request -> !IGNORED_PATH_MATCHER.matches(request)).authenticated()
+                .and()
+                .addFilterBefore(new SdkSecurityFilter(IGNORED_PATH_MATCHER, workspaceService), BasicAuthenticationFilter.class)
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler())
+                .authenticationEntryPoint(entryPointExceptionHandler())
+                .and()
+                .oauth2ResourceServer()
+                .accessDeniedHandler(accessDeniedHandler())
+                .authenticationEntryPoint(entryPointExceptionHandler())
+                .jwt()
+                .authenticationManager(authenticationManager);
     }
 
     private AccessDeniedHandler accessDeniedHandler() {
