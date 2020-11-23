@@ -4,6 +4,7 @@ import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.context.DbObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Map;
 public class StatisticLog extends DbObject {
     private long analysisTime;
 
+    @Indexed
     private String integrationPointKey;
 
     private int executedConditionsCount;
@@ -27,6 +29,7 @@ public class StatisticLog extends DbObject {
 
     private Map<String, Object> nodeValues;
 
+    @Indexed
     private String workspaceId;
 
     @Data

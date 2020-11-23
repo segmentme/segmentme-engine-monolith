@@ -1,6 +1,7 @@
 package io.segmentme.core.service.statistic;
 
 import io.segmentme.core.db.domain.condition.AbstractCondition;
+import io.segmentme.core.db.domain.condition.SegmentCondition;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.domain.statistic.StatisticLog;
@@ -31,26 +32,26 @@ public class StatisticManager {
 
     @Async
     @EventListener
-    public void saveStatistic(StatisticLogEntry statisticLogEntry) {
+    public void saveStatistic(StatisticLogEntry collectedStatistic) {
         StatisticLog statisticLog = new StatisticLog();
-        statisticLog.setWorkspaceId(statisticLogEntry.getWorkspaceId());
-        statisticLog.setAnalysisTime(statisticLogEntry.getAnalysisTime());
-        statisticLog.setIntegrationPointKey(statisticLog.getIntegrationPointKey());
-        ContextSchema schema = statisticLogEntry.getContextValueHolder().getSchema();
+        statisticLog.setWorkspaceId(collectedStatistic.getWorkspaceId());
+        statisticLog.setAnalysisTime(collectedStatistic.getAnalysisTime());
+        statisticLog.setIntegrationPointKey(collectedStatistic.getIntegrationPointKey());
+        ContextSchema schema = collectedStatistic.getContextValueHolder().getSchema();
         if (schema != null) {
             statisticLog.setKnownTypes(schema.getInlinePath());
         }
-        statisticLog.setSegmentStatistics(getSegmentStatistics(statisticLogEntry));
-        statisticLog.setConditionStatistics(getConditionsBreakdown(statisticLogEntry));
-        statisticLog.setNodeValues(statisticLogEntry.getContextValueHolder().getValues());
+        statisticLog.setSegmentStatistics(getSegmentStatistics(collectedStatistic));
+        statisticLog.setConditionStatistics(getConditionsBreakdown(collectedStatistic));
+        statisticLog.setNodeValues(collectedStatistic.getContextValueHolder().getValues());
 
         statisticService.create(statisticLog);
     }
 
-    private List<StatisticLog.SegmentStatistic> getSegmentStatistics(StatisticLogEntry statisticLogEntry) {
-        return statisticLogEntry.getAnalyzedSegments().stream()
+    private List<StatisticLog.SegmentStatistic> getSegmentStatistics(StatisticLogEntry collectedStatistic) {
+        return collectedStatistic.getAnalyzedSegments().stream()
             .map(it -> {
-                SegmentAnalysisResult segmentAnalysisResult = statisticLogEntry.getSegmentAnalysisResults()
+                SegmentAnalysisResult segmentAnalysisResult = collectedStatistic.getSegmentAnalysisResults()
                     .stream()
                     .filter(result -> result.getHash().equalsIgnoreCase(it.getHash()))
                     .findFirst()
@@ -63,8 +64,8 @@ public class StatisticManager {
             .collect(Collectors.toList());
     }
 
-    private List<StatisticLog.ConditionStatistic> getConditionsBreakdown(StatisticLogEntry statisticLogEntry) {
-        return statisticLogEntry.getConditionResults().entrySet().stream()
+    private List<StatisticLog.ConditionStatistic> getConditionsBreakdown(StatisticLogEntry collectedStatistic) {
+        return collectedStatistic.getConditionResults().entrySet().stream()
             .map(it -> new StatisticLog.ConditionStatistic()
                 .setHash(String.valueOf(it.getKey()))
                 .setCriteria(it.getValue().getCriteria())
@@ -78,7 +79,7 @@ public class StatisticManager {
         segment.getConditions().stream()
             .peek(it -> {
                 if (it.getType() == AbstractCondition.ConditionType.SEGMENT) {
-                    getSegmentConditions(segmentService.findById(it.getCriteria()).get(), conditions);
+                    getSegmentConditions(((SegmentCondition) it).getValue(), conditions);
                 }
             })
             .peek(it -> conditions.putIfAbsent(String.valueOf(it.hashCode()), 0))

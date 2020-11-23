@@ -13,6 +13,7 @@ import java.util.Map;
 public class StatisticLogEntry {
     private long analysisTime;
 
+
     private String integrationPointKey;
 
     private ContextValueHolder contextValueHolder;
