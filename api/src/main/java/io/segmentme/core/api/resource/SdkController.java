@@ -1,12 +1,17 @@
 package io.segmentme.core.api.resource;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.api.dto.context.ContextSchemaShortInfo;
 import io.segmentme.core.api.facade.SdkFacade;
 import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
+import io.segmentme.core.service.analysis.segment.AnalysisService;
+import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -16,6 +21,7 @@ public class SdkController {
 
     private final SdkFacade sdkFacade;
 
+    private final AnalysisService analysisService;
 
     @GetMapping("/connect")
     public IntegrationPoint connect(@RequestHeader("integration-point-key") String integrationPointKey) {
@@ -27,4 +33,10 @@ public class SdkController {
         return sdkFacade.actualizeSchema(integrationPointKey, rootNode);
     }
 
+    @PostMapping("/analysis/analyze")
+    public List<SegmentAnalysisResult> analyze(@RequestHeader("integration-point-key") String integrationPointKey,
+                                               @RequestParam(required = false) String contextId,
+                                               @RequestBody JsonNode payload) {
+        return analysisService.analyze(contextId, integrationPointKey, payload);
+    }
 }

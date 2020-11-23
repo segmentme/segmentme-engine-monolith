@@ -58,7 +58,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().disable().authorizeRequests()
+        http.cors().disable()
+                .csrf().disable()
+                .authorizeRequests()
                 .requestMatchers(request -> !IGNORED_PATH_MATCHER.matches(request)).authenticated()
                 .and()
                 .addFilterBefore(new SdkSecurityFilter(IGNORED_PATH_MATCHER, workspaceService), BasicAuthenticationFilter.class)
