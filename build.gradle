@@ -2,7 +2,9 @@ import groovy.model.ValueHolder
 
 plugins {
     id 'org.springframework.boot' version '2.3.3.RELEASE'
+    id 'com.bmuschko.docker-remote-api' version '6.6.1'
 }
+import com.bmuschko.gradle.docker.tasks.image.*
 
 def projectSettings = new ValueHolder()
 apply from: 'modules.gradle', to: projectSettings
@@ -32,10 +34,49 @@ subprojects {
 }
 
 def bootProjectConfiguration(Project project) {
+
     configure(project) {
         apply plugin: 'org.springframework.boot'
+        apply plugin: "com.bmuschko.docker-remote-api"
 
+        sourceCompatibility = 14.0
+
+        task copyJar(type: Copy) {
+            dependsOn build
+            from "build/libs/${project.name}-${project.version}.jar"
+            into 'build/docker'
+            rename { String fileName ->
+                fileName.replace("-${project.version}", "")
+            }
+        }
+
+
+        task createDockerfile(type: Dockerfile) {
+            dependsOn copyJar
+            from('adoptopenjdk/openjdk14:latest')
+            label(['maintainer': 'SegmentMe Team'])
+            copyFile("/${project.name}.jar", '/app/app.jar')
+            entryPoint('sh', '-c', 'java \$JAVA_OPTS \$EXTRA_PROPS -Dspring.profiles.active=cloud -jar \'/app/app.jar\'')
+            exposePort(80)
+        }
+
+        task buildDocker(type: DockerBuildImage) {
+            dependsOn createDockerfile
+            images.add("${System.properties.get("DOCKER_REGISTRY", 'localhost:5000')}/${project.group}/${project.name}")
+        }
+
+
+        docker {
+            if (System.env.DOCKER_HOST) {
+                url = System.env.DOCKER_HOST.replace("tcp", "https")
+                if (System.env.DOCKER_CERT_PATH) {
+                    certPath = new File(System.env.DOCKER_CERT_PATH)
+                }
+            }
+//    url = 'tcp://127.0.0.1'
+        }
     }
+
 }
 
 def javaProjectConfiguration(Project project) {
