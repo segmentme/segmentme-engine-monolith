@@ -25,6 +25,7 @@ public class StatisticWorm implements BiConsumer<AbstractCondition, Object> {
             statisticEntry.setErrors(((Exception) result).getMessage());
             return;
         }
+        statisticEntry.setCriteria(condition.getCriteria());
         statisticEntry.setResult(Objects.equals(condition.isMatchResult(), result));
     }
 

@@ -2,7 +2,7 @@ package io.segmentme.core.api.resource;
 
 import io.segmentme.core.api.dto.DashboardData;
 import io.segmentme.core.api.facade.WorkspaceFacade;
-import io.segmentme.core.db.domain.statistic.SegmentStatisticCount;
+import io.segmentme.core.db.domain.statistic.*;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.service.statistic.StatisticService;
 import io.segmentme.core.service.analysis.segment.SegmentManager;
@@ -28,6 +28,14 @@ public class StatisticController {
     @GetMapping("/{workspaceId}/segment-statistic-count")
     public List<SegmentStatisticCount> getSegmentStatistic(@PathVariable String workspaceId, @RequestParam int period) {
         return statisticService.getSegmentStatistic(workspaceId, period);
+    }
+
+
+    @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
+    @GetMapping("/{workspaceId}/segment-statistic")
+    public List<StatisticLog> getStatistics(@PathVariable String workspaceId, @RequestParam int period,
+                                            @RequestParam String criteria, @RequestParam String value) {
+       return statisticService.getSegmentStatistic(workspaceId, period, criteria, value);
     }
 
     @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
