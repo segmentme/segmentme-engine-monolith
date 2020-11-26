@@ -68,7 +68,7 @@ class SegmentControllerTest extends BaseControllerTest {
     def "save segment with segmentCondition with name: #name"() {
         given:
         def ruleToSave = getSegment(name)
-        def response = mockMvc.perform(auth(post("/segment/${randomUUID().toString()}"))
+        def response = mockMvc.perform(auth(post("/segment/context/${randomUUID().toString()}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(ruleToSave))
                 .accept(MediaType.APPLICATION_JSON))
@@ -88,7 +88,7 @@ class SegmentControllerTest extends BaseControllerTest {
     def "success creation rule: #segment"() {
         given:
         def ruleToSave = fillRule(new SegmentDto(), segment)
-        def response = mockMvc.perform(auth(post("/segment/${randomUUID().toString()}"))
+        def response = mockMvc.perform(auth(post("/segment/context/${randomUUID().toString()}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(ruleToSave))
                 .accept(MediaType.APPLICATION_JSON))
@@ -111,7 +111,7 @@ class SegmentControllerTest extends BaseControllerTest {
         given:
         def ruleToSave = fillRule(new SegmentDto(), segment)
         ruleToSave.name = null
-        def response = mockMvc.perform(auth(post("/segment/${randomUUID().toString()}"))
+        def response = mockMvc.perform(auth(post("/segment/context/${randomUUID().toString()}"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serializeToJson(ruleToSave))
                 .accept(MediaType.APPLICATION_JSON))
