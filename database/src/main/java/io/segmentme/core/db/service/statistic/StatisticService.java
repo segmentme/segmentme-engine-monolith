@@ -1,8 +1,6 @@
 package io.segmentme.core.db.service.statistic;
 
-import io.segmentme.core.db.domain.statistic.AggregatedAnalysisCount;
-import io.segmentme.core.db.domain.statistic.SegmentStatisticCount;
-import io.segmentme.core.db.domain.statistic.StatisticLog;
+import io.segmentme.core.db.domain.statistic.*;
 import io.segmentme.core.db.repository.StatisticRepository;
 import io.segmentme.core.db.service.AbstractDatabaseService;
 import lombok.RequiredArgsConstructor;
@@ -83,5 +81,17 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
 
     }
 
+    public List<StatisticLog> getSegmentStatistic(String workspaceId, int period, String criteria, String value) {
+        LocalDateTime localDateTime = LocalDate.now().minus(period, ChronoUnit.DAYS).atTime(LocalTime.MIDNIGHT);
 
+        MatchOperation filter = Aggregation
+                .match(new Criteria("workspaceId").is(workspaceId)
+                        .and("createdDate").gte(localDateTime)
+                        .and("nodeValues." + criteria.replaceAll("\\.", "#")).is(value));
+
+        SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC, "createdDate");
+
+        return mongoTemplate.aggregate(new TypedAggregation<>(StatisticLog.class, filter, sortOperation), StatisticLog.class)
+                .getMappedResults();
+    }
 }
