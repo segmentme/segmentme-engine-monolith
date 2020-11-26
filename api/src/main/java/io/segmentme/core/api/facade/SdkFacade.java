@@ -11,6 +11,7 @@ import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import io.segmentme.core.service.exception.ContextSchemaManagerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,7 +27,7 @@ public class SdkFacade {
 
     private final WorkspaceService workspaceService;
 
-    public ContextSchemaShortInfo actualizeSchema(String integrationPointKey, SchemaNode rootNode) {
+    public ContextSchemaShortInfo actualizeSchema(String integrationPointKey, String contextKey, SchemaNode rootNode) {
         if (workspaceService.findByIntegrationPointKey(integrationPointKey).isEmpty()) {
             throw new ContextSchemaManagerException().setCode(INTEGRATION_POINT_NOT_FOUND);
         }
@@ -37,14 +38,16 @@ public class SdkFacade {
             log.warn("Integration point key : {} Schema {} contains undefined values", integrationPointKey, rootNode);
         }
 
-        ContextSchemaHolder byHash = contextSchemaManager.findByHash(integrationPointKey, resolvedSchema.getHash());
+        String hash = StringUtils.isNoneBlank(contextKey) ? contextKey : contextSchemaManager.computeHash(resolvedSchema);
+        resolvedSchema.setHash(hash);
+        ContextSchemaHolder existedSchema = contextSchemaManager.findByHash(integrationPointKey, hash);
         ContextSchemaHolder actualizedContext;
-        if (byHash == null) {
-            actualizedContext = contextSchemaManager.create(integrationPointKey, rootNode, "sdk-schema_" + LocalDateTime.now(), null);
+        if (existedSchema == null) {
+            actualizedContext = contextSchemaManager.create(integrationPointKey, rootNode, "sdk-schema_" + LocalDateTime.now(), null, hash);
         } else {
-            resolvedSchema.setName(byHash.getName());
+            resolvedSchema.setName(existedSchema.getName());
             resolvedSchema.setIntegrationPointKey(integrationPointKey);
-            actualizedContext = contextSchemaManager.updateContextSchema(byHash.getId(), resolvedSchema);
+            actualizedContext = contextSchemaManager.updateContextSchema(existedSchema.getId(), resolvedSchema);
         }
 
         return new ContextSchemaShortInfo().setId(resolvedSchema.getId()).setIntegrationPointKey(integrationPointKey).setHash(actualizedContext.getHash());

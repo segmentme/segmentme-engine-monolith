@@ -30,13 +30,11 @@ public class ContextSchemaService extends AbstractDatabaseService<ContextSchema,
 
     @Override
     public ContextSchema create(ContextSchema entity) {
-        entity.setHash(entity.computeHash());
         return super.create(entity);
     }
 
     @Override
     public ContextSchema update(ContextSchema entity) {
-        entity.setHash(entity.computeHash());
         return super.update(entity);
     }
 }

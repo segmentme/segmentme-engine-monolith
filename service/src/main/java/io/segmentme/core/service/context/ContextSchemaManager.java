@@ -47,12 +47,17 @@ public class ContextSchemaManager {
     private final ObjectMapper objectMapper;
 
     public ContextSchemaHolder create(String integrationPointKey, SchemaNode root, String name, String rawPayload) {
+        return create(integrationPointKey, root, name, rawPayload, null);
+    }
+
+    public ContextSchemaHolder create(String integrationPointKey, SchemaNode root, String name, String rawPayload, String hash) {
         if (workspaceService.findByIntegrationPointKey(integrationPointKey).isEmpty()) {
             throw new ContextSchemaManagerException().setCode(INTEGRATION_POINT_NOT_FOUND);
         }
         ContextSchema contextSchema = contextSchemaResolver.resolve(root);
         contextSchema.setIntegrationPointKey(integrationPointKey);
         contextSchema.setName(name);
+        contextSchema.setHash(hash == null ? this.computeHash(contextSchema) : hash);
         contextSchema.setRawPayload(rawPayload);
 
         if (StringUtils.isNoneBlank(rawPayload)) {
@@ -72,6 +77,7 @@ public class ContextSchemaManager {
             ContextSchema contextSchema = contextSchemaResolver.resolve(holder.getRootNode());
             it.setInlinePath(contextSchema.getInlinePath());
             it.setRootNode(contextSchema.getRootNode());
+            it.setHash(holder.getHash() == null ? this.computeHash(contextSchema) : holder.getHash());
             it.setIntegrationPointKey(holder.getIntegrationPointKey());
             it.setName(holder.getName());
             return it;
@@ -92,7 +98,7 @@ public class ContextSchemaManager {
     public ContextSchemaHolder resolveContextSchema(SchemaNode rootNode) {
         ContextSchema resolve = contextSchemaResolver.resolve(rootNode);
         ContextSchemaHolder contextSchemaHolder = ContextSchemaConverter.toHolder(resolve);
-        contextSchemaHolder.setHash(resolve.computeHash());
+        contextSchemaHolder.setHash(this.computeHash(resolve));
         return contextSchemaHolder;
     }
 
@@ -131,6 +137,14 @@ public class ContextSchemaManager {
 
     public ContextSchemaHolder findByHash(String integrationPointKey, String hash) {
         return contextSchemaService.findByHashAndIntegrationPointKey(integrationPointKey, hash).map(ContextSchemaConverter::toHolder).orElse(null);
+    }
+
+    public String computeHash(ContextSchemaHolder contextSchema) {
+        return String.valueOf(contextSchema.getInlinePath().hashCode());
+    }
+
+    public String computeHash(ContextSchema contextSchema) {
+        return String.valueOf(contextSchema.getInlinePath().hashCode());
     }
 
 }

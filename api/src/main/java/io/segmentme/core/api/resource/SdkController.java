@@ -29,8 +29,10 @@ public class SdkController {
     }
 
     @PostMapping("/actualize")
-    public ContextSchemaShortInfo actualizeSchema(@RequestHeader("integration-point-key") String integrationPointKey, @RequestBody SchemaNode rootNode) {
-        return sdkFacade.actualizeSchema(integrationPointKey, rootNode);
+    public ContextSchemaShortInfo actualizeSchema(@RequestHeader("integration-point-key") String integrationPointKey,
+                                                  @RequestParam(required = false) String key,
+                                                  @RequestBody SchemaNode rootNode) {
+        return sdkFacade.actualizeSchema(integrationPointKey,key, rootNode);
     }
 
     @PostMapping("/analysis/analyze")

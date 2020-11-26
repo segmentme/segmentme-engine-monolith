@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +42,7 @@ public class DbConfiguration {
         List<Converter<?, ?>> converters = new ArrayList<>();
         converters.add(new JsonNodeToDocumentConverter());
         converters.add(new DocumentToJsonNodeConverter());
+        StringUtils.join("asd","");
         return new MongoCustomConversions(converters);
     }
 
