@@ -50,7 +50,7 @@ public class SdkFacade {
             actualizedContext = contextSchemaManager.updateContextSchema(existedSchema.getId(), resolvedSchema);
         }
 
-        return new ContextSchemaShortInfo().setId(resolvedSchema.getId()).setIntegrationPointKey(integrationPointKey).setHash(actualizedContext.getHash());
+        return new ContextSchemaShortInfo().setId(actualizedContext.getId()).setIntegrationPointKey(integrationPointKey).setHash(actualizedContext.getHash());
     }
 
     public IntegrationPoint connect(String integrationPointKey) {

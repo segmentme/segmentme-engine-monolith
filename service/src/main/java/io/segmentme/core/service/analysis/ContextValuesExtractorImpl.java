@@ -90,7 +90,7 @@ public class ContextValuesExtractorImpl implements ContextValuesExtractor {
     public Comparable<?> getComparableValue(JsonNode value, SchemaNodeType type, List<DateTimeFormatter> dateFormats) {
         return switch (type) {
             case STRING -> value.asText();
-            case NUMBER -> value.numberValue().doubleValue();
+            case NUMBER -> Optional.ofNullable(value.numberValue()).map(Number::doubleValue).orElse(null);
             case BOOLEAN -> value.booleanValue();
             case DATE -> {
                 Optional<Instant> resolve = DateResolver.resolve(value.asText(), dateFormats);
