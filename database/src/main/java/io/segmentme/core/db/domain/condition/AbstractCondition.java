@@ -4,21 +4,22 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
 @Data
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes(value = {
-        @Type(name = "IN", value = ArrayCondition.class),
-        @Type(name = "RANGE", value = RangeCondition.class),
-        @Type(name = "GT", value = SingleCondition.class),
-        @Type(name = "GTE", value = SingleCondition.class),
-        @Type(name = "LT", value = SingleCondition.class),
-        @Type(name = "LTE", value = SingleCondition.class),
-        @Type(name = "SEGMENT", value = SegmentCondition.class),
-        @Type(name = "CONTAINS_ALL", value = ArrayCondition.class),
-        @Type(name = "CONTAINS_ANY", value = ArrayCondition.class),
-        @Type(name = "CONTAINS_ONLY", value = ArrayCondition.class)
+    @Type(name = "IN", value = ArrayCondition.class),
+    @Type(name = "RANGE", value = RangeCondition.class),
+    @Type(name = "GT", value = SingleCondition.class),
+    @Type(name = "GTE", value = SingleCondition.class),
+    @Type(name = "LT", value = SingleCondition.class),
+    @Type(name = "LTE", value = SingleCondition.class),
+    @Type(name = "SEGMENT", value = SegmentCondition.class),
+    @Type(name = "CONTAINS_ALL", value = ArrayCondition.class),
+    @Type(name = "CONTAINS_ANY", value = ArrayCondition.class),
+    @Type(name = "CONTAINS_ONLY", value = ArrayCondition.class)
 })
 public abstract class AbstractCondition {
 
@@ -30,9 +31,14 @@ public abstract class AbstractCondition {
 
     private String hash;
 
+    @EqualsAndHashCode.Exclude
     private String description;
 
     public enum ConditionType {
         IN, RANGE, GT, GTE, LT, LTE, SEGMENT, CONTAINS_ALL, CONTAINS_ANY, CONTAINS_ONLY
+    }
+
+    public void recalculateHash() {
+        this.hash = String.valueOf(this.hashCode());
     }
 }

@@ -32,6 +32,13 @@ public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepo
     }
 
     public void update(List<Segment> byIntegrationPointKey) {
+        byIntegrationPointKey.forEach(Segment::recalculateHash);
         repository.saveAll(byIntegrationPointKey);
+    }
+
+    @Override
+    public Segment create(Segment entity) {
+        entity.recalculateHash();
+        return super.create(entity);
     }
 }

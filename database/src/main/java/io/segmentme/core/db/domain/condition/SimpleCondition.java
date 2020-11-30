@@ -11,4 +11,8 @@ public abstract class SimpleCondition<T> extends AbstractCondition {
 
     private boolean isNullValid;
 
+    @Override
+    public void recalculateHash() {
+       super.setHash(String.valueOf(this.hashCode()));
+    }
 }
