@@ -23,6 +23,10 @@ public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepo
         return repository.findByIntegrationPointKey(integrationPointKey);
     }
 
+    public Segment findByIntegrationPointKeyAndKey(String integrationPointKey, String key) {
+        return repository.findByIntegrationPointKeyAndName(integrationPointKey, key);
+    }
+
     public List<Segment> findByContextId(String contextId) {
         return repository.findByContextId(contextId);
     }

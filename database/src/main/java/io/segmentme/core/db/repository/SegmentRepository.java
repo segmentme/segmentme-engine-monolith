@@ -10,4 +10,6 @@ public interface SegmentRepository extends MongoRepository<Segment, String> {
     List<Segment> findByIntegrationPointKey(String integrationPointKey);
 
     List<Segment> findByContextId(String contextId);
+
+    Segment findByIntegrationPointKeyAndName(String integrationPointKey, String name);
 }
