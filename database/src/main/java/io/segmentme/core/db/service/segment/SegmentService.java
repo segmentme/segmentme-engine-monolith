@@ -45,4 +45,5 @@ public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepo
         entity.recalculateHash();
         return super.create(entity);
     }
+
 }

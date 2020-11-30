@@ -29,6 +29,7 @@ public abstract class AbstractCondition {
 
     private boolean matchResult = true;
 
+    @EqualsAndHashCode.Exclude
     private String hash;
 
     @EqualsAndHashCode.Exclude

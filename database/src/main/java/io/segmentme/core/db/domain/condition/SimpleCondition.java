@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = {"value"})
+@EqualsAndHashCode(callSuper = true)
 public abstract class SimpleCondition<T> extends AbstractCondition {
 
     private T value;
@@ -13,6 +13,6 @@ public abstract class SimpleCondition<T> extends AbstractCondition {
 
     @Override
     public void recalculateHash() {
-       super.setHash(String.valueOf(this.hashCode()));
+        super.setHash(String.valueOf(this.hashCode()));
     }
 }

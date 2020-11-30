@@ -6,4 +6,10 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SegmentCondition extends SimpleCondition<Segment> {}
+public class SegmentCondition extends SimpleCondition<Segment> {
+
+    @Override
+    public void recalculateHash() {
+        this.getValue().recalculateHash();
+    }
+}
