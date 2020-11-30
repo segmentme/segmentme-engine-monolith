@@ -11,5 +11,6 @@ public class SegmentCondition extends SimpleCondition<Segment> {
     @Override
     public void recalculateHash() {
         this.getValue().recalculateHash();
+        super.recalculateHash();
     }
 }
