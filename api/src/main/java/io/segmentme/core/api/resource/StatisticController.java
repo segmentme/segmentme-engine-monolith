@@ -1,6 +1,7 @@
 package io.segmentme.core.api.resource;
 
 import io.segmentme.core.api.dto.DashboardData;
+import io.segmentme.core.api.dto.ExploreDashboardData;
 import io.segmentme.core.api.facade.WorkspaceFacade;
 import io.segmentme.core.db.domain.statistic.*;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
@@ -33,9 +34,22 @@ public class StatisticController {
 
     @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
     @GetMapping("/{workspaceId}/segment-statistic")
-    public List<StatisticLog> getStatistics(@PathVariable String workspaceId, @RequestParam int period,
+    public ExploreDashboardData getStatistics(@PathVariable String workspaceId, @RequestParam int period,
                                             @RequestParam String criteria, @RequestParam String value) {
-       return statisticService.getSegmentStatistic(workspaceId, period, criteria, value);
+        var statistics = statisticService.getSegmentStatistic(workspaceId, period, criteria, value);
+
+        List<DashboardData.SegmentShortInfo> segments = segmentManager.findByIds(statistics.stream()
+                .map(StatisticLog::getSegmentStatistics)
+                .flatMap(Collection::stream)
+                .map(StatisticLog.SegmentStatistic::getSegmentId)
+                .collect(Collectors.toSet()))
+                .stream()
+                .map(this::toShortSegment)
+                .collect(Collectors.toList());
+
+        return new ExploreDashboardData()
+                .setStatistics(statistics)
+                .setSegments(segments);
     }
 
     @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")

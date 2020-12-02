@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
@@ -21,6 +23,11 @@ public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepo
 
     public List<Segment> findByIntegrationPointKey(String integrationPointKey) {
         return repository.findByIntegrationPointKey(integrationPointKey);
+    }
+
+    public List<Segment> findByIds(Iterable<String> ids) {
+        return StreamSupport.stream(repository.findAllById(ids).spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     public Segment findByIntegrationPointKeyAndKey(String integrationPointKey, String key) {
