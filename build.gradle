@@ -62,7 +62,7 @@ def bootProjectConfiguration(Project project) {
 
         task buildDocker(type: DockerBuildImage) {
             dependsOn createDockerfile
-            images.add("${System.properties.get("DOCKER_REGISTRY", 'localhost:5000')}/${project.group}/${project.name}")
+            images.add("${System.properties.get("DOCKER_REGISTRY", 'localhost:5000')}/segmentme-monolith-api")
         }
 
 
