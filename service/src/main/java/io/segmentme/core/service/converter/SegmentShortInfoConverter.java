@@ -11,12 +11,14 @@ public class SegmentShortInfoConverter {
     public SegmentShortInfo of(Segment source) {
         return new SegmentShortInfo()
                 .setId(source.getId())
+                .setIntegrationPointKey(source.getIntegrationPointKey())
                 .setName(source.getName());
     }
 
     public SegmentShortInfo of(SegmentDto source) {
         return new SegmentShortInfo()
                 .setId(source.getId())
+                .setIntegrationPointKey(source.getIntegrationPointKey())
                 .setName(source.getName());
     }
 }

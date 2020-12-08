@@ -6,4 +6,5 @@ import lombok.Data;
 public class SegmentShortInfo {
     private String id;
     private String name;
+    private String integrationPointKey;
 }
