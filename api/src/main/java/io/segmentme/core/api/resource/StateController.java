@@ -22,14 +22,14 @@ public class StateController {
     @PreAuthorize("@securityService.isValidIntegrationPointKey(#state.integrationPointKey, #currentUser.id)")
     public StateDto create(@AuthenticationPrincipal AuthUser currentUser,
                            @Valid @RequestBody StateDto state) {
+        state.setId(null);
         return stateManager.create(state);
     }
 
-    @GetMapping("/integrationPointKey/{integrationPointKey}")
-    @PreAuthorize("@securityService.isValidIntegrationPointKey(#integrationPointKey, #currentUser.id)")
-    public List<StateDto> getAllInWorkspace(@AuthenticationPrincipal AuthUser currentUser,
-                                            @PathVariable String integrationPointKey) {
-        return stateManager.getByIntegrationPointKey(integrationPointKey);
+    @GetMapping("/workspace/{workspaceId}")
+    @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
+    public List<StateDto> getAllInWorkspace(@PathVariable String workspaceId) {
+        return stateManager.getByWorkspaceId(workspaceId);
     }
 
     @GetMapping("/{stateId}")

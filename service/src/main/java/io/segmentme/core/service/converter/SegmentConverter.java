@@ -32,6 +32,7 @@ public class SegmentConverter {
                 .setAggregation(source.getAggregation())
                 .setMatchResult(source.isMatchResult())
                 .setDescription(source.getDescription())
+                .setIntegrationPointKey(source.getIntegrationPointKey())
                 .setConditions(source.getConditions().stream().map(ConditionConverter::of).collect(Collectors.toList()));
     }
 }

@@ -24,6 +24,8 @@ public class SegmentDto {
 
     private String description;
 
+    private String integrationPointKey;
+
     @NotEmpty
     private List<AbstractConditionDto> conditions;
 

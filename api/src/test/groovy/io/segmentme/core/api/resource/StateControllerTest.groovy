@@ -5,10 +5,14 @@ import io.segmentme.core.api.common.BaseControllerTest
 import io.segmentme.core.api.error.dto.ErrorType
 import io.segmentme.core.api.security.ContextSchemaSecurityService
 import io.segmentme.core.api.security.SecurityService
+import io.segmentme.core.db.repository.SegmentRepository
 import io.segmentme.core.db.repository.StateRepository
+import io.segmentme.core.db.service.segment.SegmentService
+import io.segmentme.core.service.analysis.segment.SegmentManager
 import io.segmentme.core.service.analysis.state.StateManager
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto
+import io.segmentme.core.service.dto.analysis.segment.SegmentShortInfo
 import io.segmentme.core.service.dto.analysis.state.StateDto
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,6 +41,12 @@ class StateControllerTest extends BaseControllerTest {
     @Autowired
     protected StateManager stateManager
 
+    @Autowired
+    protected SegmentManager segmentManager
+
+    @Autowired
+    protected SegmentRepository segmentRepository
+
     @SpringBean
     private SecurityService securityService = Mock(SecurityService.class)
 
@@ -50,6 +60,7 @@ class StateControllerTest extends BaseControllerTest {
 
     def cleanup() {
         stateRepository.deleteAll()
+        segmentRepository.deleteAll()
     }
 
     def 'create state with segment #segmentName'() {
@@ -121,21 +132,6 @@ class StateControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath('$.fieldErrors[*].field', hasItem("name")))
     }
 
-    def 'get states for workplace'() {
-        given:
-        def firstState = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY")))
-        stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")).setIntegrationPointKey(firstState.integrationPointKey))
-        when:
-        def response = sendRequest(get("/state/integrationPointKey/${firstState.integrationPointKey}"))
-        then:
-        response.andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(jsonPath('$[*]', hasSize(2)))
-                .andExpect(jsonPath('$[*].id').isNotEmpty())
-                .andExpect(jsonPath('$[*].name').isNotEmpty())
-                .andExpect(jsonPath('$[*].segment').isNotEmpty())
-    }
-
     def 'delete state'() {
         given:
         def firstSegment = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY")))
@@ -151,10 +147,14 @@ class StateControllerTest extends BaseControllerTest {
 
 
     private StateDto createState(SegmentDto segment) {
+        if (segment != null) {
+            segment = segmentManager.save(segment, null, segment.getIntegrationPointKey())
+        }
+
         return new StateDto()
                 .setName(randomUUID().toString())
                 .setIntegrationPointKey(randomUUID().toString())
-                .setSegment(segment)
+                .setSegment(segment == null ? null : new SegmentShortInfo().setId(segment.getId()).setName(segment.getName()))
                 .setValue(objectMapper.convertValue(Map.of("name", "test"), JsonNode.class))
     }
 }

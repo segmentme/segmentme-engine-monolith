@@ -2,6 +2,7 @@ package io.segmentme.core.service.dto.analysis.state;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
+import io.segmentme.core.service.dto.analysis.segment.SegmentShortInfo;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -22,6 +23,6 @@ public class StateDto {
     private JsonNode value;
 
     @NotNull
-    private SegmentDto segment;
+    private SegmentShortInfo segment;
 
 }

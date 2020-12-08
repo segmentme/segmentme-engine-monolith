@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 @Slf4j
@@ -15,6 +16,10 @@ import java.util.Collection;
 public class SecurityService {
 
     private final WorkspaceService workspaceService;
+
+    public boolean isValidIntegrationPointKeys(String[] integrationPointKeys, String userId) {
+        return Arrays.stream(integrationPointKeys).allMatch(it -> isValidIntegrationPointKey(it, userId));
+    }
 
     public boolean isValidIntegrationPointKey(String integrationPointKey, String userId) {
         return workspaceService.findByIntegrationPointKey(integrationPointKey)

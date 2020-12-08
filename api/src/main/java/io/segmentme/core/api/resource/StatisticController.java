@@ -7,7 +7,9 @@ import io.segmentme.core.db.domain.statistic.*;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.service.statistic.StatisticService;
 import io.segmentme.core.service.analysis.segment.SegmentManager;
+import io.segmentme.core.service.converter.SegmentShortInfoConverter;
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
+import io.segmentme.core.service.dto.analysis.segment.SegmentShortInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,13 +40,13 @@ public class StatisticController {
                                             @RequestParam String criteria, @RequestParam String value) {
         var statistics = statisticService.getSegmentStatistic(workspaceId, period, criteria, value);
 
-        List<DashboardData.SegmentShortInfo> segments = segmentManager.findByIds(statistics.stream()
+        List<SegmentShortInfo> segments = segmentManager.findByIds(statistics.stream()
                 .map(StatisticLog::getSegmentStatistics)
                 .flatMap(Collection::stream)
                 .map(StatisticLog.SegmentStatistic::getSegmentId)
                 .collect(Collectors.toSet()))
                 .stream()
-                .map(this::toShortSegment)
+                .map(SegmentShortInfoConverter::of)
                 .collect(Collectors.toList());
 
         return new ExploreDashboardData()
@@ -58,12 +60,7 @@ public class StatisticController {
         List<IntegrationPoint> integrationPoints = workspaceFacade.getWorkspaceDetails(workspaceId).getIntegrationPoints();
         return new DashboardData()
             .setAnalysisCount(statisticService.getAnalysisCount(workspaceId, period))
-            .setSegments(integrationPoints.stream().map(it -> segmentManager.findByIntegrationPointKey(it.getKey())).flatMap(Collection::stream).map(this::toShortSegment).collect(Collectors.toList()))
+            .setSegments(integrationPoints.stream().map(it -> segmentManager.findByIntegrationPointKey(it.getKey())).flatMap(Collection::stream).map(SegmentShortInfoConverter::of).collect(Collectors.toList()))
             .setIntegrationPoints(integrationPoints);
     }
-
-    private DashboardData.SegmentShortInfo toShortSegment(SegmentDto it) {
-        return new DashboardData.SegmentShortInfo().setId(it.getId()).setName(it.getName());
-    }
-
 }

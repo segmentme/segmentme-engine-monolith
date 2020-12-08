@@ -54,6 +54,13 @@ public class SegmentManager {
             .collect(Collectors.toList());
     }
 
+    public List<SegmentDto> findByIntegrationPointKeys(Iterable<String> integrationPointKeys) {
+        return segmentService.findByIntegrationPointKeys(integrationPointKeys)
+                .stream()
+                .map(SegmentConverter::of)
+                .collect(Collectors.toList());
+    }
+
     public List<SegmentDto> findByContextId(String contextId) {
         return segmentService.findByContextId(contextId).stream().map(SegmentConverter::of).collect(Collectors.toList());
     }

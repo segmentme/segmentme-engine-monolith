@@ -25,6 +25,10 @@ public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepo
         return repository.findByIntegrationPointKey(integrationPointKey);
     }
 
+    public List<Segment> findByIntegrationPointKeys(Iterable<String> integrationPointKeys) {
+        return repository.findByIntegrationPointKeyIn(integrationPointKeys);
+    }
+
     public List<Segment> findByIds(Iterable<String> ids) {
         return StreamSupport.stream(repository.findAllById(ids).spliterator(), false)
                 .collect(Collectors.toList());
