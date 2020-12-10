@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Document(collection = "user_profile")
+@Document(collection = "userProfile")
 public class UserProfile extends DbObject {
     @BackReferenceId("userProfiles")
     @Indexed

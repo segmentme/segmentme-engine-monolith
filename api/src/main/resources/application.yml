@@ -6,6 +6,9 @@ auth0:
   audience: https://segmentme.us.auth0.com/api/v2/
   managementApi: https://segmentme.us.auth0.com/api/v2/
 spring:
+  data:
+    mongodb:
+        auto-index-creation: on
   security:
     oauth2:
       client:

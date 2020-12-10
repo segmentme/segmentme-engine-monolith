@@ -4,8 +4,10 @@ import io.segmentme.core.db.domain.condition.AbstractCondition;
 import io.segmentme.core.db.domain.condition.SegmentCondition;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.segment.Segment;
+import io.segmentme.core.db.domain.statistic.AnalyzedData;
 import io.segmentme.core.db.domain.statistic.StatisticLog;
 import io.segmentme.core.db.service.segment.SegmentService;
+import io.segmentme.core.db.service.statistic.AnalyzedDataService;
 import io.segmentme.core.db.service.statistic.StatisticService;
 import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
 import io.segmentme.core.service.dto.statistic.StatisticLogEntry;
@@ -15,6 +17,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,23 +32,48 @@ public class StatisticManager {
 
     private final SegmentService segmentService;
 
+    private final AnalyzedDataService analyzedDataService;
 
     @Async
     @EventListener
     public void saveStatistic(StatisticLogEntry collectedStatistic) {
+        AnalyzedData analyzedData = new AnalyzedData();
+        analyzedData.setPayload(collectedStatistic.getRawPayload().toString());
+        analyzedData.setNodeValues(prepareNodeValues(collectedStatistic.getContextValueHolder().getValues()));
+        analyzedDataService.insertIfNotExists(analyzedData);
+
         StatisticLog statisticLog = new StatisticLog();
         statisticLog.setWorkspaceId(collectedStatistic.getWorkspaceId());
         statisticLog.setAnalysisTime(collectedStatistic.getAnalysisTime());
         statisticLog.setIntegrationPointKey(collectedStatistic.getIntegrationPointKey());
+        statisticLog.setAnalyzedDataKey(analyzedData.getHash());
         ContextSchema schema = collectedStatistic.getContextValueHolder().getSchema();
         if (schema != null) {
             statisticLog.setKnownTypes(schema.getInlinePath());
         }
         statisticLog.setSegmentStatistics(getSegmentStatistics(collectedStatistic));
         statisticLog.setConditionStatistics(getConditionsBreakdown(collectedStatistic));
-        statisticLog.setNodeValues(collectedStatistic.getContextValueHolder().getValues());
 
         statisticService.create(statisticLog);
+    }
+
+    private Map<String, List<Object>> prepareNodeValues(Map<String, Object> values) {
+        Map<String, List<Object>> prepared = new HashMap<>();
+
+        values.forEach((key, value) -> {
+            List<Object> preparedValue = null;
+            if (value == null) {
+                return;
+            }
+            if (List.class.isAssignableFrom(value.getClass())) {
+                preparedValue = (List<Object>) value;
+            } else {
+                preparedValue = new ArrayList<>();
+                preparedValue.add(value);
+            }
+            prepared.put(key, preparedValue);
+        });
+        return prepared;
     }
 
     private List<StatisticLog.SegmentStatistic> getSegmentStatistics(StatisticLogEntry collectedStatistic) {

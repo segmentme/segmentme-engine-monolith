@@ -10,7 +10,7 @@ import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Document(collection = "context-schema")
+@Document(collection = "contextSchema")
 public class ContextSchema extends DbObject {
     private SchemaNode rootNode;
 

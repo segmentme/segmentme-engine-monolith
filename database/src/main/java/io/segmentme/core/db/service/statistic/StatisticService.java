@@ -28,6 +28,7 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
 
     private final MongoTemplate mongoTemplate;
 
+
     public List<SegmentStatisticCount> getSegmentStatistic(String workspaceId, int period) {
         LocalDateTime localDateTime = LocalDate.now().minus(period, ChronoUnit.DAYS).atTime(LocalTime.MIDNIGHT);
         MatchOperation dateFilter = Aggregation

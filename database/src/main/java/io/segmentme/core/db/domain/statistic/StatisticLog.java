@@ -27,7 +27,8 @@ public class StatisticLog extends DbObject {
 
     private Map<String, ContextSchema.InlineType> knownTypes;
 
-    private Map<String, Object> nodeValues;
+    @Indexed
+    private String analyzedDataKey;
 
     @Indexed
     private String workspaceId;

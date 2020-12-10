@@ -85,6 +85,7 @@ public class AnalysisService {
 
     private List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload, List<Segment> segments) {
         StatisticLogEntry statisticLogEntry = new StatisticLogEntry();
+        statisticLogEntry.setRawPayload(payload);
         StatisticWorm worm = new StatisticWorm();
         long analyzeStartTime = System.currentTimeMillis();
 
