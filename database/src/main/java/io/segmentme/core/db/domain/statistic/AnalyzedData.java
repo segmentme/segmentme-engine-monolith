@@ -15,6 +15,9 @@ import java.util.Map;
 public class AnalyzedData extends DbObject {
     private String payload;
 
+    @Indexed
+    private String workspaceId;
+
     @Indexed(unique = true)
     private String hash;
 

@@ -38,6 +38,7 @@ public class StatisticManager {
     @EventListener
     public void saveStatistic(StatisticLogEntry collectedStatistic) {
         AnalyzedData analyzedData = new AnalyzedData();
+        analyzedData.setWorkspaceId(collectedStatistic.getWorkspaceId());
         analyzedData.setPayload(collectedStatistic.getRawPayload().toString());
         analyzedData.setNodeValues(prepareNodeValues(collectedStatistic.getContextValueHolder().getValues()));
         analyzedDataService.insertIfNotExists(analyzedData);
