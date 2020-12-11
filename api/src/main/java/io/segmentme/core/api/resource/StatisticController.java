@@ -8,7 +8,6 @@ import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.service.statistic.StatisticService;
 import io.segmentme.core.service.analysis.segment.SegmentManager;
 import io.segmentme.core.service.converter.SegmentShortInfoConverter;
-import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import io.segmentme.core.service.dto.analysis.segment.SegmentShortInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,6 +51,12 @@ public class StatisticController {
         return new ExploreDashboardData()
                 .setStatistics(statistics)
                 .setSegments(segments);
+    }
+
+    @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
+    @GetMapping("/{workspaceId}/statistic-log-details/{statisticLogId}")
+    public StatisticService.ExploreStatisticLog getStatisticLog(@PathVariable String workspaceId, @PathVariable String statisticLogId) {
+        return statisticService.getStatisticLogOverview(statisticLogId);
     }
 
     @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")

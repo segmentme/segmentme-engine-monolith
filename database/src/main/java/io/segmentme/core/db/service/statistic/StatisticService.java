@@ -4,8 +4,10 @@ import io.segmentme.core.db.domain.statistic.AggregatedAnalysisCount;
 import io.segmentme.core.db.domain.statistic.AnalyzedData;
 import io.segmentme.core.db.domain.statistic.SegmentStatisticCount;
 import io.segmentme.core.db.domain.statistic.StatisticLog;
+import io.segmentme.core.db.repository.AnalyzedDataRepository;
 import io.segmentme.core.db.repository.StatisticRepository;
 import io.segmentme.core.db.service.AbstractDatabaseService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.domain.Sort;
@@ -29,11 +31,10 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.grou
 @RequiredArgsConstructor
 public class StatisticService extends AbstractDatabaseService<StatisticLog, StatisticRepository> {
 
-    private final static String NODE_VALUE_PATH_ALIAS = "criteriaField";
-
-    private final static String DB_STATISTIC_COLLECTION_NAME = "statistic";
 
     private final MongoTemplate mongoTemplate;
+
+    private final AnalyzedDataRepository analyzedDataRepository;
 
 
     public List<SegmentStatisticCount> getSegmentStatistic(String workspaceId, int period) {
@@ -139,5 +140,20 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
 
 
         return values;
+    }
+
+    public ExploreStatisticLog getStatisticLogOverview(String statisticLogId) {
+        return repository.findById(statisticLogId).map(log -> {
+            AnalyzedData hash = analyzedDataRepository.findByHash(log.getAnalyzedDataKey());
+            return new ExploreStatisticLog().setLog(log)
+                .setRawPayload(hash.getPayload());
+        }).orElseGet(ExploreStatisticLog::new);
+    }
+
+    @Data
+    public static class ExploreStatisticLog {
+        private StatisticLog log;
+
+        private String rawPayload;
     }
 }
