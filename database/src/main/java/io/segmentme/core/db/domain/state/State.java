@@ -19,6 +19,8 @@ public class State extends DbObject {
 
     private JsonNode value;
 
+    private JsonNode defaultValue;
+
     private Segment segment;
 
     @Indexed

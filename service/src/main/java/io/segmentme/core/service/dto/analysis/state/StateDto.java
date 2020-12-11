@@ -22,6 +22,8 @@ public class StateDto {
     @NotNull
     private JsonNode value;
 
+    private JsonNode defaultValue;
+
     @NotNull
     private SegmentShortInfo segment;
 

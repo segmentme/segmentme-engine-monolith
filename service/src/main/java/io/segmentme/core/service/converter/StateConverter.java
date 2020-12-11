@@ -21,6 +21,7 @@ public class StateConverter {
                 .setName(target.getName())
                 .setSegment(segmentService.findById(target.getSegment().getId()).orElseThrow(() -> new SegmentManagerException(SegmentMangerErrors.SEGMENT_NOT_FOUND)))
                 .setValue(target.getValue())
+                .setDefaultValue(target.getDefaultValue())
                 .setIntegrationPointKey(target.getIntegrationPointKey())
                 .setId(target.getId());
     }
@@ -30,6 +31,7 @@ public class StateConverter {
                 .setName(target.getName())
                 .setSegment(SegmentShortInfoConverter.of(target.getSegment()))
                 .setValue(target.getValue())
+                .setDefaultValue(target.getDefaultValue())
                 .setIntegrationPointKey(target.getIntegrationPointKey())
                 .setId(target.getId());
     }

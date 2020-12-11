@@ -79,6 +79,7 @@ public class StateManager {
         State updatedState = stateConverter.of(stateDto);
         return (State) state.setSegment(updatedState.getSegment())
                 .setValue(updatedState.getValue())
+                .setDefaultValue(updatedState.getDefaultValue())
                 .setName(updatedState.getName())
                 .setIntegrationPointKey(updatedState.getIntegrationPointKey())
                 .setSegment(updatedState.getSegment())
