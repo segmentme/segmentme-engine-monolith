@@ -1,6 +1,7 @@
 package io.segmentme.core.api.resource;
 
 import io.segmentme.core.api.config.AuthUser;
+import io.segmentme.core.api.dto.SegmentExportRequest;
 import io.segmentme.core.service.analysis.segment.SegmentManager;
 import io.segmentme.core.service.converter.SegmentShortInfoConverter;
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
@@ -10,10 +11,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
 @RestController
@@ -22,6 +28,8 @@ import java.util.stream.Collectors;
 public class SegmentController {
 
     private final SegmentManager segmentManager;
+
+    public static final String SEGMENTS_FILE_NAME = "attachment; filename=segments.json";
 
     @PostMapping("/context/{contextId}")
     @PreAuthorize("@contextSchemaSecurityService.isManagedSchema(#contextId)")
@@ -57,5 +65,12 @@ public class SegmentController {
     public void delete(@PathVariable String segmentId) {
         log.info("Request to delete segment with id {}", segmentId);
         segmentManager.delete(segmentId);
+    }
+
+    @PostMapping("/export")
+    public void export(@RequestBody SegmentExportRequest exportRequest, HttpServletResponse response) throws IOException {
+        response.setContentType(APPLICATION_JSON.toString());
+        response.addHeader(CONTENT_DISPOSITION, SEGMENTS_FILE_NAME);
+        segmentManager.exportSegments(exportRequest.getWorkspaceId(), exportRequest.getSegmentIds(), response.getOutputStream());
     }
 }

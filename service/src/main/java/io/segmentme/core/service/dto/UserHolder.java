@@ -6,6 +6,8 @@ import lombok.Data;
 public class UserHolder {
     private String id;
 
+    private String externalId;
+
     private String email;
 
     private String name;

@@ -64,7 +64,7 @@ public class UserManager {
 
 
     public void acknowledgeUser(UserHolder holder) {
-        if (userService.findById(holder.getId()).isPresent() || userService.findByEmail(holder.getEmail()).isPresent()) {
+        if (userService.findByExternalId(holder.getId()).isPresent() || userService.findByEmail(holder.getEmail()).isPresent()) {
             return;
         }
         createUser(holder);
@@ -74,5 +74,9 @@ public class UserManager {
         return StreamSupport.stream(userService.findByIds(userIds).spliterator(), false)
             .collect(Collectors.toList());
 
+    }
+
+    public UserHolder getByExternalId(String externalId) {
+        return UserHolderConverter.toHolder(userService.findByExternalId(externalId).get());
     }
 }

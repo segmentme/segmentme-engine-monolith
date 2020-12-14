@@ -1,7 +1,11 @@
 package io.segmentme.core.service.analysis.segment;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.db.domain.segment.Segment;
+import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
+import io.segmentme.core.db.domain.workpsace.Workspace;
 import io.segmentme.core.db.service.segment.SegmentService;
+import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.converter.SegmentConverter;
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import io.segmentme.core.service.exception.SegmentManagerException;
@@ -10,9 +14,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 
 @Slf4j
@@ -21,6 +29,9 @@ import java.util.stream.Collectors;
 public class SegmentManager {
 
     private final SegmentService segmentService;
+    private final WorkspaceService workspaceService;
+
+    private final ObjectMapper objectMapper;
 
     public SegmentDto save(SegmentDto rule, String contextId, String integrationPointKey) {
         Segment existedSegment = segmentService.findByIntegrationPointKeyAndKey(integrationPointKey, rule.getName());
@@ -41,11 +52,11 @@ public class SegmentManager {
         return segmentService.createAll(analysisRules).stream().map(SegmentConverter::of).collect(Collectors.toList());
     }
 
-    public List<SegmentDto> findByIds(Iterable<String> ids){
+    public List<SegmentDto> findByIds(Iterable<String> ids) {
         return segmentService.findByIds(ids)
-                .stream()
-                .map(SegmentConverter::of)
-                .collect(Collectors.toList());
+            .stream()
+            .map(SegmentConverter::of)
+            .collect(Collectors.toList());
     }
 
     public List<SegmentDto> findByIntegrationPointKey(String integrationPointKey) {
@@ -56,9 +67,9 @@ public class SegmentManager {
 
     public List<SegmentDto> findByIntegrationPointKeys(Iterable<String> integrationPointKeys) {
         return segmentService.findByIntegrationPointKeys(integrationPointKeys)
-                .stream()
-                .map(SegmentConverter::of)
-                .collect(Collectors.toList());
+            .stream()
+            .map(SegmentConverter::of)
+            .collect(Collectors.toList());
     }
 
     public List<SegmentDto> findByContextId(String contextId) {
@@ -86,4 +97,10 @@ public class SegmentManager {
         segmentService.update(contextRules);
     }
 
+    public void exportSegments(String workspaceId, List<String> segmentIds, OutputStream outputStream) throws IOException {
+        List<String> collect = workspaceService.findById(workspaceId).stream().map(Workspace::getIntegrationPoints).flatMap(Collection::stream).map(IntegrationPoint::getKey).collect(Collectors.toList());
+        Iterable<Segment> segments = StreamSupport.stream(segmentService.findByIds(segmentIds).spliterator(), false).filter(it -> collect.contains(it.getIntegrationPointKey())).collect(Collectors.toList());
+
+        objectMapper.writeValue(outputStream, segments);
+    }
 }

@@ -17,4 +17,7 @@ public class User extends DbObject {
 
     private String lastActiveWorkspace;
 
+    @Indexed(unique = true)
+    private String externalId;
+
 }

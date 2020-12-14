@@ -3,10 +3,13 @@ package io.segmentme.core.api.facade;
 import io.segmentme.core.api.dto.CurrentUserProfile;
 import io.segmentme.core.api.dto.UserBasicInfo;
 import io.segmentme.core.api.dto.UserDetails;
+import io.segmentme.core.db.domain.context.DbObject;
+import io.segmentme.core.db.domain.user.User;
 import io.segmentme.core.db.domain.workpsace.UserProfile;
 import io.segmentme.core.service.dto.UserHolder;
 import io.segmentme.core.service.user.UserManager;
 import io.segmentme.core.service.workspace.UserProfileManager;
+import io.segmentme.core.service.workspace.WorkspaceManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +22,12 @@ public class UserFacade {
 
     private final UserManager userManager;
 
+    private final WorkspaceManager workspaceManager;
+
     private final UserProfileManager userProfileManager;
 
-    public UserDetails getUserDetails(String userId) {
-        return getUserDetails(userManager.getById(userId));
+    public UserDetails getUserDetails(String externalId) {
+        return getUserDetails(userManager.getByExternalId(externalId));
     }
 
     private UserDetails getUserDetails(UserHolder createdUser) {
@@ -58,6 +63,6 @@ public class UserFacade {
     }
 
     public void acknowledgeUser(String id, String email, String fullName) {
-        userManager.acknowledgeUser(new UserHolder().setName(fullName).setEmail(email).setId(id));
+        userManager.acknowledgeUser(new UserHolder().setName(fullName).setEmail(email).setExternalId(id));
     }
 }

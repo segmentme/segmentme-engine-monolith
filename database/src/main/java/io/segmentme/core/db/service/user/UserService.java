@@ -15,4 +15,8 @@ public class UserService extends AbstractDatabaseService<User, UserRepository> {
     public Optional<User> findByEmail(String email) {
         return repository.findByEmail(email);
     }
+
+    public Optional<User> findByExternalId(String externalId) {
+        return repository.findByExternalId(externalId);
+    }
 }

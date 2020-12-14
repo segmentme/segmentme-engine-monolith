@@ -3,6 +3,7 @@ package io.segmentme.core.api.security;
 import io.segmentme.core.api.config.SecurityUtils;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.service.context.ContextSchemaService;
+import io.segmentme.core.db.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,9 @@ public class ContextSchemaSecurityService {
 
     public boolean isManagedSchema(String contextSchemaId) {
         return contextSchemaService.findById(contextSchemaId)
-                .map(ContextSchema::getIntegrationPointKey)
-                .map(it -> securityService.isValidIntegrationPointKey(it, SecurityUtils.currentUserId()))
-                .orElse(false);
+            .map(ContextSchema::getIntegrationPointKey)
+            .map(it -> securityService.isValidIntegrationPointKey(it, SecurityUtils.currentUserId()))
+            .orElse(false);
     }
 }
 
