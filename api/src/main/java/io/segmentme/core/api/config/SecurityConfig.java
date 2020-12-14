@@ -59,20 +59,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().disable()
-                .csrf().disable()
-                .authorizeRequests()
-                .requestMatchers(request -> !IGNORED_PATH_MATCHER.matches(request)).authenticated()
-                .and()
-                .addFilterBefore(new SdkSecurityFilter(IGNORED_PATH_MATCHER, workspaceService), BasicAuthenticationFilter.class)
-                .exceptionHandling()
-                .accessDeniedHandler(accessDeniedHandler())
-                .authenticationEntryPoint(entryPointExceptionHandler())
-                .and()
-                .oauth2ResourceServer()
-                .accessDeniedHandler(accessDeniedHandler())
-                .authenticationEntryPoint(entryPointExceptionHandler())
-                .jwt()
-                .authenticationManager(authenticationManager);
+            .csrf().disable()
+            .authorizeRequests()
+            .antMatchers("/actuator/**").permitAll()
+            .requestMatchers(request -> !IGNORED_PATH_MATCHER.matches(request)).authenticated()
+            .and()
+            .addFilterBefore(new SdkSecurityFilter(IGNORED_PATH_MATCHER, workspaceService), BasicAuthenticationFilter.class)
+            .exceptionHandling()
+            .accessDeniedHandler(accessDeniedHandler())
+            .authenticationEntryPoint(entryPointExceptionHandler())
+            .and()
+            .oauth2ResourceServer()
+            .accessDeniedHandler(accessDeniedHandler())
+            .authenticationEntryPoint(entryPointExceptionHandler())
+            .jwt()
+            .authenticationManager(authenticationManager);
     }
 
     private AccessDeniedHandler accessDeniedHandler() {
