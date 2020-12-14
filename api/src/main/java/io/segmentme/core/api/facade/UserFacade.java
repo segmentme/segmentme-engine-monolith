@@ -22,8 +22,6 @@ public class UserFacade {
 
     private final UserManager userManager;
 
-    private final WorkspaceManager workspaceManager;
-
     private final UserProfileManager userProfileManager;
 
     public UserDetails getUserDetails(String externalId) {
