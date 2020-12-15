@@ -1,20 +1,28 @@
 package io.segmentme.core.api.resource;
 
 import io.segmentme.core.api.dto.DashboardData;
-import io.segmentme.core.api.dto.ExploreDashboardData;
+import io.segmentme.core.api.dto.ExploreListView;
 import io.segmentme.core.api.facade.WorkspaceFacade;
-import io.segmentme.core.db.domain.statistic.*;
+import io.segmentme.core.db.domain.statistic.SegmentStatisticCount;
+import io.segmentme.core.db.domain.statistic.StatisticLog;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.service.statistic.StatisticService;
 import io.segmentme.core.service.analysis.segment.SegmentManager;
 import io.segmentme.core.service.converter.SegmentShortInfoConverter;
-import io.segmentme.core.service.dto.analysis.segment.SegmentShortInfo;
+import io.segmentme.core.service.converter.StatisticConverter;
+import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
+import io.segmentme.core.service.dto.statistic.StatisticSegmentInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,24 +42,42 @@ public class StatisticController {
 
 
     @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
-    @GetMapping("/{workspaceId}/segment-statistic")
-    public ExploreDashboardData getStatistics(@PathVariable String workspaceId, @RequestParam int period,
-                                            @RequestParam String criteria, @RequestParam String value) {
-        var statistics = statisticService.getSegmentStatistic(workspaceId, period, criteria, value);
+    @GetMapping("/{workspaceId}/segment-statistic-criteria-count")
+    public DashboardData getStatisticCriteriaCount(@PathVariable String workspaceId, @RequestParam int period,
+                                                   @RequestParam String criteria, @RequestParam String value) {
+        List<IntegrationPoint> integrationPoints = workspaceFacade.getWorkspaceDetails(workspaceId).getIntegrationPoints();
+        return new DashboardData()
+                .setAnalysisCount(statisticService.getAnalysisCountForCriteriaValue(workspaceId, period, criteria, value))
+                .setIntegrationPoints(integrationPoints);
+    }
 
-        List<SegmentShortInfo> segments = segmentManager.findByIds(statistics.stream()
+
+    @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
+    @GetMapping("/{workspaceId}/segment-statistic-view")
+    public Page<ExploreListView> getStatistics(@PathVariable String workspaceId,
+                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+                                               @RequestParam String criteria, @RequestParam String value, Pageable pageable) {
+
+        var statistics = statisticService.getSegmentStatistic(workspaceId, startDate, endDate, criteria, value, pageable).getContent();
+
+        var segments = segmentManager.findByIds(statistics.stream()
                 .map(StatisticLog::getSegmentStatistics)
                 .flatMap(Collection::stream)
                 .map(StatisticLog.SegmentStatistic::getSegmentId)
                 .collect(Collectors.toSet()))
                 .stream()
-                .map(SegmentShortInfoConverter::of)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(SegmentDto::getId, Function.identity()));
 
-        return new ExploreDashboardData()
-                .setStatistics(statistics)
-                .setSegments(segments);
+        return statisticService.getSegmentStatistic(workspaceId, startDate, endDate, criteria, value, pageable)
+                .map(statistic -> {
+                    var statisticSegmentInfos = statistic.getSegmentStatistics().stream()
+                            .map(it -> of(segments.get(it.getSegmentId()), it))
+                            .collect(Collectors.toList());
+                    return ExploreListView.of(StatisticConverter.of(statistic), statisticSegmentInfos);
+                });
     }
+
 
     @PreAuthorize("@workspaceSecurityService.isWorkspaceMember(#workspaceId)")
     @GetMapping("/{workspaceId}/statistic-log-details/{statisticLogId}")
@@ -64,8 +90,17 @@ public class StatisticController {
     public DashboardData getTotalAnalyticsCount(@PathVariable String workspaceId, @RequestParam int period) {
         List<IntegrationPoint> integrationPoints = workspaceFacade.getWorkspaceDetails(workspaceId).getIntegrationPoints();
         return new DashboardData()
-            .setAnalysisCount(statisticService.getAnalysisCount(workspaceId, period))
-            .setSegments(integrationPoints.stream().map(it -> segmentManager.findByIntegrationPointKey(it.getKey())).flatMap(Collection::stream).map(SegmentShortInfoConverter::of).collect(Collectors.toList()))
-            .setIntegrationPoints(integrationPoints);
+                .setAnalysisCount(statisticService.getAnalysisCount(workspaceId, period))
+                .setSegments(integrationPoints.stream().map(it -> segmentManager.findByIntegrationPointKey(it.getKey())).flatMap(Collection::stream).map(SegmentShortInfoConverter::of).collect(Collectors.toList()))
+                .setIntegrationPoints(integrationPoints);
+    }
+
+
+    private StatisticSegmentInfo of(SegmentDto segment, StatisticLog.SegmentStatistic segmentStatistic) {
+        return new StatisticSegmentInfo()
+                .setId(segment.getId())
+                .setName(segment.getName())
+                .setAnalysisTime(segmentStatistic.getAnalysisTime())
+                .setResult(segmentStatistic.isResult());
     }
 }
