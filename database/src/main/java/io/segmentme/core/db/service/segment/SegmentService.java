@@ -46,9 +46,9 @@ public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepo
         repository.deleteAll(rules);
     }
 
-    public void update(List<Segment> byIntegrationPointKey) {
-        byIntegrationPointKey.forEach(Segment::recalculateHash);
-        repository.saveAll(byIntegrationPointKey);
+    public void save(List<Segment> segments) {
+        segments.forEach(Segment::recalculateHash);
+        repository.saveAll(segments);
     }
 
     @Override

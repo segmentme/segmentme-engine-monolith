@@ -23,6 +23,7 @@ public class SecurityUtils {
 
 
     public AuthUser currentUser() {
-        return (AuthUser) Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication()).map(Authentication::getPrincipal).orElse(null);
+        return (AuthUser) Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication()).map(Authentication::getPrincipal)
+            .filter(it->AuthUser.class.isAssignableFrom(it.getClass())).orElse(null);
     }
 }

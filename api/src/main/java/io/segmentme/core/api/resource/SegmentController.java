@@ -4,12 +4,14 @@ import io.segmentme.core.api.config.AuthUser;
 import io.segmentme.core.api.dto.SegmentExportRequest;
 import io.segmentme.core.service.analysis.segment.SegmentManager;
 import io.segmentme.core.service.converter.SegmentShortInfoConverter;
+import io.segmentme.core.service.dto.SegmentImportResult;
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -72,5 +74,11 @@ public class SegmentController {
         response.setContentType(APPLICATION_JSON.toString());
         response.addHeader(CONTENT_DISPOSITION, SEGMENTS_FILE_NAME);
         segmentManager.exportSegments(exportRequest.getWorkspaceId(), exportRequest.getSegmentIds(), response.getOutputStream());
+    }
+
+    @PostMapping("/import/{contextId}")
+    @PreAuthorize("@contextSchemaSecurityService.isManagedSchema(#contextId)")
+    public SegmentImportResult importFile(@PathVariable String contextId, @RequestParam("file") MultipartFile file) throws IOException {
+        return segmentManager.importSegments(contextId, file.getInputStream());
     }
 }

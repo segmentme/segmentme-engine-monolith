@@ -1,12 +1,16 @@
 package io.segmentme.core.service.analysis.segment;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.db.domain.segment.Segment;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.Workspace;
+import io.segmentme.core.db.service.context.ContextSchemaService;
 import io.segmentme.core.db.service.segment.SegmentService;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.converter.SegmentConverter;
+import io.segmentme.core.service.dto.SegmentImportResult;
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import io.segmentme.core.service.exception.SegmentManagerException;
 import io.segmentme.core.service.exception.error.SegmentMangerErrors;
@@ -15,10 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -29,6 +36,8 @@ import java.util.stream.StreamSupport;
 public class SegmentManager {
 
     private final SegmentService segmentService;
+
+    private final ContextSchemaService contextSchemaService;
     private final WorkspaceService workspaceService;
 
     private final ObjectMapper objectMapper;
@@ -87,14 +96,48 @@ public class SegmentManager {
     public void unlinkFromIntegrationPoint(String integrationPointKey) {
         List<Segment> byIntegrationPointKey = segmentService.findByIntegrationPointKey(integrationPointKey);
         byIntegrationPointKey.forEach(it -> it.setIntegrationPointKey(null));
-        segmentService.update(byIntegrationPointKey);
+        segmentService.save(byIntegrationPointKey);
 
     }
 
     public void unlinkFromContext(String contextId) {
         List<Segment> contextRules = segmentService.findByContextId(contextId);
         contextRules.forEach(it -> it.setContextId(null));
-        segmentService.update(contextRules);
+        segmentService.save(contextRules);
+    }
+
+    public SegmentImportResult importSegments(String contextId, InputStream outputStream) throws IOException {
+        List<Segment> segments = objectMapper.readValue(outputStream, new TypeReference<List<Segment>>() {
+        });
+
+        ContextSchema targetContext = contextSchemaService.findById(contextId).get();
+        SegmentImportResult result = new SegmentImportResult();
+        AtomicInteger created = new AtomicInteger();
+        AtomicInteger updated = new AtomicInteger();
+
+        Map<String, Segment> existedSegments = segmentService.findByContextId(contextId).stream().collect(Collectors.toMap(Segment::getName, it -> it));
+
+        segments.forEach(it -> {
+            it.setId(null);
+            it.setContextId(contextId);
+            it.setIntegrationPointKey(targetContext.getIntegrationPointKey());
+            it.setCreatedBy(null);
+            it.setLastModifiedBy(null);
+            Segment existedSegment = existedSegments.get(it.getName());
+            if (existedSegment != null) {
+                it.setId(existedSegment.getId());
+                updated.getAndIncrement();
+            } else {
+                it.setCreatedDate(null);
+                it.setLastModifiedDate(null);
+                created.getAndIncrement();
+            }
+        });
+        result.setCreated(created.get());
+        result.setUpdated(updated.get());
+        segmentService.save(segments);
+        return result;
+
     }
 
     public void exportSegments(String workspaceId, List<String> segmentIds, OutputStream outputStream) throws IOException {
