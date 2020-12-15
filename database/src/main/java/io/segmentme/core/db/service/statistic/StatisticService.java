@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +32,10 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
 
     public List<SegmentStatisticCount> getSegmentStatistic(String workspaceId, int period) {
         LocalDateTime localDateTime = LocalDate.now().minus(period, ChronoUnit.DAYS).atTime(LocalTime.MIDNIGHT);
-        MatchOperation dateFilter = Aggregation
-                .match(new Criteria("workspaceId")
-                        .is(workspaceId)
-                        .and("createdDate")
-                        .gte(localDateTime));
+        MatchOperation dateFilter = match(new Criteria("workspaceId")
+                .is(workspaceId)
+                .and("createdDate")
+                .gte(localDateTime));
         UnwindOperation unwind = Aggregation.unwind("segmentStatistics");
 
 
@@ -45,7 +44,7 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
                 .and("segmentStatistics.segmentId").as("segmentId")
                 .and("segmentStatistics.result").as("segmentResult");
 
-        MatchOperation trueSegmentFilter = Aggregation.match(new Criteria("segmentResult").is(true));
+        MatchOperation trueSegmentFilter = match(new Criteria("segmentResult").is(true));
         GroupOperation groupBySegment = group("segmentId").count().as("count");
         SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC, "count");
 
@@ -67,11 +66,10 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
                 .project("workspaceId", "createdDate", "analysisTime", "integrationPointKey")
                 .and("createdDate").dateAsFormattedString("%Y-%m-%dT%H:00:00").as("dateHour");
 
-        MatchOperation matchStage = Aggregation
-                .match(new Criteria("workspaceId")
-                        .is(workspaceId)
-                        .and("createdDate")
-                        .gte(localDateTime));
+        MatchOperation matchStage = match(new Criteria("workspaceId")
+                .is(workspaceId)
+                .and("createdDate")
+                .gte(localDateTime));
 
         GroupOperation groupOperation = group("dateHour", "integrationPointKey").count().as("count").sum("analysisTime").as("totalAnalysisTime");
 
@@ -92,9 +90,9 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
         String criteriaField = "nodeValues." + criteria.replaceAll("\\.", "#");
 
         List<Object> values = resolvePossibleValueType(value);
-        MatchOperation dateFilter = Aggregation.match(new Criteria("workspaceId").is(workspaceId).and("lastModifiedDate").gte(localDateTime));
+        MatchOperation dateFilter = match(new Criteria("workspaceId").is(workspaceId).and("lastModifiedDate").gte(localDateTime));
 
-        MatchOperation nodeValuePath = Aggregation.match(new Criteria(criteriaField).in(values));
+        MatchOperation nodeValuePath = match(new Criteria(criteriaField).in(values));
 
         ProjectionOperation analyzedDataProjection = Aggregation.project("hash");
 
@@ -102,8 +100,8 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
                 = new TypedAggregation<>(AnalyzedData.class, dateFilter, nodeValuePath, analyzedDataProjection);
         AggregationResults<AnalyzedData> analyzedDataList = mongoTemplate.aggregate(analyzedDataAggregation, AnalyzedData.class);
 
-        dateFilter = Aggregation.match(new Criteria("workspaceId").is(workspaceId).and("createdDate").gte(localDateTime));
-        MatchOperation analyzedDataMatch = Aggregation.match(new Criteria("analyzedDataKey").in(analyzedDataList.getMappedResults().stream().map(AnalyzedData::getHash).collect(Collectors.toList())));
+        dateFilter = match(new Criteria("workspaceId").is(workspaceId).and("createdDate").gte(localDateTime));
+        MatchOperation analyzedDataMatch = match(new Criteria("analyzedDataKey").in(analyzedDataList.getMappedResults().stream().map(AnalyzedData::getHash).collect(Collectors.toList())));
         SortOperation sort = Aggregation.sort(Sort.Direction.DESC, "createdDate");
 
         ProjectionOperation projectStage = Aggregation
@@ -126,46 +124,60 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
     }
 
     public Page<StatisticLog> getSegmentStatistic(String workspaceId, LocalDateTime start, LocalDateTime end, String criteria, String value, Pageable pageable) {
-        Instant startDate = start.toInstant(ZoneOffset.UTC);
-        Instant endDate = end.toInstant(ZoneOffset.UTC);
+        var startDate = start.toInstant(ZoneOffset.UTC);
+        var endDate = end.toInstant(ZoneOffset.UTC);
+        var criteriaField = "nodeValues." + criteria.replaceAll("\\.", "#");
+        var values = resolvePossibleValueType(value);
 
-        String criteriaField = "nodeValues." + criteria.replaceAll("\\.", "#");
+        var analyzedDataQuery = Arrays.asList(
+                match(Criteria.where("workspaceId").is(workspaceId).and("lastModifiedDate").gte(startDate).lte(endDate).and(criteriaField).in(values)),
+                project("hash"));
 
-        List<Object> values = resolvePossibleValueType(value);
-        MatchOperation dateFilter = Aggregation.match(new Criteria("workspaceId").is(workspaceId)
-                .and("lastModifiedDate").gte(startDate).lte(endDate));
+        var analyzedDataHashes = this.aggregate(AnalyzedData.class, analyzedDataQuery).getMappedResults().stream().map(AnalyzedData::getHash).collect(Collectors.toList());
 
-        MatchOperation nodeValuePath = Aggregation.match(new Criteria(criteriaField).in(values));
+        var statisticMatch = match(Criteria.where("workspaceId").is(workspaceId)
+                .and("createdDate").gte(startDate).lt(endDate)
+                .and("analyzedDataKey").in(analyzedDataHashes)
+        );
 
-        ProjectionOperation analyzedDataProjection = Aggregation.project("hash");
+        var statisticCount = count(StatisticLog.class, statisticMatch);
 
-        TypedAggregation<AnalyzedData> analyzedDataAggregation
-                = new TypedAggregation<>(AnalyzedData.class, dateFilter, nodeValuePath, analyzedDataProjection);
+        var statisticAggregations = new ArrayList<>(Arrays.asList(statisticMatch,
+                new SkipOperation(pageable.getPageNumber() * pageable.getPageSize()),
+                limit(pageable.getPageSize())));
 
-        List<String> analyzedDataHashes = mongoTemplate.aggregate(analyzedDataAggregation, AnalyzedData.class)
-                .getMappedResults().stream().map(AnalyzedData::getHash).collect(Collectors.toList());
+        addStatisticOrder(pageable.getSort(), statisticAggregations);
 
-        dateFilter = Aggregation.match(new Criteria("workspaceId").is(workspaceId)
-                .and("createdDate").gte(startDate).lt(endDate));
+        return new PageImpl<>(this.aggregate(StatisticLog.class, statisticAggregations).getMappedResults(), pageable, statisticCount);
+    }
 
-        MatchOperation analyzedDataMatch = Aggregation.match(new Criteria("analyzedDataKey").in(analyzedDataHashes));
+    private void addStatisticOrder(Sort sort, List<AggregationOperation> aggregationOperation){
+        if (sort.isUnsorted()) {
+            aggregationOperation.add(Aggregation.sort(Sort.Direction.DESC, "createdDate"));
+        } else {
+            boolean segmentsCount = sort.stream().anyMatch(it -> "segmentsCount".equals(it.getProperty()));
+            if (segmentsCount){
+                ArrayOperators.Size segmentsCountField = ArrayOperators.Size.lengthOfArray(ConditionalOperators.ifNull("segmentsCount").then(Collections.emptyList()));
+                aggregationOperation.add(Aggregation.addFields().addField("segmentsCount").withValueOf(segmentsCountField).build());
+            }
+            sort.forEach(it -> aggregationOperation.add(Aggregation.sort(it.getDirection(), it.getProperty())));
+        }
+    }
 
-        SkipOperation skipOperation = new SkipOperation(pageable.getPageNumber() * pageable.getPageSize());
-        LimitOperation limit = Aggregation.limit(pageable.getPageSize());
-        CountOperation totalCountOperator = Aggregation.count().as("count");
+    private <T> long count(Class<T> clazz, AggregationOperation... operations) {
+        var countOperations = new ArrayList<>(Arrays.asList(operations));
+        countOperations.add(Aggregation.count().as("count"));
 
-        SortOperation sort = Aggregation.sort(Sort.Direction.DESC, "createdDate");
-        TypedAggregation<StatisticLog> countAggregation = new TypedAggregation<>(StatisticLog.class, dateFilter, sort, analyzedDataMatch, totalCountOperator);
-        TypedAggregation<StatisticLog> typedAggregation = new TypedAggregation<>(StatisticLog.class, dateFilter, sort, analyzedDataMatch, skipOperation, limit);
+        var countAggregation = TypedAggregation.newAggregation(clazz, countOperations);
 
-        List<StatisticLog> result = mongoTemplate.aggregate(typedAggregation, StatisticLog.class).getMappedResults();
-
-        var count = Optional.of(mongoTemplate.aggregate(countAggregation, TotalCount.class))
+        return Optional.of(mongoTemplate.aggregate(countAggregation, TotalCount.class))
                 .map(AggregationResults::getUniqueMappedResult)
                 .map(TotalCount::getCount)
                 .orElse(0L);
+    }
 
-        return new PageImpl<>(result, pageable, count);
+    private <T> AggregationResults<T> aggregate(Class<T> clazz, List<AggregationOperation> operations) {
+        return mongoTemplate.aggregate(TypedAggregation.newAggregation(clazz, operations), clazz);
     }
 
     private List<Object> resolvePossibleValueType(String value) {
