@@ -160,7 +160,12 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
 
         List<StatisticLog> result = mongoTemplate.aggregate(typedAggregation, StatisticLog.class).getMappedResults();
 
-        return new PageImpl<>(result, pageable, mongoTemplate.aggregate(countAggregation, TotalCount.class).getUniqueMappedResult().getCount());
+        var count = Optional.of(mongoTemplate.aggregate(countAggregation, TotalCount.class))
+                .map(AggregationResults::getUniqueMappedResult)
+                .map(TotalCount::getCount)
+                .orElse(0L);
+
+        return new PageImpl<>(result, pageable, count);
     }
 
     private List<Object> resolvePossibleValueType(String value) {
