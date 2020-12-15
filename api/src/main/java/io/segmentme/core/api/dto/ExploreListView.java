@@ -1,6 +1,5 @@
 package io.segmentme.core.api.dto;
 
-import io.segmentme.core.service.dto.analysis.segment.SegmentShortInfo;
 import io.segmentme.core.service.dto.statistic.StatisticSegmentInfo;
 import io.segmentme.core.service.dto.statistic.StatisticShortInfo;
 import lombok.AllArgsConstructor;
@@ -14,6 +13,6 @@ public class ExploreListView {
 
     private StatisticShortInfo statistic;
 
-    private List<StatisticSegmentInfo> segment;
+    private List<StatisticSegmentInfo> segments;
 
 }
