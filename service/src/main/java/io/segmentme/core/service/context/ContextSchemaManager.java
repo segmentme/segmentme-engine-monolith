@@ -80,6 +80,7 @@ public class ContextSchemaManager {
             it.setHash(holder.getHash() == null ? this.computeHash(contextSchema) : holder.getHash());
             it.setIntegrationPointKey(holder.getIntegrationPointKey());
             it.setName(holder.getName());
+            it.setRawPayload(Optional.ofNullable(holder.getRawPayload()).filter(StringUtils::isNoneBlank).orElse(it.getRawPayload()));
             return it;
         }).map(contextSchemaService::update)
             .map(ContextSchemaConverter::toHolder).orElseThrow(() -> new ContextSchemaManagerException().setCode(ContextMangerErrors.CONTEXT_NOT_FOUND));

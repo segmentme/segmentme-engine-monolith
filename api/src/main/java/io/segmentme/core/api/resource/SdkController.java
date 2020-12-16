@@ -1,6 +1,7 @@
 package io.segmentme.core.api.resource;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.segmentme.core.api.dto.SdkContextActualizeRequest;
 import io.segmentme.core.api.dto.context.ContextSchemaShortInfo;
 import io.segmentme.core.api.facade.SdkFacade;
 import io.segmentme.core.db.domain.context.SchemaNode;
@@ -30,9 +31,8 @@ public class SdkController {
 
     @PostMapping("/actualize")
     public ContextSchemaShortInfo actualizeSchema(@RequestHeader("integration-point-key") String integrationPointKey,
-                                                  @RequestParam(required = false) String key,
-                                                  @RequestBody SchemaNode rootNode) {
-        return sdkFacade.actualizeSchema(integrationPointKey,key, rootNode);
+                                                  @RequestBody SdkContextActualizeRequest payload) {
+        return sdkFacade.actualizeSchema(integrationPointKey, payload);
     }
 
     @PostMapping("/analysis/analyze")
