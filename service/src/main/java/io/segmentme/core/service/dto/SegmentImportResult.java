@@ -2,13 +2,14 @@ package io.segmentme.core.service.dto;
 
 import lombok.Data;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
 public class SegmentImportResult {
-    private Integer created;
+    private List<String> created;
 
-    private Integer updated;
+    private List<String> updated;
 
     private Map<String, String> errors;
 }

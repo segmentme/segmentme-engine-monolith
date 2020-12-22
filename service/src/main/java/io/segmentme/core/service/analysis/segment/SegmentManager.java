@@ -21,11 +21,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -112,8 +108,8 @@ public class SegmentManager {
 
         ContextSchema targetContext = contextSchemaService.findById(contextId).get();
         SegmentImportResult result = new SegmentImportResult();
-        AtomicInteger created = new AtomicInteger();
-        AtomicInteger updated = new AtomicInteger();
+        List<String> created = new ArrayList<>();
+        List<String> updated = new ArrayList<>();
 
         Map<String, Segment> existedSegments = segmentService.findByContextId(contextId).stream().collect(Collectors.toMap(Segment::getName, it -> it));
 
@@ -126,15 +122,15 @@ public class SegmentManager {
             Segment existedSegment = existedSegments.get(it.getName());
             if (existedSegment != null) {
                 it.setId(existedSegment.getId());
-                updated.getAndIncrement();
+                updated.add(it.getName());
             } else {
                 it.setCreatedDate(null);
                 it.setLastModifiedDate(null);
-                created.getAndIncrement();
+                created.add(it.getName());
             }
         });
-        result.setCreated(created.get());
-        result.setUpdated(updated.get());
+        result.setCreated(created);
+        result.setUpdated(updated);
         segmentService.save(segments);
         return result;
 
