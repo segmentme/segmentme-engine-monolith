@@ -3,7 +3,7 @@ package io.segmentme.core.api.config.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.api.config.AuthUser;
 import io.segmentme.core.api.facade.UserFacade;
-import io.segmentme.core.api.service.Auth0;
+import io.segmentme.core.api.service.Auth0Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -28,7 +28,7 @@ public class AuthenticationManager implements org.springframework.security.authe
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private final String issuer;
 
-    private final Auth0 auth0;
+    private final Auth0Service auth0Service;
 
     private final UserFacade userFacade;
 
@@ -64,7 +64,7 @@ public class AuthenticationManager implements org.springframework.security.authe
         AuthUser authUser = (AuthUser) authenticate.getPrincipal();
         if (authenticate.isAuthenticated() && !Boolean.TRUE.equals(authUser.isAcknowledged())) {
             userFacade.acknowledgeUser(authUser.getId(), authUser.getEmail(), authUser.getFullName());
-            auth0.acknowledge(authUser.getId());
+            auth0Service.acknowledge(authUser.getId());
         }
 
         return authenticate;
