@@ -22,9 +22,12 @@ public class SegmentDto {
 
     private String hash;
 
+    private boolean active = true;
+
     private String description;
 
     private String integrationPointKey;
+
 
     @NotEmpty
     private List<AbstractConditionDto> conditions;

@@ -49,6 +49,11 @@ public class SegmentManager {
         return SegmentConverter.of(segmentService.create(analysisRule));
     }
 
+    public void activate(String segmentId, boolean isActive) {
+        Segment segment = segmentService.findById(segmentId).orElseThrow(() -> new SegmentManagerException(SegmentMangerErrors.SEGMENT_NOT_FOUND));
+        segmentService.save(segment.setActive(isActive));
+    }
+
     public List<SegmentDto> save(List<SegmentDto> rules, String contextId, String integrationPointKey) {
 
         List<Segment> analysisRules = rules.stream().map(it -> SegmentConverter.of(it, contextId, integrationPointKey))

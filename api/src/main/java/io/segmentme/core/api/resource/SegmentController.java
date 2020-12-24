@@ -47,6 +47,13 @@ public class SegmentController {
         return segmentManager.findByContextId(contextId);
     }
 
+    @PutMapping("/{segmentId}")
+    @PreAuthorize("@segmentSecurityService.isManaged(#segmentId, #currentUser.id)")
+    public void activate(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String segmentId, @RequestParam boolean isActive){
+        log.info("Request to set active {} for segment with id {}", isActive, segmentId);
+        segmentManager.activate(segmentId, isActive);
+    }
+
     @PostMapping
     @PreAuthorize("@securityService.isValidIntegrationPointKeys(#integrationPointKeys, #currentUser.id)")
     public List<?> findByIntegrationPointKeys(@AuthenticationPrincipal AuthUser currentUser,
@@ -58,13 +65,16 @@ public class SegmentController {
     }
 
     @GetMapping("/{segmentId}")
-    public SegmentDto findById(@PathVariable String segmentId) {
+    @PreAuthorize("@segmentSecurityService.isManaged(#segmentId, #currentUser.id)")
+    public SegmentDto findById(@AuthenticationPrincipal AuthUser currentUser,
+                               @PathVariable String segmentId) {
         log.info("Request to find segment with id {}", segmentId);
         return segmentManager.findById(segmentId);
     }
 
     @DeleteMapping("/{segmentId}")
-    public void delete(@PathVariable String segmentId) {
+    @PreAuthorize("@segmentSecurityService.isManaged(#segmentId, #currentUser.id)")
+    public void delete(@AuthenticationPrincipal AuthUser currentUser, @PathVariable String segmentId) {
         log.info("Request to delete segment with id {}", segmentId);
         segmentManager.delete(segmentId);
     }

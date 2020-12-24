@@ -80,7 +80,7 @@ public class AnalysisService {
     }
 
     public List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload) {
-        return analyze(contextId, integrationPointKey, payload, analysisRuleRepository.findByIntegrationPointKey(integrationPointKey));
+        return analyze(contextId, integrationPointKey, payload, analysisRuleRepository.findByIntegrationPointKeyAndActive(integrationPointKey, true));
     }
 
     private List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload, List<Segment> segments) {

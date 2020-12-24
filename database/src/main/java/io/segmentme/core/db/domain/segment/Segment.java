@@ -20,6 +20,8 @@ public class Segment extends DbObject {
     @EqualsAndHashCode.Exclude
     private String name;
 
+    private boolean active;
+
     @EqualsAndHashCode.Exclude
     private String description;
 

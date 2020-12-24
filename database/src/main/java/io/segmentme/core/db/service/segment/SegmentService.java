@@ -51,6 +51,10 @@ public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepo
         repository.saveAll(segments);
     }
 
+    public void save(Segment segment){
+        repository.save(segment);
+    }
+
     @Override
     public Segment create(Segment entity) {
         entity.recalculateHash();
