@@ -20,7 +20,7 @@ public class StateSecurityService {
     private final UserService userService;
 
     public boolean isManagedState(String stateId, String userId) {
-        String id = userService.findByExternalId(SecurityUtils.currentUserId()).get().getId();
+        String id = userService.findByExternalId(userId).get().getId();
         return stateService.findById(stateId)
                 .map(State::getIntegrationPointKey)
                 .map(it -> securityService.isValidIntegrationPointKey(it, id))

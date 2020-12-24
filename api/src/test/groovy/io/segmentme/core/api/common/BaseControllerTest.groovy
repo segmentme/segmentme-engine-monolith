@@ -2,6 +2,9 @@ package io.segmentme.core.api.common
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.segmentme.core.api.config.AuthUser
+import io.segmentme.core.db.domain.context.DbObject
+import io.segmentme.core.db.domain.user.User
+import io.segmentme.core.db.service.user.UserService
 import io.segmentme.core.service.common.BaseTestWithContext
 import io.segmentme.core.service.configuration.test.ResourceHolder
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto
@@ -31,6 +34,9 @@ class BaseControllerTest extends BaseTestWithContext {
 
     @Autowired
     protected ResourceHolder resourceHolder
+
+    @Autowired
+    protected UserService userService;
 
     @SneakyThrows
     protected String serializeToJson(Object o) {

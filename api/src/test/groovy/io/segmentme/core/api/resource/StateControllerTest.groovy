@@ -5,9 +5,11 @@ import io.segmentme.core.api.common.BaseControllerTest
 import io.segmentme.core.api.error.dto.ErrorType
 import io.segmentme.core.api.security.ContextSchemaSecurityService
 import io.segmentme.core.api.security.SecurityService
+import io.segmentme.core.db.domain.user.User
 import io.segmentme.core.db.repository.SegmentRepository
 import io.segmentme.core.db.repository.StateRepository
 import io.segmentme.core.db.service.segment.SegmentService
+import io.segmentme.core.db.service.user.UserService
 import io.segmentme.core.service.analysis.segment.SegmentManager
 import io.segmentme.core.service.analysis.state.StateManager
 import io.segmentme.core.service.configuration.test.ResourceHolder
@@ -50,17 +52,25 @@ class StateControllerTest extends BaseControllerTest {
     @SpringBean
     private SecurityService securityService = Mock(SecurityService.class)
 
+    @Autowired
+    protected UserService userService
+
+    private User user
+
     @SpringBean
     protected ContextSchemaSecurityService contextSchemaSecurityService = Mock(ContextSchemaSecurityService.class)
 
     def setup(){
         securityService.isValidIntegrationPointKey(_, _) >> true
         contextSchemaSecurityService.isManagedSchema(_) >> true
+        user = new User().setExternalId(randomUUID().toString()).setId(randomUUID().toString())
+        userService.create(user)
     }
 
     def cleanup() {
         stateRepository.deleteAll()
         segmentRepository.deleteAll()
+        userService.delete(user)
     }
 
     def 'create state with segment #segmentName'() {
@@ -108,7 +118,7 @@ class StateControllerTest extends BaseControllerTest {
         def state = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")))
         state.setName("UPDATED_NAME")
         when:
-        def response = sendRequest(put("/state/${state.id}"), state)
+        def response = sendRequest(auth(put("/state/${state.id}"), user.externalId), state)
         then:
         response.andExpect(status().isOk())
                 .andDo(print())
@@ -137,7 +147,7 @@ class StateControllerTest extends BaseControllerTest {
         def firstSegment = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY")))
         def secondSegment = stateManager.create(createState(getSegment("SECOND_PHONE_CONTAINS_ONLY_SEGMENT")))
         when:
-        def response = sendRequest(delete("/state/${secondSegment.id}"))
+        def response = sendRequest(auth(delete("/state/${secondSegment.id}"), user.externalId))
         then:
         response.andExpect(status().isOk()).andDo(print())
         def segments = stateRepository.findAll()
