@@ -16,6 +16,7 @@ import io.segmentme.core.service.analysis.segment.SegmentManager;
 import io.segmentme.core.service.converter.ContextSchemaConverter;
 import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import io.segmentme.core.service.exception.ContextSchemaManagerException;
+import io.segmentme.core.service.exception.CriteriaValueLocatorException;
 import io.segmentme.core.service.exception.error.ContextMangerErrors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,9 +62,16 @@ public class ContextSchemaManager {
         contextSchema.setRawPayload(rawPayload);
 
         if (StringUtils.isNoneBlank(rawPayload)) {
+
+
             try {
                 JsonNode rawContext = objectMapper.readValue(rawPayload, JsonNode.class);
-                contextSchema.setNodeValues(getNodeValues(contextSchema, contextValuesExtractor.extractValues(rawContext, null, null)));
+                contextSchema.setNodeValues(
+                    getNodeValues(contextSchema, contextValuesExtractor.extractValues(rawContext, null, null))
+                        .entrySet()
+                        .stream()
+                        .filter(it -> it != null && !CriteriaValueLocatorException.class.equals(it.getValue().getClass())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                );
             } catch (JsonProcessingException e) {
                 log.error("Unable to parse json", e);
             }
