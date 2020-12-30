@@ -42,7 +42,6 @@ public class DbConfiguration {
         List<Converter<?, ?>> converters = new ArrayList<>();
         converters.add(new JsonNodeToDocumentConverter());
         converters.add(new DocumentToJsonNodeConverter());
-        StringUtils.join("asd","");
         return new MongoCustomConversions(converters);
     }
 
