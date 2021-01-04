@@ -73,7 +73,7 @@ public class WorkspaceManager {
         workspaceService.findById(workspaceId).map(workspace -> {
             workspace.getIntegrationPoints().add(integrationPoint);
             return workspace;
-        }).map(workspaceService::update);
+        }).ifPresent(workspaceService::update);
         return integrationPoint;
     }
 
@@ -83,7 +83,7 @@ public class WorkspaceManager {
             workspace.getIntegrationPoints()
                 .stream()
                 .filter(it -> it.getKey().equalsIgnoreCase(integrationPoint.getKey())).findAny()
-                .map(it -> it.setName(integrationPoint.getName()));
+                .ifPresent(it -> it.setName(integrationPoint.getName()));
             return workspaceService.update(workspace);
         }).map(it -> integrationPoint).orElse(null);
 

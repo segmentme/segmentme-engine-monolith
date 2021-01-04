@@ -73,6 +73,6 @@ public class UserManager {
     }
 
     public UserHolder getByExternalId(String externalId) {
-        return UserHolderConverter.toHolder(userService.findByExternalId(externalId).get());
+        return UserHolderConverter.toHolder(userService.findByExternalId(externalId).orElseThrow(() -> new UserManagerException().setCode(UserManagerErrors.USER_WITH_SUCH_EMAIL_ALREADY_EXISTS)));
     }
 }

@@ -185,7 +185,7 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
     }
 
     private String convertToNodeValues(String criteria) {
-        return NODE_VALUES + criteria.replaceAll("\\.", "#");
+        return NODE_VALUES + criteria.replace("\\.", "#");
     }
 
     private void addStatisticOrder(Sort sort, List<AggregationOperation> aggregationOperation){
