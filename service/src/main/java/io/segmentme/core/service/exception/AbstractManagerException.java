@@ -6,16 +6,18 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 @Getter
 @ToString
 @EqualsAndHashCode(callSuper = false)
-public abstract class AbstractManagerException extends RuntimeException {
+public abstract class AbstractManagerException extends RuntimeException implements Serializable {
 
     private SeverityLevel severity;
 
     private String code;
 
-    public AbstractManagerException() {
+    protected AbstractManagerException() {
     }
 
     public AbstractManagerException(String message, String code) {
@@ -23,16 +25,16 @@ public abstract class AbstractManagerException extends RuntimeException {
         setCode(code);
     }
 
-    public AbstractManagerException(String code) {
+    protected AbstractManagerException(String code) {
         setCode(code);
     }
 
-    public AbstractManagerException(Throwable cause, String code) {
+    protected AbstractManagerException(Throwable cause, String code) {
         super(cause);
         setCode(code);
     }
 
-    public AbstractManagerException(Throwable cause) {
+    protected AbstractManagerException(Throwable cause) {
         super(cause);
     }
 

@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -31,7 +30,7 @@ public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepo
 
     public List<Segment> findByIds(Iterable<String> ids) {
         return StreamSupport.stream(repository.findAllById(ids).spliterator(), false)
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
     }
 
     public Segment findByIntegrationPointKeyAndKey(String integrationPointKey, String key) {
@@ -42,16 +41,12 @@ public class SegmentService extends AbstractDatabaseService<Segment, SegmentRepo
         return repository.findByContextId(contextId);
     }
 
-    public void deleteAll(Collection<Segment> rules) {
-        repository.deleteAll(rules);
-    }
-
     public void save(List<Segment> segments) {
         segments.forEach(Segment::recalculateHash);
         repository.saveAll(segments);
     }
 
-    public void save(Segment segment){
+    public void save(Segment segment) {
         repository.save(segment);
     }
 

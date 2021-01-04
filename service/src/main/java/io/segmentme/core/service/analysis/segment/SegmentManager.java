@@ -87,7 +87,7 @@ public class SegmentManager {
     }
 
     public SegmentDto findById(String segmentId) {
-        return segmentService.findById(segmentId).map(SegmentConverter::of).get();
+        return segmentService.findById(segmentId).map(SegmentConverter::of).orElse(null);
     }
 
     public void delete(String ruleId) {
@@ -111,7 +111,7 @@ public class SegmentManager {
         List<Segment> segments = objectMapper.readValue(outputStream, new TypeReference<List<Segment>>() {
         });
 
-        ContextSchema targetContext = contextSchemaService.findById(contextId).get();
+        ContextSchema targetContext = contextSchemaService.findById(contextId).orElse(null);
         SegmentImportResult result = new SegmentImportResult();
         List<String> created = new ArrayList<>();
         List<String> updated = new ArrayList<>();

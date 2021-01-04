@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.api.dto.SdkContextActualizeRequest;
 import io.segmentme.core.api.dto.context.ContextSchemaShortInfo;
 import io.segmentme.core.api.facade.SdkFacade;
-import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.service.analysis.segment.AnalysisService;
 import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;

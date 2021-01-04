@@ -1,6 +1,9 @@
 package io.segmentme.core.db.domain.condition;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -17,11 +20,9 @@ public class RangeCondition extends SimpleCondition<RangeCondition.RangeValue> {
 
         @Override
         public int compareTo(Object o) {
-            Comparable<Object> min = (Comparable<Object>) this.min;
-            Comparable<Object> max = (Comparable<Object>) this.max;
 
-            boolean comparedMin = min.compareTo(o) <= 0;
-            boolean comparedMax = max.compareTo(o) >= 0;
+            boolean comparedMin = ((Comparable<Object>) min).compareTo(o) <= 0;
+            boolean comparedMax = ((Comparable<Object>) max).compareTo(o) >= 0;
 
             if (comparedMin && comparedMax) {
                 return 0;

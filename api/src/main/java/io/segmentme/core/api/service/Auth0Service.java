@@ -1,7 +1,9 @@
 package io.segmentme.core.api.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,9 +16,9 @@ import java.util.Map;
 @Slf4j
 public class Auth0Service {
 
-    private final static String USER_URL = "/users/";
+    private static final String USER_URL = "/users/";
 
-    private final static String VERIFICATION_EMAIL_URL = "/jobs/verification-email";
+    private static final String VERIFICATION_EMAIL_URL = "/jobs/verification-email";
 
 
     private final WebClient auth0WebClient;
@@ -52,6 +54,6 @@ public class Auth0Service {
     public static class AppMetadata {
 
         @JsonProperty("app_metadata")
-        public Map<String, Object> appMetadata;
+        public Map<String, Object> metadata;
     }
 }

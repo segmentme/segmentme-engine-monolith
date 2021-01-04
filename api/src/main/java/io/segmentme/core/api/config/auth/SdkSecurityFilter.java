@@ -6,7 +6,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.servlet.*;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Optional;
@@ -14,7 +17,7 @@ import java.util.Optional;
 @Slf4j
 public class SdkSecurityFilter extends GenericFilterBean {
 
-    private final static String INTEGRATION_POINT_KEY = "integration-point-key";
+    private  static final String INTEGRATION_POINT_KEY = "integration-point-key";
 
     private final RequestMatcher requestMatcher;
 

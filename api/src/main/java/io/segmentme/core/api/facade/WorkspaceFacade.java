@@ -1,8 +1,13 @@
 package io.segmentme.core.api.facade;
 
-import io.segmentme.core.api.dto.*;
+import io.segmentme.core.api.dto.WorkspaceDatesValidationRequest;
+import io.segmentme.core.api.dto.WorkspaceDatesValidationResponse;
+import io.segmentme.core.api.dto.WorkspaceDetails;
+import io.segmentme.core.api.dto.WorkspaceUserProfile;
 import io.segmentme.core.db.domain.user.User;
-import io.segmentme.core.db.domain.workpsace.*;
+import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
+import io.segmentme.core.db.domain.workpsace.UserProfile;
+import io.segmentme.core.db.domain.workpsace.WorkspaceConfiguration;
 import io.segmentme.core.service.dto.WorkspaceHolder;
 import io.segmentme.core.service.user.UserManager;
 import io.segmentme.core.service.utils.DateResolver;
@@ -83,10 +88,9 @@ public class WorkspaceFacade {
     }
 
     private String tryToParseDate(String candidate, Map<String, DateTimeFormatter> validPatterns) {
-        String format = validPatterns.entrySet().stream()
+        return validPatterns.entrySet().stream()
                 .filter(it -> DateResolver.resolve(candidate, Arrays.asList(it.getValue())).isPresent())
                 .map(Map.Entry::getKey).findAny().orElse(null);
-        return format;
     }
 
     private Optional<DateTimeFormatter> silentOfPattern(String format) {
@@ -96,7 +100,7 @@ public class WorkspaceFacade {
                 return Optional.of(value);
             }
             return Optional.empty();
-        } catch (Throwable ex) {
+        } catch (RuntimeException ex) {
             log.error("Unable to create date time formatter for pattern {}", format, ex);
         }
         return Optional.empty();

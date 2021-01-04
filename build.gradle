@@ -3,6 +3,7 @@ import groovy.model.ValueHolder
 plugins {
     id 'org.springframework.boot' version '2.3.3.RELEASE'
     id 'com.bmuschko.docker-remote-api' version '6.6.1'
+    id "org.sonarqube" version "3.0"
 }
 import com.bmuschko.gradle.docker.tasks.image.*
 

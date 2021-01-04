@@ -5,6 +5,8 @@ import io.segmentme.core.service.dto.WorkspaceHolder;
 
 public class WorkspaceHolderConverter {
 
+    private WorkspaceHolderConverter() {
+    }
 
     public static WorkspaceHolder toHolder(Workspace workspace) {
         return new WorkspaceHolder()

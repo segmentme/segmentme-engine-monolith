@@ -4,9 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
-import org.springframework.security.oauth2.client.*;
-import org.springframework.security.oauth2.client.endpoint.*;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.endpoint.DefaultClientCredentialsTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2ClientCredentialsGrantRequest;
+import org.springframework.security.oauth2.client.endpoint.OAuth2ClientCredentialsGrantRequestEntityConverter;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
@@ -15,6 +20,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Configuration
 @RequiredArgsConstructor
@@ -54,7 +60,7 @@ public class WebClientConfiguration {
                                 public RequestEntity<?> convert(OAuth2ClientCredentialsGrantRequest clientCredentialsGrantRequest) {
                                     RequestEntity<?> convert = super.convert(clientCredentialsGrantRequest);
                                     MultiValueMap<String, String> httpEntity = (MultiValueMap<String, String>) convert.getBody();
-                                    httpEntity.put("audience", Collections.singletonList(audience));
+                                    Optional.ofNullable(httpEntity).orElseGet(HttpHeaders::new).put("audience", Collections.singletonList(audience));
                                     return convert;
                                 }
                             });

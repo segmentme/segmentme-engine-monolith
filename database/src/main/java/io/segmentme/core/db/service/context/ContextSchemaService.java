@@ -27,14 +27,4 @@ public class ContextSchemaService extends AbstractDatabaseService<ContextSchema,
     public List<ContextSchema> findByIntegrationPointKeys(Collection<String> integrationPointKeys, boolean shortForm) {
         return shortForm ? repository.findShortFormByIntegrationPointKeyIn(integrationPointKeys) : repository.findByIntegrationPointKeyIn(integrationPointKeys);
     }
-
-    @Override
-    public ContextSchema create(ContextSchema entity) {
-        return super.create(entity);
-    }
-
-    @Override
-    public ContextSchema update(ContextSchema entity) {
-        return super.update(entity);
-    }
 }

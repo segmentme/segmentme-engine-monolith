@@ -7,6 +7,7 @@ import io.segmentme.core.db.domain.context.SchemaNodeType;
 import io.segmentme.core.db.domain.workpsace.WorkspaceConfiguration;
 import io.segmentme.core.service.utils.DateResolver;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ContextValuesExtractorImpl implements ContextValuesExtractor {
 
 
@@ -49,6 +51,7 @@ public class ContextValuesExtractorImpl implements ContextValuesExtractor {
             case STRING, NUMBER, BOOLEAN, DATE -> values.put(schemaNode.getPath(), getComparableValue(value, resolvedType, dateFormats));
             case OBJECT -> value.fields().forEachRemaining(objectField -> collectObjectValues(schemaNode, values, objectField, dateFormats));
             case ARRAY -> resolveArrayItems(schemaNode.getPath(), schemaNode, value, values, dateFormats);
+            default -> log.debug("Unexpected node type: {}",resolvedType);
         }
     }
 
@@ -68,10 +71,9 @@ public class ContextValuesExtractorImpl implements ContextValuesExtractor {
                 case OBJECT -> {
                     Map<String, Object> objectValues = new HashMap<>();
                     element.fields().forEachRemaining(objectField -> collectObjectValues(schemaNode, objectValues, objectField, dateFormats));
-                    objectValues.forEach((key, value) -> {
-                        putValue(objects, key, value);
-                    });
+                    objectValues.forEach((key, value) -> putValue(objects, key, value));
                 }
+                default -> log.debug("Unexpected node type: {}",subtype);
             }
         });
         values.putAll(objects);

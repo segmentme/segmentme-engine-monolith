@@ -1,8 +1,8 @@
 package io.segmentme.core.service.dto.analysis.conditions;
 
-import lombok.*;
-
-import javax.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @ToString(callSuper = true)

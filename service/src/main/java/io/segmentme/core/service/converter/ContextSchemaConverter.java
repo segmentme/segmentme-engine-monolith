@@ -5,6 +5,9 @@ import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 
 public class ContextSchemaConverter {
 
+    private ContextSchemaConverter() {
+    }
+
     public static ContextSchemaHolder toHolder(ContextSchema contextSchema) {
         return new ContextSchemaHolder().setId(contextSchema.getId())
             .setName(contextSchema.getName())

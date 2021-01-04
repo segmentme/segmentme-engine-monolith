@@ -1,5 +1,6 @@
 package io.segmentme.core.api.security;
 
+import io.segmentme.core.db.domain.context.DbObject;
 import io.segmentme.core.db.domain.workpsace.UserProfile;
 import io.segmentme.core.db.domain.workpsace.Workspace;
 import io.segmentme.core.db.service.user.UserService;
@@ -24,15 +25,15 @@ public class SecurityService {
     }
 
     public boolean isValidIntegrationPointKey(String integrationPointKey, String userId) {
-        String systemUserId = userService.findByExternalId(userId).get().getId();
+        String systemUserId = userService.findByExternalId(userId).map(DbObject::getId).orElse(null);
         return workspaceService.findByIntegrationPointKey(integrationPointKey)
-                .map(Workspace::getUserProfiles)
-                .stream()
-                .flatMap(Collection::stream)
-                .map(UserProfile::getUserId)
-                .filter(it -> it.equalsIgnoreCase(systemUserId))
-                .findFirst()
-                .map(it -> Boolean.TRUE)
-                .orElse(false);
+            .map(Workspace::getUserProfiles)
+            .stream()
+            .flatMap(Collection::stream)
+            .map(UserProfile::getUserId)
+            .filter(it -> it.equalsIgnoreCase(systemUserId))
+            .findFirst()
+            .map(it -> Boolean.TRUE)
+            .orElse(false);
     }
 }

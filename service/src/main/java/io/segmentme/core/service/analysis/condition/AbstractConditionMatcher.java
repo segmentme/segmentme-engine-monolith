@@ -51,7 +51,6 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
     }
 
 
-    public abstract AbstractCondition.ConditionType getType();
 
 
     public boolean match(T condition, ContextValueHolder context, Worm<Object> worm) {

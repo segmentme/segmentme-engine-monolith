@@ -13,12 +13,12 @@ public abstract class AbstractContainsConditionMatcher extends AbstractCondition
 
     @Override
     protected Collection<Comparable<Object>> getExpectedValue(ArrayCondition condition, Collection<Comparable<Object>> actualValue) {
-        Comparable<Object> objectComparable = actualValue.stream().findFirst().get();
+        Comparable<Object> objectComparable = actualValue.stream().findFirst().orElse(null);
 
         return condition.getValue()
-                .stream()
-                .map(conditionValue -> castJsonProperty(conditionValue, objectComparable))
-                .collect(Collectors.toList());
+            .stream()
+            .map(conditionValue -> castJsonProperty(conditionValue, objectComparable))
+            .collect(Collectors.toList());
     }
 
     @Override

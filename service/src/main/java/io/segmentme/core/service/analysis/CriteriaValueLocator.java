@@ -43,29 +43,37 @@ public class CriteriaValueLocator {
         boolean hasUnderlineCollections = collection.stream().anyMatch(it -> it instanceof Collection);
         MutablePair<String, Integer> currentPosition = getElementIndexIfPossible(path, clearPath);
         if (!hasUnderlineCollections) {
-            Integer index = currentPosition == null ? parentIndex : currentPosition.getRight();
-            if (index == null) {
-                return collection;
-            } else {
-                if (collection.size() - 1 < index) {
-                    return null;
-                }
-                return Arrays.asList(collection.get(index));
-            }
+            return handlePlainValue(collection, parentIndex, currentPosition);
         } else {
-            String nextArray = currentPosition != null ? clearPath.replace(currentPosition.left, "") : clearPath;
-            if (StringUtils.isNotBlank(nextArray) && !Objects.equals(nextArray, clearPath)) {
-                if (collection.size() - 1 < currentPosition.getRight()) {
-                    return Collections.emptyList();
-                }
-                return Stream.of(collection.get(currentPosition.getRight()))
-                    .map(it -> getCollectionValue((List<?>) it, path, nextArray, null)).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
-
-            }
-            Integer currentIndex = currentPosition != null ? currentPosition.getRight() : null;
-            return collection.stream().map(it -> getCollectionValue((List<?>) it, path, nextArray, currentIndex)).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
+            return handleCollectionValue(collection, path, clearPath, currentPosition);
         }
 
+    }
+
+    private List<?> handleCollectionValue(List<?> collection, String path, String clearPath, MutablePair<String, Integer> currentPosition) {
+        String nextArray = currentPosition != null ? clearPath.replace(currentPosition.left, "") : clearPath;
+        if (StringUtils.isNotBlank(nextArray) && !Objects.equals(nextArray, clearPath)) {
+            if (collection.size() - 1 < currentPosition.getRight()) {
+                return Collections.emptyList();
+            }
+            return Stream.of(collection.get(currentPosition.getRight()))
+                .map(it -> getCollectionValue((List<?>) it, path, nextArray, null)).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
+
+        }
+        Integer currentIndex = currentPosition != null ? currentPosition.getRight() : null;
+        return collection.stream().map(it -> getCollectionValue((List<?>) it, path, nextArray, currentIndex)).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    private List<?> handlePlainValue(List<?> collection, Integer parentIndex, MutablePair<String, Integer> currentPosition) {
+        Integer index = currentPosition == null ? parentIndex : currentPosition.getRight();
+        if (index == null) {
+            return collection;
+        } else {
+            if (collection.size() - 1 < index) {
+                return null;
+            }
+            return Arrays.asList(collection.get(index));
+        }
     }
 
 

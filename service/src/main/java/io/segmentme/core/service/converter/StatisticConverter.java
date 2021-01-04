@@ -4,6 +4,7 @@ import io.segmentme.core.db.domain.statistic.StatisticLog;
 import io.segmentme.core.service.dto.statistic.StatisticShortInfo;
 import lombok.experimental.UtilityClass;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ public class StatisticConverter {
 
     public List<StatisticShortInfo> of(List<StatisticLog> statisticLog) {
         if (statisticLog == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         return statisticLog.stream().map(StatisticConverter::of).collect(Collectors.toList());

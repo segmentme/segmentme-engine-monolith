@@ -95,7 +95,7 @@ public class ContextSchemaManager {
     }
 
     public ContextSchemaHolder resolveContextSchema(String workspaceId, JsonNode jsonNode) {
-        Workspace workspace = workspaceService.findById(workspaceId).get();
+        Workspace workspace = workspaceService.findById(workspaceId).orElse(null);
         ContextSchema resolve = contextSchemaResolver.resolve(workspace, jsonNode);
 
         ContextSchemaHolder contextSchemaHolder = ContextSchemaConverter.toHolder(resolve);

@@ -6,8 +6,8 @@ import java.util.Map;
 
 public class StateManagerErrors implements Errors {
 
-    public static String STATE_NOT_FOUND = "sate.manager.not.found";
-    public static String DUPLICATED_STATE_NAME = "sate.manager.duplicated.name";
+    public static final String STATE_NOT_FOUND = "sate.manager.not.found";
+    public static final String DUPLICATED_STATE_NAME = "sate.manager.duplicated.name";
 
     static {
         ERRORS_SEVERITY.putAll(Map.of(

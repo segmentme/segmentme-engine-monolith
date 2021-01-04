@@ -1,12 +1,16 @@
 package io.segmentme.core.api.error.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public class ValidationErrorDto extends SimpleErrorDto {
 
     private final List<FieldErrorDto> fieldErrors = new ArrayList<>();

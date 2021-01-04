@@ -34,16 +34,17 @@ import static io.segmentme.core.api.error.dto.ErrorType.AUTHENTICATION_ERROR;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final AntPathRequestMatcher IGNORED_PATH_MATCHER = new AntPathRequestMatcher("/sdk/**");
+
     private final ObjectMapper objectMapper;
 
     private final AuthenticationManager authenticationManager;
 
-    private final AntPathRequestMatcher IGNORED_PATH_MATCHER = new AntPathRequestMatcher("/sdk/**");
 
     private final WorkspaceService workspaceService;
 
     @Bean
-    public FilterRegistrationBean<?> filterRegistrationBean() {
+    public FilterRegistrationBean<CorsFilter> filterRegistrationBean() {
         var source = new UrlBasedCorsConfigurationSource();
         var config = new CorsConfiguration();
         config.setAllowCredentials(true);

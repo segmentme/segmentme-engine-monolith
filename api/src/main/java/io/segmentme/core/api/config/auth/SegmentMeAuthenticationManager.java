@@ -7,7 +7,6 @@ import io.segmentme.core.api.service.Auth0Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
@@ -20,7 +19,7 @@ import javax.annotation.PostConstruct;
 
 @Component
 @RequiredArgsConstructor
-public class AuthenticationManager implements org.springframework.security.authentication.AuthenticationManager {
+public class SegmentMeAuthenticationManager implements org.springframework.security.authentication.AuthenticationManager {
 
     @Value("${auth0.audience}")
     private final String audience;
@@ -57,7 +56,7 @@ public class AuthenticationManager implements org.springframework.security.authe
 
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) {
         Authentication authenticate = customJwtAuthenticationProvider.authenticate(authentication);
 
         //check for app https://segmentme.io:persisted  true

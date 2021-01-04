@@ -2,12 +2,14 @@ package io.segmentme.core.db;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.Assert;
 
 @SpringBootTest
 class SpringCoreDataApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+        Assert.isTrue(true, "Started");
+    }
 
 }

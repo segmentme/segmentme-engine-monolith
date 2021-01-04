@@ -49,7 +49,7 @@ public class AnalysisService {
 
 
     public AnalysisResult debug(ContextValueHolder context, String segmentId) {
-        return debug(context, analysisRuleRepository.findById(segmentId).get());
+        return debug(context, analysisRuleRepository.findById(segmentId).orElse(null));
     }
 
     public AnalysisResult debug(ContextValueHolder context, Segment segment) {

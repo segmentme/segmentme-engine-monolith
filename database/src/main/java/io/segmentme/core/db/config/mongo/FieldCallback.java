@@ -10,7 +10,7 @@ public class FieldCallback implements ReflectionUtils.FieldCallback {
     private boolean idFound;
 
     @Override
-    public void doWith(final Field field) throws IllegalArgumentException {
+    public void doWith(final Field field) {
         ReflectionUtils.makeAccessible(field);
 
         if (field.isAnnotationPresent(Id.class)) {

@@ -1,7 +1,6 @@
 package io.segmentme.core.api.facade;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.segmentme.core.api.config.AuthUser;
 import io.segmentme.core.api.dto.context.*;
 import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.service.context.ContextSchemaManager;

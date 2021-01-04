@@ -3,13 +3,10 @@ package io.segmentme.core.api.facade;
 import io.segmentme.core.api.dto.CurrentUserProfile;
 import io.segmentme.core.api.dto.UserBasicInfo;
 import io.segmentme.core.api.dto.UserDetails;
-import io.segmentme.core.db.domain.context.DbObject;
-import io.segmentme.core.db.domain.user.User;
 import io.segmentme.core.db.domain.workpsace.UserProfile;
 import io.segmentme.core.service.dto.UserHolder;
 import io.segmentme.core.service.user.UserManager;
 import io.segmentme.core.service.workspace.UserProfileManager;
-import io.segmentme.core.service.workspace.WorkspaceManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

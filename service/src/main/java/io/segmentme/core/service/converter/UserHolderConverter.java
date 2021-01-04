@@ -4,6 +4,8 @@ import io.segmentme.core.db.domain.user.User;
 import io.segmentme.core.service.dto.UserHolder;
 
 public class UserHolderConverter {
+    private UserHolderConverter() {
+    }
 
     public static User toUser(UserHolder holder) {
         return (User) new User()

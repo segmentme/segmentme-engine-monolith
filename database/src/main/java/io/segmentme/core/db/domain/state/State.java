@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotEmpty;
-
 @Data
 @Document("state")
 @EqualsAndHashCode(callSuper = true)

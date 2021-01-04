@@ -20,13 +20,13 @@ public class CascadeCallback implements ReflectionUtils.FieldCallback {
     }
 
     @Override
-    public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
+    public void doWith(final Field field) throws IllegalArgumentException {
         ReflectionUtils.makeAccessible(field);
 
         Optional.of(field).filter(it -> it.isAnnotationPresent(DBRef.class))
-                .filter(it -> it.isAnnotationPresent(CascadeSave.class))
-                .map(this::getSource)
-                .ifPresent(this::saveObject);
+            .filter(it -> it.isAnnotationPresent(CascadeSave.class))
+            .map(this::getSource)
+            .ifPresent(this::saveObject);
     }
 
     private void saveObject(Object fieldValue) {
