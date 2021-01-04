@@ -29,20 +29,19 @@ public class UserManager {
 
 
     public UserHolder getById(String userId) {
-        return UserHolderConverter.toHolder(userService.findById(userId).orElse(null));
+        return UserHolderConverter.toHolder(userService.findById(userId).orElseThrow(() -> new UserManagerException().setCode(UserManagerErrors.USER_WITH_SUCH_EMAIL_ALREADY_EXISTS)));
     }
 
-    public String switchWorkspace(String userId, String workspaceId) {
-        User user = userService.findById(userId).orElse(null);
+    public void switchWorkspace(String userId, String workspaceId) {
+        User user = userService.findById(userId).orElseThrow(() -> new UserManagerException().setCode(UserManagerErrors.USER_WITH_SUCH_EMAIL_ALREADY_EXISTS));
         if (userProfileManager.getUserProfiles(userId).stream().noneMatch(it -> it.getWorkspaceId().equalsIgnoreCase(workspaceId))) {
             throw new UserManagerException().setCode(UserManagerErrors.UNABLE_TO_SWITCH_WORKSPACE_DOESNT_EXISTS);
         }
         user.setLastActiveWorkspace(workspaceId);
         userService.update(user);
-        return workspaceId;
     }
 
-    public UserHolder createUser(UserHolder userToCreate)  {
+    public UserHolder createUser(UserHolder userToCreate) {
         log.info("Create userToCreate {}", userToCreate);
 
         if (userService.findByEmail(userToCreate.getEmail()).isPresent()) {
