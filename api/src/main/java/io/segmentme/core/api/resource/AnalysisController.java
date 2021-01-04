@@ -2,12 +2,12 @@ package io.segmentme.core.api.resource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.core.api.dto.DebugRequest;
+import io.segmentme.core.service.analysis.segment.AnalysisService;
 import io.segmentme.core.service.analysis.state.StateAnalysisResult;
 import io.segmentme.core.service.analysis.state.StateAnalysisService;
 import io.segmentme.core.service.converter.SegmentConverter;
 import io.segmentme.core.service.dto.analysis.AnalysisResult;
 import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
-import io.segmentme.core.service.analysis.segment.AnalysisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

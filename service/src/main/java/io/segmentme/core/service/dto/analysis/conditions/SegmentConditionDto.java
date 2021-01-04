@@ -1,7 +1,9 @@
 package io.segmentme.core.service.dto.analysis.conditions;
 
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @ToString(callSuper = true)

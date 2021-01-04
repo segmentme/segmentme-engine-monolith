@@ -6,7 +6,6 @@ import io.segmentme.core.db.service.user.UserService
 import io.segmentme.core.db.service.workspace.UserProfileService
 import io.segmentme.core.db.service.workspace.WorkspaceService
 import io.segmentme.core.service.common.BaseTestWithContext
-import io.segmentme.core.service.workspace.WorkspaceManager
 import org.springframework.beans.factory.annotation.Autowired
 
 import static io.segmentme.core.service.helper.UserHolderHelper.createUser

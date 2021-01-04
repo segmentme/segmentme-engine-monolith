@@ -1,3 +1,5 @@
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 import groovy.model.ValueHolder
 
 plugins {
@@ -5,7 +7,6 @@ plugins {
     id 'com.bmuschko.docker-remote-api' version '6.6.1'
     id "org.sonarqube" version "3.0"
 }
-import com.bmuschko.gradle.docker.tasks.image.*
 
 def projectSettings = new ValueHolder()
 apply from: 'modules.gradle', to: projectSettings

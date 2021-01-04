@@ -8,7 +8,6 @@ import io.segmentme.core.api.security.SecurityService
 import io.segmentme.core.db.domain.user.User
 import io.segmentme.core.db.repository.SegmentRepository
 import io.segmentme.core.db.repository.StateRepository
-import io.segmentme.core.db.service.segment.SegmentService
 import io.segmentme.core.db.service.user.UserService
 import io.segmentme.core.service.analysis.segment.SegmentManager
 import io.segmentme.core.service.analysis.state.StateManager
@@ -23,7 +22,6 @@ import org.springframework.core.io.Resource
 
 import static java.util.UUID.randomUUID
 import static org.hamcrest.Matchers.hasItem
-import static org.hamcrest.Matchers.hasSize
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath

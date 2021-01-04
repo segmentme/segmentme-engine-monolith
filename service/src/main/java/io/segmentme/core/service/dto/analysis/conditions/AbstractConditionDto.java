@@ -1,12 +1,13 @@
 package io.segmentme.core.service.dto.analysis.conditions;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotEmpty;
 
 
 @Data

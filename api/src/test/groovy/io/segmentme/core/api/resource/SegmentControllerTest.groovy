@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import io.segmentme.core.api.common.BaseControllerTest
 import io.segmentme.core.api.security.ContextSchemaSecurityService
 import io.segmentme.core.db.domain.workpsace.Workspace
-
 import io.segmentme.core.db.repository.SegmentRepository
 import io.segmentme.core.service.analysis.ContextValueHolder
 import io.segmentme.core.service.analysis.ContextValuesExtractorImpl

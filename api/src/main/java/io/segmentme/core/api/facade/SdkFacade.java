@@ -2,7 +2,6 @@ package io.segmentme.core.api.facade;
 
 import io.segmentme.core.api.dto.SdkContextActualizeRequest;
 import io.segmentme.core.api.dto.context.ContextSchemaShortInfo;
-import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.Workspace;

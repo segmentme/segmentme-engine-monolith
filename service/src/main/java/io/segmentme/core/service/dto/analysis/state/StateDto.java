@@ -1,7 +1,6 @@
 package io.segmentme.core.service.dto.analysis.state;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import io.segmentme.core.service.dto.analysis.segment.SegmentShortInfo;
 import lombok.Data;
 

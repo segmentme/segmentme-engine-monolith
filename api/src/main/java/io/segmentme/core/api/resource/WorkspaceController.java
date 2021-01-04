@@ -1,7 +1,10 @@
 package io.segmentme.core.api.resource;
 
 import io.segmentme.core.api.config.AuthUser;
-import io.segmentme.core.api.dto.*;
+import io.segmentme.core.api.dto.WorkspaceDatesValidationRequest;
+import io.segmentme.core.api.dto.WorkspaceDatesValidationResponse;
+import io.segmentme.core.api.dto.WorkspaceDetails;
+import io.segmentme.core.api.dto.WorkspaceUserProfile;
 import io.segmentme.core.api.facade.WorkspaceFacade;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.WorkspaceConfiguration;
