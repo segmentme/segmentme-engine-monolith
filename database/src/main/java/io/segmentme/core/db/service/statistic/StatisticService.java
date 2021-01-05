@@ -185,7 +185,7 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
     }
 
     private String convertToNodeValues(String criteria) {
-        return NODE_VALUES + criteria.replace("\\.", "#");
+        return NODE_VALUES + criteria.replace(".", "#");
     }
 
     private void addStatisticOrder(Sort sort, List<AggregationOperation> aggregationOperation){
@@ -205,7 +205,7 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
         var countOperations = new ArrayList<>(Arrays.asList(operations));
         countOperations.add(Aggregation.count().as(COUNT));
 
-        var countAggregation = TypedAggregation.newAggregation(clazz, countOperations);
+        var countAggregation = newAggregation(clazz, countOperations);
 
         return Optional.of(mongoTemplate.aggregate(countAggregation, TotalCount.class))
                 .map(AggregationResults::getUniqueMappedResult)
@@ -214,7 +214,7 @@ public class StatisticService extends AbstractDatabaseService<StatisticLog, Stat
     }
 
     private <T> AggregationResults<T> aggregate(Class<T> clazz, List<AggregationOperation> operations) {
-        return mongoTemplate.aggregate(TypedAggregation.newAggregation(clazz, operations), clazz);
+        return mongoTemplate.aggregate(newAggregation(clazz, operations), clazz);
     }
 
     private List<Object> resolvePossibleValueType(String value) {

@@ -20,7 +20,7 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
 
     private Class<P> comparableValueClass;
 
-    public AbstractConditionMatcher() {
+    protected AbstractConditionMatcher() {
         comparableValueClass = (Class) ((ParameterizedType) this.getAbstractConditionParameterizedType(this.getClass()).getActualTypeArguments()[2]).getRawType();
     }
 

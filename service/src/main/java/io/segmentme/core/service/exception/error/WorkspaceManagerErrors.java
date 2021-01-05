@@ -2,14 +2,14 @@ package io.segmentme.core.service.exception.error;
 
 import io.segmentme.core.service.context.SeverityLevel;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class WorkspaceManagerErrors implements Errors {
     public static final String UNABLE_TO_DELETE_DEFAULT_WORKSAPCE = "workspace.manager.unable.to.delete.default.workspace";
 
     static {
-        ERRORS_SEVERITY.putAll(new HashMap<>() {{
-            put(UNABLE_TO_DELETE_DEFAULT_WORKSAPCE, SeverityLevel.CRITICAL);
-        }});
+        ERRORS_SEVERITY.putAll(Map.of(
+            UNABLE_TO_DELETE_DEFAULT_WORKSAPCE, SeverityLevel.CRITICAL
+        ));
     }
 }

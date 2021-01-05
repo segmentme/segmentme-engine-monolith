@@ -1,6 +1,6 @@
 package io.segmentme.core.service.exception.error;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import static io.segmentme.core.service.context.SeverityLevel.CRITICAL;
 import static io.segmentme.core.service.context.SeverityLevel.MID;
@@ -12,10 +12,10 @@ public class CriteriaValueLocatorErrors implements Errors {
     public static final String UNEXPECTED_ARRAY_TYPE = "criteria.value.locator.expected.single.but.found.array";
 
     static {
-        ERRORS_SEVERITY.putAll(new HashMap<>() {{
-            put(CRITERIA_NOT_FOUND, MID);
-            put(UNEXPECTED_LOCATOR_ERROR, MID);
-            put(UNEXPECTED_ARRAY_TYPE, CRITICAL);
-        }});
+        ERRORS_SEVERITY.putAll(Map.of(
+            CRITERIA_NOT_FOUND, MID,
+            UNEXPECTED_LOCATOR_ERROR, MID,
+            UNEXPECTED_ARRAY_TYPE, CRITICAL
+        ));
     }
 }

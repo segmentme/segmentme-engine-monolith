@@ -25,12 +25,12 @@ public class BackReferenceCallback implements ReflectionUtils.FieldCallback {
     }
 
     @Override
-    public void doWith(final Field field) throws IllegalArgumentException {
+    public void doWith(final Field field) {
         ReflectionUtils.makeAccessible(field);
         Optional.of(field)
-                .filter(it -> it.isAnnotationPresent(DBRef.class))
-                .filter(it -> it.isAnnotationPresent(CascadeSave.class))
-                .ifPresent(it -> updateIfRequired(this.getSource(it), it.getName()));
+            .filter(it -> it.isAnnotationPresent(DBRef.class))
+            .filter(it -> it.isAnnotationPresent(CascadeSave.class))
+            .ifPresent(it -> updateIfRequired(this.getSource(it), it.getName()));
     }
 
     private void updateIfRequired(Object fieldValue, String name) {
@@ -46,13 +46,13 @@ public class BackReferenceCallback implements ReflectionUtils.FieldCallback {
             return;
         }
         Arrays.stream(FieldUtils.getAllFields(fieldValue.getClass()))
-                .collect(Collectors.toList())
-                .stream()
-                .filter(it -> it.isAnnotationPresent(BackReferenceId.class))
-                .filter(it -> it.getAnnotation(BackReferenceId.class).value().equals(name))
-                .map(it -> setValue(source.getId(), fieldValue, it))
-                .findFirst()
-                .ifPresent(it -> saveObject(fieldValue));
+            .collect(Collectors.toList())
+            .stream()
+            .filter(it -> it.isAnnotationPresent(BackReferenceId.class))
+            .filter(it -> it.getAnnotation(BackReferenceId.class).value().equals(name))
+            .map(it -> setValue(source.getId(), fieldValue, it))
+            .findFirst()
+            .ifPresent(it -> saveObject(fieldValue));
     }
 
     private void saveObject(Object fieldValue) {
@@ -64,7 +64,7 @@ public class BackReferenceCallback implements ReflectionUtils.FieldCallback {
     }
 
     private void save(Object fieldValue) {
-        final FieldCallback callback = new FieldCallback();
+        final ReferenceFieldeCallback callback = new ReferenceFieldeCallback();
 
         ReflectionUtils.doWithFields(fieldValue.getClass(), callback);
 

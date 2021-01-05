@@ -5,7 +5,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 
-public class FieldCallback implements ReflectionUtils.FieldCallback {
+public class ReferenceFieldeCallback implements ReflectionUtils.FieldCallback {
 
     private boolean idFound;
 

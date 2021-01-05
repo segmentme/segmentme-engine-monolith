@@ -20,7 +20,7 @@ public class CascadeCallback implements ReflectionUtils.FieldCallback {
     }
 
     @Override
-    public void doWith(final Field field) throws IllegalArgumentException {
+    public void doWith(final Field field) {
         ReflectionUtils.makeAccessible(field);
 
         Optional.of(field).filter(it -> it.isAnnotationPresent(DBRef.class))
@@ -38,7 +38,7 @@ public class CascadeCallback implements ReflectionUtils.FieldCallback {
     }
 
     private void save(Object fieldValue) {
-        final FieldCallback callback = new FieldCallback();
+        final ReferenceFieldeCallback callback = new ReferenceFieldeCallback();
 
         ReflectionUtils.doWithFields(fieldValue.getClass(), callback);
 

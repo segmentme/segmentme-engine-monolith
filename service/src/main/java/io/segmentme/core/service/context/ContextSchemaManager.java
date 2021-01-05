@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.segmentme.core.service.exception.error.ContextMangerErrors.INTEGRATION_POINT_NOT_FOUND;
+import static io.segmentme.core.service.exception.error.ContextMangerErrors.*;
 
 @Service
 @Slf4j
@@ -94,14 +94,29 @@ public class ContextSchemaManager {
             .map(ContextSchemaConverter::toHolder).orElseThrow(() -> new ContextSchemaManagerException().setCode(ContextMangerErrors.CONTEXT_NOT_FOUND));
     }
 
-    public ContextSchemaHolder resolveContextSchema(String workspaceId, JsonNode jsonNode) {
-        Workspace workspace = workspaceService.findById(workspaceId).orElse(null);
+    public ContextSchemaHolder resolveContextSchema(Workspace workspace, JsonNode jsonNode) {
         ContextSchema resolve = contextSchemaResolver.resolve(workspace, jsonNode);
 
         ContextSchemaHolder contextSchemaHolder = ContextSchemaConverter.toHolder(resolve);
         contextSchemaHolder.setNodeValues(getNodeValues(resolve, contextValuesExtractor.extractValues(jsonNode, null, null)));
         contextSchemaHolder.setRawPayload(jsonNode.toString());
         return contextSchemaHolder;
+    }
+
+    public ContextSchemaHolder resolveContextSchema(String workspaceId, JsonNode jsonNode) {
+        Workspace workspace = workspaceService.findById(workspaceId).orElseThrow(()->new ContextSchemaManagerException().setCode(WORKSPACE_NOT_FOUND));
+        return resolveContextSchema(workspace, jsonNode);
+    }
+
+    public ContextSchemaHolder resolveContextSchema(Workspace workspace, String rawPayload) {
+        JsonNode jsonNode;
+        try {
+             jsonNode = objectMapper.readValue(rawPayload, JsonNode.class);
+        } catch (Exception ex) {
+            throw new ContextSchemaManagerException().setCode(INVALID_JSON);
+        }
+        return resolveContextSchema(workspace.getId(), jsonNode);
+
     }
 
     public ContextSchemaHolder resolveContextSchema(SchemaNode rootNode) {
@@ -155,5 +170,4 @@ public class ContextSchemaManager {
     public String computeHash(ContextSchema contextSchema) {
         return String.valueOf(contextSchema.getInlinePath().hashCode());
     }
-
 }

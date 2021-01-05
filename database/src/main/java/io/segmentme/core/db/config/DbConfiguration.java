@@ -43,7 +43,7 @@ public class DbConfiguration {
     }
 
     @Bean
-    public MappingMongoConverter mongoConverter(MongoDatabaseFactory mongoFactory, MongoMappingContext mongoMappingContext, MongoCustomConversions customConversions) throws Exception {
+    public MappingMongoConverter mongoConverter(MongoDatabaseFactory mongoFactory, MongoMappingContext mongoMappingContext, MongoCustomConversions customConversions) {
         DbRefResolver dbRefResolver = new DefaultDbRefResolver(mongoFactory);
         MappingMongoConverter mongoConverter = new MappingMongoConverter(dbRefResolver, mongoMappingContext);
         mongoConverter.setMapKeyDotReplacement("#");
@@ -71,7 +71,7 @@ public class DbConfiguration {
             try {
                 return objectMapper.readTree(value);
             } catch (IOException e) {
-                throw new RuntimeException("Unable to parse DbObject to JsonNode", e);
+                throw new IllegalArgumentException("Unable to parse DbObject to JsonNode", e);
             }
         }
     }

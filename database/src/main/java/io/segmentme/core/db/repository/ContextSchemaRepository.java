@@ -16,7 +16,7 @@ public interface ContextSchemaRepository extends MongoRepository<ContextSchema, 
 
     Optional<ContextSchema> findByIntegrationPointKey(String integrationPointKey);
 
-    @Query(fields = "{ 'id' : 1,'name':1, 'integrationPointKey':1 }")
+    @Query(fields = "{ 'id' : 1,'name':1, 'integrationPointKey':1,'inlinePath':1 }")
     Optional<ContextSchema> findByIntegrationPointKeyAndHash(String integrationPointKey, String hash);
 
     Optional<ContextSchema> findByIdAndIntegrationPointKey(String id, String integrationPointKey);

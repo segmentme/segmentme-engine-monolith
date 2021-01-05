@@ -4,14 +4,11 @@ import io.segmentme.core.db.domain.statistic.AnalyzedData;
 import io.segmentme.core.db.repository.AnalyzedDataRepository;
 import io.segmentme.core.db.service.AbstractDatabaseService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AnalyzedDataService extends AbstractDatabaseService<AnalyzedData, AnalyzedDataRepository> {
-
-    private final MongoTemplate mongoTemplate;
 
     public AnalyzedData findByHash(String hash) {
         return repository.findByHash(hash);

@@ -2,6 +2,8 @@ package io.segmentme.core.api.facade;
 
 import io.segmentme.core.api.dto.SdkContextActualizeRequest;
 import io.segmentme.core.api.dto.context.ContextSchemaShortInfo;
+import io.segmentme.core.db.domain.context.ContextSchema;
+import io.segmentme.core.db.domain.context.SchemaNode;
 import io.segmentme.core.db.domain.context.SchemaNodeType;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.Workspace;
@@ -11,11 +13,14 @@ import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import io.segmentme.core.service.exception.ContextSchemaManagerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static io.segmentme.core.service.exception.error.ContextMangerErrors.INTEGRATION_POINT_NOT_FOUND;
 
@@ -27,15 +32,11 @@ public class SdkFacade {
 
     private final WorkspaceService workspaceService;
 
-    public ContextSchemaShortInfo actualizeSchema(String integrationPointKey,  SdkContextActualizeRequest payload) {
-        if (workspaceService.findByIntegrationPointKey(integrationPointKey).isEmpty()) {
-            throw new ContextSchemaManagerException().setCode(INTEGRATION_POINT_NOT_FOUND);
-        }
-
-        ContextSchemaHolder resolvedSchema = contextSchemaManager.resolveContextSchema(payload.getSchemaNode());
-
+    public ContextSchemaShortInfo actualizeSchema(String integrationPointKey, SdkContextActualizeRequest payload) {
+        Workspace workspace = workspaceService.findByIntegrationPointKey(integrationPointKey).orElseThrow(() -> new ContextSchemaManagerException().setCode(INTEGRATION_POINT_NOT_FOUND));
+        ContextSchemaHolder resolvedSchema = contextSchemaManager.resolveContextSchema(workspace, payload.getRawPayload());
         if (resolvedSchema.getInlinePath().entrySet().stream().anyMatch(it -> it.getValue().getRootType() == SchemaNodeType.UNDEFINED || it.getValue().getSubType() == SchemaNodeType.UNDEFINED)) {
-            log.warn("Integration point key : {} Schema {} contains undefined values", integrationPointKey, payload.getSchemaNode());
+            log.warn("Integration point key : {} Schema {} contains undefined values", integrationPointKey, payload.getRawPayload());
         }
 
         String hash = StringUtils.isNoneBlank(payload.getContextKey()) ? payload.getContextKey() : contextSchemaManager.computeHash(resolvedSchema);
@@ -43,17 +44,57 @@ public class SdkFacade {
         ContextSchemaHolder existedSchema = contextSchemaManager.findByHash(integrationPointKey, hash);
         ContextSchemaHolder actualizedContext;
         if (existedSchema == null) {
-            actualizedContext = contextSchemaManager.create(integrationPointKey, payload.getSchemaNode(), "sdk-schema_" + LocalDateTime.now(), payload.getRawPayload(), hash);
+            actualizedContext = contextSchemaManager.create(integrationPointKey, resolvedSchema.getRootNode(), payload.getContextKey(), payload.getRawPayload(), hash);
         } else {
             resolvedSchema.setName(existedSchema.getName());
             resolvedSchema.setIntegrationPointKey(integrationPointKey);
             resolvedSchema.setRawPayload(payload.getRawPayload());
+            resolveUnknownProperties(resolvedSchema, existedSchema);
             actualizedContext = contextSchemaManager.updateContextSchema(existedSchema.getId(), resolvedSchema);
         }
 
 
         return new ContextSchemaShortInfo().setId(actualizedContext.getId()).setIntegrationPointKey(integrationPointKey).setHash(actualizedContext.getHash());
     }
+
+    private void resolveUnknownProperties(ContextSchemaHolder resolvedSchema, ContextSchemaHolder existedSchema) {
+        Map<String, ContextSchema.InlineType> resolvedUndefinedPaths = resolvedSchema.getInlinePath().entrySet().stream().filter(it -> it.getValue().getRootType() == SchemaNodeType.UNDEFINED || it.getValue().getSubType() == SchemaNodeType.UNDEFINED)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        resolvedUndefinedPaths.entrySet().stream().filter(it -> wasResolvedBefore(it.getKey(), existedSchema.getInlinePath())).forEach(it -> updateType(it.getKey(), resolvedSchema, existedSchema));
+    }
+
+    private void updateType(String key, ContextSchemaHolder resolvedSchema, ContextSchemaHolder existedSchema) {
+        ContextSchema.InlineType actualType = existedSchema.getInlinePath().get(key);
+        resolvedSchema.getInlinePath().put(key, actualType);
+
+        SchemaNode nodeToUpdate = getNode(resolvedSchema.getRootNode(), key);
+        if (nodeToUpdate == null) {
+            return;
+        }
+        nodeToUpdate.setType(actualType.getRootType());
+        nodeToUpdate.setSubType(actualType.getSubType());
+
+    }
+
+    private SchemaNode getNode(SchemaNode rootNode, String key) {
+        if (StringUtils.isBlank(rootNode.getPath()) ||
+            (!rootNode.getPath().equalsIgnoreCase(key)) && CollectionUtils.isNotEmpty(rootNode.getSubNodes())) {
+            return rootNode.getSubNodes().stream().map(it -> getNode(it, key)).filter(Objects::nonNull).findFirst().orElse(null);
+        }
+
+        if (rootNode.getPath().equalsIgnoreCase(key)) {
+            return rootNode;
+        }
+
+        return null;
+    }
+
+    private boolean wasResolvedBefore(String key, Map<String, ContextSchema.InlineType> inlinePath) {
+        ContextSchema.InlineType inlineType = inlinePath.get(key);
+        return inlineType.getRootType() != SchemaNodeType.UNDEFINED || inlineType.getSubType() != SchemaNodeType.UNDEFINED;
+    }
+
 
     public IntegrationPoint connect(String integrationPointKey) {
         return workspaceService.findByIntegrationPointKey(integrationPointKey)

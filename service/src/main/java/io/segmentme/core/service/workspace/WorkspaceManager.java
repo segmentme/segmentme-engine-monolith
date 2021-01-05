@@ -105,7 +105,7 @@ public class WorkspaceManager {
     }
 
     IntegrationPoint generateIntegrationPoint() {
-        return new IntegrationPoint().setKey(UUID.randomUUID().toString().replaceAll("-", StringUtils.EMPTY));
+        return new IntegrationPoint().setKey(UUID.randomUUID().toString().replace("-", StringUtils.EMPTY));
     }
 
 
