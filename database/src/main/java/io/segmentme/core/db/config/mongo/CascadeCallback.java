@@ -22,8 +22,8 @@ public class CascadeCallback implements ReflectionUtils.FieldCallback {
     @Override
     public void doWith(final Field field) {
         ReflectionUtils.makeAccessible(field);
-
-        Optional.of(field).filter(it -> it.isAnnotationPresent(DBRef.class))
+        Optional.of(field)
+            .filter(it -> it.isAnnotationPresent(DBRef.class))
             .filter(it -> it.isAnnotationPresent(CascadeSave.class))
             .map(this::getSource)
             .ifPresent(this::saveObject);
