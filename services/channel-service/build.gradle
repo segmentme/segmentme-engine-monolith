@@ -1,6 +1,9 @@
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-rsocket'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    compile group: 'redis.clients', name: 'jedis', version: '3.4.1'
+    compile project(':dependencies:redis-dependency')
+
 }
 
 

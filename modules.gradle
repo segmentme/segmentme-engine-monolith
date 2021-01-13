@@ -4,7 +4,8 @@ def settings = [
         [name: 'database', isJava: true],
         [name: 'service', isJava: true],
         [name: 'api', isJava: true, isBoot: true],
-        [name: 'notification-service', isJava: true, isBoot: true]
+        [name: 'services:channel-service', isJava: true, isBoot: true],
+        [name: 'dependencies:redis-dependency', isJava: true, isBoot: false]
 ]
 
 value = new Settings(settings: settings, springVersion: springVersion)

@@ -2,11 +2,10 @@ package io.segmentme.notification;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
-@SpringBootApplication(scanBasePackages = "io.segmentme.notification")
+@SpringBootApplication(scanBasePackages = "io.segmentme")
 public class NotificationServiceApplication {
 
     public static void main(String[] args) {
