@@ -1,5 +1,6 @@
 package io.segmentme.core.db.domain.context;
 
+import io.segmentme.db.config.domain.DbObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,12 +1,10 @@
 dependencies {
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.11.2'
-	compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
-	compile 'org.apache.commons:commons-lang3'
+
+	compile project(':dependencies:database-dependency')
+
 	compile 'org.springframework.boot:spring-boot-starter-validation'
     compile group: 'commons-codec', name: 'commons-codec', version: '1.15'
 
-    testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 	testCompile 'org.springframework.boot:spring-boot-starter-web'
 }
 

@@ -1,6 +1,6 @@
 package io.segmentme.core.db.service;
 
-import io.segmentme.core.db.domain.context.DbObject;
+import io.segmentme.db.config.domain.DbObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 

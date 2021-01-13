@@ -1,4 +1,4 @@
-package io.segmentme.core.db.domain.context;
+package io.segmentme.db.config.domain;
 
 import lombok.Data;
 import org.springframework.data.annotation.*;

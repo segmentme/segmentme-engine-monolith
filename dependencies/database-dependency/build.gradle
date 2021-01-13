@@ -1,0 +1,21 @@
+dependencies {
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.11.2'
+    compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    compile 'org.apache.commons:commons-lang3'
+    testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+}
+
+task jarTests(type: Jar, dependsOn: testClasses) {
+    archiveClassifier = 'tests'
+    from sourceSets.test.output
+}
+configurations {
+    tests {
+        extendsFrom testRuntime
+    }
+}
+
+artifacts {
+    tests jarTests
+}

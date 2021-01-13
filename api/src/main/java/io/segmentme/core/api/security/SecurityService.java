@@ -1,6 +1,6 @@
 package io.segmentme.core.api.security;
 
-import io.segmentme.core.db.domain.context.DbObject;
+import io.segmentme.db.config.domain.DbObject;
 import io.segmentme.core.db.domain.workpsace.UserProfile;
 import io.segmentme.core.db.domain.workpsace.Workspace;
 import io.segmentme.core.db.service.user.UserService;

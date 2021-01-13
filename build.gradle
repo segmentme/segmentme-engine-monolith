@@ -40,6 +40,8 @@ def bootProjectConfiguration(Project project) {
     configure(project) {
         apply plugin: 'org.springframework.boot'
         apply plugin: "com.bmuschko.docker-remote-api"
+        apply plugin: 'io.spring.dependency-management'
+
 
         sourceCompatibility = 14.0
 
@@ -128,10 +130,13 @@ def configureDependencyManagement(Project project) {
 
         dependencyManagement {
             imports {
+                mavenBom "org.springframework.cloud:spring-cloud-dependencies:${rootProjectInfo.springCloudVersion}"
                 mavenBom "org.springframework.boot:spring-boot-dependencies:${rootProjectInfo.springVersion}"
             }
 
             dependencies {
+                dependency 'net.logstash.logback:logstash-logback-encoder:6.1'
+
                 dependency 'org.projectlombok:lombok:1.18.12'
                 dependency 'org.spockframework:spock-core:2.0-M3-groovy-3.0'
                 dependency 'org.spockframework:spock-spring:2.0-M3-groovy-3.0'

@@ -1,4 +1,4 @@
-package io.segmentme.core.db.config.mongo;
+package io.segmentme.db.config.mongo;
 
 import lombok.SneakyThrows;
 import org.springframework.data.mongodb.core.MongoOperations;

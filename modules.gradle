@@ -1,16 +1,26 @@
 def springVersion = '2.3.3.RELEASE'
+def springCloudVersion = 'Hoxton.SR1'
 
 def settings = [
         [name: 'database', isJava: true],
         [name: 'service', isJava: true],
         [name: 'api', isJava: true, isBoot: true],
+
+        [name: 'services:access-service', isJava: true, isBoot: true],
+        [name: 'services:analysis-service', isJava: true, isBoot: true],
         [name: 'services:channel-service', isJava: true, isBoot: true],
-        [name: 'dependencies:redis-dependency', isJava: true, isBoot: false]
+        [name: 'services:config-service', isJava: true, isBoot: true],
+        [name: 'services:measurement-service', isJava: true, isBoot: true],
+        [name: 'services:operation-service', isJava: true, isBoot: true],
+
+        [name: 'dependencies:redis-dependency', isJava: true, isBoot: false],
+        [name: 'dependencies:database-dependency', isJava: true, isBoot: false],
 ]
 
-value = new Settings(settings: settings, springVersion: springVersion)
+value = new Settings(settings: settings, springVersion: springVersion, springCloudVersion: springCloudVersion)
 
 class Settings {
     def settings
     def springVersion
+    def springCloudVersion
 }

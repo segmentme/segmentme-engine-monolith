@@ -1,7 +1,7 @@
 package io.segmentme.core.db.domain.statistic;
 
 import io.segmentme.core.db.domain.context.ContextSchema;
-import io.segmentme.core.db.domain.context.DbObject;
+import io.segmentme.db.config.domain.DbObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.index.Indexed;

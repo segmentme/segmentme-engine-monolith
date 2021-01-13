@@ -1,4 +1,4 @@
-package io.segmentme.core.db.config.mongo;
+package io.segmentme.db.config.mongo;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.util.ReflectionUtils;

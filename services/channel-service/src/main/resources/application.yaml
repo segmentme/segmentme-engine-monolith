@@ -9,6 +9,5 @@ segmentme:
       port: ${REDIS_PORT:6379}
       connectionTimeout: ${REDIS_CONNECTION_TIMEOUT:25}
       readTimeOut: ${REDIS_READ_TIMEOUT:15}
-
 server:
-  port: 9090
+  port: 9292

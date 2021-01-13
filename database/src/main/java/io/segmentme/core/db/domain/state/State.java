@@ -1,7 +1,7 @@
 package io.segmentme.core.db.domain.state;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.segmentme.core.db.domain.context.DbObject;
+import io.segmentme.db.config.domain.DbObject;
 import io.segmentme.core.db.domain.segment.Segment;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

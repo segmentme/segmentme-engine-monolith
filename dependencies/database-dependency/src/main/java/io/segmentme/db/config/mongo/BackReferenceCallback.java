@@ -1,6 +1,6 @@
-package io.segmentme.core.db.config.mongo;
+package io.segmentme.db.config.mongo;
 
-import io.segmentme.core.db.domain.context.DbObject;
+import io.segmentme.db.config.domain.DbObject;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -8,9 +8,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BackReferenceCallback implements ReflectionUtils.FieldCallback {

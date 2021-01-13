@@ -1,0 +1,12 @@
+dependencies {
+    compile('org.springframework.cloud:spring-cloud-config-server')
+
+    compile('net.logstash.logback:logstash-logback-encoder') { transitive = false }
+
+
+    compile('ch.qos.logback:logback-classic:1.2.3')
+    compile('ch.qos.logback:logback-core:1.2.3')
+    compile group: 'ch.qos.logback.contrib', name: 'logback-json-classic', version: '0.1.5'
+    compile group: 'ch.qos.logback.contrib', name: 'logback-jackson', version: '0.1.5'
+
+}
