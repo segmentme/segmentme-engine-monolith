@@ -1,4 +1,4 @@
-package io.segmentme.channelservice.redis;
+package io.segmentme.channelservice.config;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -1,4 +1,4 @@
-package io.segmentme.channelservice.redis;
+package io.segmentme.channelservice.config;
 
 import io.segmentme.redist.config.*;
 import lombok.RequiredArgsConstructor;
