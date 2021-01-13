@@ -11,7 +11,7 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 
 @Configuration
 @RequiredArgsConstructor
-public class NotificationRedisConfig extends RedisConfig {
+public class ChannelRedisConfig extends RedisConfig {
 
     @Bean
     protected RedisMessageListenerContainer redisContainer(RedisMessageSubscriber messageSubscriber) {
