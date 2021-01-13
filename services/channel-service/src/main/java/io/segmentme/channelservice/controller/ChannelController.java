@@ -1,7 +1,7 @@
-package io.segmentme.notification.controller;
+package io.segmentme.channelservice.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.segmentme.notification.service.rsocket.RSocketConnectionHandler;
+import io.segmentme.channelservice.rsocket.RSocketConnectionHandler;
 import io.segmentme.redist.config.MessagePublisher;
 import io.segmentme.redist.dto.RedisMessage;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import static java.util.UUID.randomUUID;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class NotificationController {
+public class ChannelController {
 
     private final MessagePublisher messagePublisher;
 

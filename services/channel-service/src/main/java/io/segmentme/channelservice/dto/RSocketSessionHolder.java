@@ -1,4 +1,4 @@
-package io.segmentme.notification.dto;
+package io.segmentme.channelservice.dto;
 
 import lombok.*;
 import org.springframework.messaging.rsocket.RSocketRequester;

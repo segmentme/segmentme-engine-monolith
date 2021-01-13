@@ -1,7 +1,7 @@
-package io.segmentme.notification.service.rsocket;
+package io.segmentme.channelservice.rsocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.segmentme.notification.dto.RSocketSessionHolder;
+import io.segmentme.channelservice.dto.RSocketSessionHolder;
 import io.segmentme.redist.dto.RedisMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

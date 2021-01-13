@@ -1,6 +1,6 @@
-package io.segmentme.notification.service.rsocket;
+package io.segmentme.channelservice.rsocket;
 
-import io.segmentme.notification.dto.RSocketSessionHolder;
+import io.segmentme.channelservice.dto.RSocketSessionHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
