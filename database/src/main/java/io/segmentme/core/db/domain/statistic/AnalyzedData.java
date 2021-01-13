@@ -23,6 +23,9 @@ public class AnalyzedData extends DbObject {
 
     private Map<String, List<Object>> nodeValues;
 
+    @Indexed
+    private String clientId;
+
     public void setPayload(String payload) {
         this.payload = payload;
         this.hash = String.valueOf(payload.hashCode());

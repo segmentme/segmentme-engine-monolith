@@ -13,6 +13,7 @@ import io.segmentme.core.service.analysis.segment.worm.DebugWorm;
 import io.segmentme.core.service.analysis.segment.worm.StatisticWorm;
 import io.segmentme.core.service.analysis.segment.worm.Worm;
 import io.segmentme.core.service.analysis.segment.worm.WormConsumer;
+import io.segmentme.core.service.dto.analysis.AnalysisData;
 import io.segmentme.core.service.dto.analysis.AnalysisResult;
 import io.segmentme.core.service.dto.analysis.SegmentAnalysisResult;
 import io.segmentme.core.service.dto.statistic.StatisticLogEntry;
@@ -75,17 +76,19 @@ public class AnalysisService {
         return rules.stream().map(it -> this.analyze(context, it, worm)).collect(Collectors.toList());
     }
 
-    public List<SegmentAnalysisResult> analyze(String integrationPointKey, JsonNode payload, Segment segment) {
-        return analyze(null, integrationPointKey, payload, List.of(segment));
+    public List<SegmentAnalysisResult> analyze(String integrationPointKey, AnalysisData analysisData, Segment segment) {
+        return analyze(null, integrationPointKey, analysisData, List.of(segment));
     }
 
-    public List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload) {
-        return analyze(contextId, integrationPointKey, payload, analysisRuleRepository.findByIntegrationPointKeyAndActive(integrationPointKey, true));
+    public List<SegmentAnalysisResult> analyze(String integrationPointKey, String contextId, AnalysisData analysisData) {
+        return analyze(contextId, integrationPointKey, analysisData, analysisRuleRepository.findByIntegrationPointKeyAndActive(integrationPointKey, true));
     }
 
-    private List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, JsonNode payload, List<Segment> segments) {
+    private List<SegmentAnalysisResult> analyze(String contextId, String integrationPointKey, AnalysisData analysisData, List<Segment> segments) {
         StatisticLogEntry statisticLogEntry = new StatisticLogEntry();
-        statisticLogEntry.setRawPayload(payload);
+        statisticLogEntry.setRawPayload(analysisData.getPayload());
+        statisticLogEntry.setClientId(analysisData.getClientId());
+
         StatisticWorm worm = new StatisticWorm();
         long analyzeStartTime = System.currentTimeMillis();
 
@@ -105,7 +108,7 @@ public class AnalysisService {
         List<Segment> finalSegments = segments;
         try {
             List<SegmentAnalysisResult> segmentAnalysisResults = schemas.stream()
-                .map(it -> contextValuesExtractor.extractValues(payload, it, workspace.getConfiguration()))
+                .map(it -> contextValuesExtractor.extractValues(analysisData.getPayload(), it, workspace.getConfiguration()))
                 .peek(statisticLogEntry::setContextValueHolder)
                 .map(it -> this.analyze(it, finalSegments, worm))
                 .flatMap(List::stream).collect(Collectors.toList());

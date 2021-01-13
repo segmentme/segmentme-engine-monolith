@@ -29,6 +29,8 @@ public class StatisticLogEntry {
 
     private JsonNode rawPayload;
 
+    private String clientId;
+
     @Data
     public static class ConditionStatisticEntry {
         private boolean result;
