@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -22,14 +23,8 @@ public abstract class AbstractContainsConditionMatcher extends AbstractCondition
     }
 
     @Override
-    Boolean checkForNullValid(ArrayCondition condition, Collection<Comparable<Object>> value) {
-        boolean empty = CollectionUtils.isEmpty(value);
+    Optional<Boolean> checkForNullValid(ArrayCondition condition, Collection<Comparable<Object>> value) {
+        return Optional.ofNullable(CollectionUtils.isNotEmpty(value) ? null : condition.isNullValid());
 
-        if (!empty) {
-            return null;
-        }
-
-
-        return condition.isNullValid();
     }
 }

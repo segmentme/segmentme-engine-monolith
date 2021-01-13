@@ -65,11 +65,9 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
         }
 
         try {
-            Boolean aBoolean = checkForNullValid(condition, actualValue);
-            if (aBoolean != null) {
-                return aBoolean;
-            }
-            return match(getExpectedValue(condition, actualValue), actualValue);
+            Optional<Boolean> aBoolean = checkForNullValid(condition, actualValue);
+            P finalActualValue = actualValue;
+            return aBoolean.orElseGet(()->match(getExpectedValue(condition, finalActualValue), finalActualValue));
         } catch (Exception ex) {
             log.warn("Can't match property {} in context {} , because {}", condition.getCriteria(), context, ex.getMessage());
             Optional.ofNullable(worm).ifPresent(it -> it.apply(condition, ex));
@@ -80,7 +78,7 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
     protected abstract E getExpectedValue(T condition, P actualValue);
 
 
-    abstract Boolean checkForNullValid(T condition, P value);
+    abstract Optional<Boolean> checkForNullValid(T condition, P value);
 
     abstract boolean match(E expected, P actual);
 }

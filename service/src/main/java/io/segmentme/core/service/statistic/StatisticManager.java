@@ -41,6 +41,7 @@ public class StatisticManager {
         analyzedData.setWorkspaceId(collectedStatistic.getWorkspaceId());
         analyzedData.setPayload(collectedStatistic.getRawPayload().toString());
         analyzedData.setNodeValues(prepareNodeValues(collectedStatistic.getContextValueHolder().getValues()));
+        analyzedData.setClientId(collectedStatistic.getClientId());
         analyzedDataService.insertIfNotExists(analyzedData);
 
         StatisticLog statisticLog = new StatisticLog();

@@ -4,12 +4,12 @@ import io.segmentme.core.service.context.ContextSchemaValidationService;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.List;
+import java.util.ArrayList;
 
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ContextSchemaValidationException extends ContextSchemaManagerException {
-    private List<ContextSchemaValidationService.SchemaValidationEntry> schemaValidationResult;
+    private ArrayList<ContextSchemaValidationService.SchemaValidationEntry> schemaValidationResult;
 
 }

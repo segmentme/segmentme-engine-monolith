@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Service
@@ -20,11 +21,8 @@ class InConditionMatcher extends AbstractConditionMatcher<ArrayCondition, List<O
     }
 
     @Override
-    Boolean checkForNullValid(ArrayCondition condition, Comparable<Object> value) {
-        if (value != null) {
-            return null;
-        }
-        return condition.isNullValid();
+    Optional<Boolean> checkForNullValid(ArrayCondition condition, Comparable<Object> value) {
+        return Optional.ofNullable(value != null ? null : condition.isNullValid());
     }
 
     @Override
