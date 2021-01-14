@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,6 +76,7 @@ public class AnalysisEventProcessor {
         return clientRepository.findByIntegrationPointKey(integrationPointKey)
                 .stream()
                 .map(ConnectedClient::getClientId)
+                .distinct()
                 .collect(Collectors.toList());
     }
 }
