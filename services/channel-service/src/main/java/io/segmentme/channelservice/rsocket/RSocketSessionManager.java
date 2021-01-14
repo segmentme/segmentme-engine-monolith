@@ -58,11 +58,11 @@ class RSocketSessionManager {
         socketClient.clear();
     }
 
-    private void deleteClientFromHash(String clientId, String integrationPointKey, String sessionId){
+    private void deleteClientFromHash(String clientId, String integrationPointKey, String sessionId) {
         clientRepository.findByIntegrationPointKeyAndClientIdAndSessionId(integrationPointKey, clientId, sessionId).ifPresent(clientRepository::delete);
     }
 
-    private ConnectedClient createConnectedClient(String clientId, String integrationPointKey, String sessionId){
+    private ConnectedClient createConnectedClient(String clientId, String integrationPointKey, String sessionId) {
         return new ConnectedClient()
                 .setIntegrationPointKey(integrationPointKey)
                 .setClientId(clientId)
