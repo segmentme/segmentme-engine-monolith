@@ -5,9 +5,7 @@ import io.segmentme.channelservice.rsocket.RSocketConnectionHandler;
 import io.segmentme.redis.config.MessagePublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Mono;
@@ -34,9 +32,9 @@ public class ChannelController {
 //    @Scheduled(fixedRate = 6000)
 //    public void reportCurrentTime() {
 //        IntStream.range(0, 10)
-//                .mapToObj(it -> new RedisMessage<Map<?, ?>>().setIntegrationPointKey("ca79e73c-1dca-4b00-8b2b-1f14dbee9012")
+//                .mapToObj(it -> new SegmentChangedMessage().setIntegrationPointKey("ca79e73c-1dca-4b00-8b2b-1f14dbee9012")
 //                        .setClientId("ca79e73c-1dca-4b00-8b2b-1f14dbee900c")
-//                        .setBody(Map.of("name", randomUUID().toString())))
+//                        .setBody(new SegmentChangedMessage.SdkAnalysisResponse().setAnalyzedSegments(List.of(new SegmentChangedMessage.SegmentAnalysisResult().setName("sadasdadsa")))))
 //                .forEach(messagePublisher::publish);
 //    }
 }

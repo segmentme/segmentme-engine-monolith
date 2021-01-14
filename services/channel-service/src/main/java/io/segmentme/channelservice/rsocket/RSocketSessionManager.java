@@ -1,6 +1,8 @@
 package io.segmentme.channelservice.rsocket;
 
 import io.segmentme.channelservice.dto.RSocketSessionHolder;
+import io.segmentme.redis.domain.ConnectedClient;
+import io.segmentme.redis.repository.ConnectedClientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -17,6 +19,8 @@ import static java.util.Optional.ofNullable;
 @RequiredArgsConstructor
 class RSocketSessionManager {
 
+    private final ConnectedClientRepository clientRepository;
+
     private final static Map<String, Map<String, List<RSocketSessionHolder>>> socketClient = new ConcurrentHashMap<>();
 
     public void addClient(String clientId, String integrationPointKey, String sessionId, RSocketRequester requester) {
@@ -24,6 +28,10 @@ class RSocketSessionManager {
                 .computeIfAbsent(clientId, key -> new ConcurrentHashMap<>())
                 .computeIfAbsent(integrationPointKey, key -> Collections.synchronizedList(new ArrayList<>()))
                 .add(RSocketSessionHolder.of(sessionId, requester));
+
+        if (clientRepository.findByIntegrationPointKeyAndClientIdAndSessionId(integrationPointKey, clientId, sessionId).isEmpty()) {
+            clientRepository.save(createConnectedClient(clientId, integrationPointKey, sessionId));
+        }
     }
 
     public void delete(String clientId, String integrationPointKey, String sessionId) {
@@ -36,6 +44,8 @@ class RSocketSessionManager {
                         it.remove(integrationPointKey);
                         socketClient.remove(clientId);
                     }
+
+                    clientRepository.deleteByIntegrationPointKeyAndClientIdAndSessionId(integrationPointKey, clientId, sessionId);
                 });
     }
 
@@ -44,6 +54,14 @@ class RSocketSessionManager {
     }
 
     public void deleteAll() {
+        socketClient.forEach((key1, value1) -> value1.forEach((key, value) -> value.forEach(holder -> clientRepository.deleteByIntegrationPointKeyAndClientIdAndSessionId(key, key1, holder.getId()))));
         socketClient.clear();
+    }
+
+    private ConnectedClient createConnectedClient(String clientId, String integrationPointKey, String sessionId){
+        return new ConnectedClient()
+                .setIntegrationPointKey(integrationPointKey)
+                .setClientId(clientId)
+                .setSessionId(sessionId);
     }
 }

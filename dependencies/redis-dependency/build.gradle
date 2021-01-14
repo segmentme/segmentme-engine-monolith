@@ -1,6 +1,5 @@
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-data-redis'
-    compile 'redis.clients:jedis'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.1'
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.1'
 }
