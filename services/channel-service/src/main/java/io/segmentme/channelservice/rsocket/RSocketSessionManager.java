@@ -45,7 +45,7 @@ class RSocketSessionManager {
                         socketClient.remove(clientId);
                     }
 
-                    clientRepository.deleteByIntegrationPointKeyAndClientIdAndSessionId(integrationPointKey, clientId, sessionId);
+                    deleteClientFromHash(clientId, integrationPointKey, sessionId);
                 });
     }
 
@@ -54,8 +54,12 @@ class RSocketSessionManager {
     }
 
     public void deleteAll() {
-        socketClient.forEach((key1, value1) -> value1.forEach((key, value) -> value.forEach(holder -> clientRepository.deleteByIntegrationPointKeyAndClientIdAndSessionId(key, key1, holder.getId()))));
+        socketClient.forEach((key1, value1) -> value1.forEach((key, value) -> value.forEach(holder -> deleteClientFromHash(key, key1, holder.getId()))));
         socketClient.clear();
+    }
+
+    private void deleteClientFromHash(String clientId, String integrationPointKey, String sessionId){
+        clientRepository.findByIntegrationPointKeyAndClientIdAndSessionId(integrationPointKey, clientId, sessionId).ifPresent(clientRepository::delete);
     }
 
     private ConnectedClient createConnectedClient(String clientId, String integrationPointKey, String sessionId){

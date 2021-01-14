@@ -10,7 +10,5 @@ public interface ConnectedClientRepository extends KeyValueRepository<ConnectedC
 
     Optional<ConnectedClient> findByIntegrationPointKeyAndClientIdAndSessionId(String integrationPointKey, String clientId, String sessionId);
 
-    void deleteByIntegrationPointKeyAndClientIdAndSessionId(String integrationPointKey, String clientId, String sessionId);
-
     List<ConnectedClient> findByIntegrationPointKey(String integrationPointKey);
 }
