@@ -1,8 +1,7 @@
 package io.segmentme.channelservice.rsocket;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.channelservice.dto.RSocketSessionHolder;
-import io.segmentme.redist.dto.RedisMessage;
+import io.segmentme.redis.dto.SegmentChangedMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -23,36 +22,36 @@ public class RSocketConnectionHandler {
 
     private final RSocketSessionManager socketSessionManager;
 
-    @EventListener(RedisMessage.class)
-    public void handleMessage(RedisMessage<JsonNode> redisMessage) {
+    @EventListener(SegmentChangedMessage.class)
+    public void handleMessage(SegmentChangedMessage redisMessage) {
         socketSessionManager.findClient(redisMessage.getClientId(), redisMessage.getIntegrationPointKey())
-                .stream()
-                .flatMap(Collection::stream)
-                .map(RSocketSessionHolder::getRequester)
-                .forEach(it -> sendMessage(it, redisMessage.getBody()));
+            .stream()
+            .flatMap(Collection::stream)
+            .map(RSocketSessionHolder::getRequester)
+            .forEach(it -> sendMessage(it, redisMessage.getBody()));
     }
 
     public void handleSession(RSocketRequester requester, String clientId, String integrationPointKey) {
         var sessionId = randomUUID().toString();
         requester.rsocket()
-                .onClose()
-                .doFirst(() -> {
-                    log.info("Connected client sessionId={} clientId={} integrationPointKey={}", sessionId, clientId, integrationPointKey);
-                    this.socketSessionManager.addClient(clientId, integrationPointKey, sessionId, requester);
-                })
-                .doOnError(error -> log.warn("Client error sessionId={} clientId={} integrationPointKey={}", sessionId, clientId, integrationPointKey))
-                .doFinally(consumer -> {
-                    this.socketSessionManager.delete(clientId, integrationPointKey, sessionId);
-                    log.info("Client disconnected sessionId={} clientId={} integrationPointKey={}", sessionId, clientId, integrationPointKey);
-                })
-                .subscribe();
+            .onClose()
+            .doFirst(() -> {
+                log.info("Connected client sessionId={} clientId={} integrationPointKey={}", sessionId, clientId, integrationPointKey);
+                this.socketSessionManager.addClient(clientId, integrationPointKey, sessionId, requester);
+            })
+            .doOnError(error -> log.warn("Client error sessionId={} clientId={} integrationPointKey={}", sessionId, clientId, integrationPointKey))
+            .doFinally(consumer -> {
+                this.socketSessionManager.delete(clientId, integrationPointKey, sessionId);
+                log.info("Client disconnected sessionId={} clientId={} integrationPointKey={}", sessionId, clientId, integrationPointKey);
+            })
+            .subscribe();
     }
 
-    private void sendMessage(RSocketRequester requester, JsonNode body) {
+    private void sendMessage(RSocketRequester requester, SegmentChangedMessage.SdkAnalysisResponse body) {
         requester.route(CALL_BACK_ROUTE)
-                .data(body)
-                .retrieveMono(String.class)
-                .subscribe();
+            .data(body)
+            .retrieveMono(String.class)
+            .subscribe();
     }
 
     @PreDestroy

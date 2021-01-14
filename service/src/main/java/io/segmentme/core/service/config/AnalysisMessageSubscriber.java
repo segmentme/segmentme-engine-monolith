@@ -1,6 +1,5 @@
-package io.segmentme.channelservice.config;
+package io.segmentme.core.service.config;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.redis.dto.RedisMessage;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RedisMessageSubscriber implements MessageListener {
+public class AnalysisMessageSubscriber implements MessageListener {
 
     private final ObjectMapper objectMapper;
 
@@ -23,7 +22,7 @@ public class RedisMessageSubscriber implements MessageListener {
     @SneakyThrows
     public void onMessage(Message message, byte[] pattern) {
         log.info("Message received: {}", message.toString());
-        RedisMessage jsonNodeRedisMessage = objectMapper.readValue(message.getBody(), new TypeReference<>() {});
-        eventPublisher.publishEvent(jsonNodeRedisMessage);
+        RedisMessage redisMessage = objectMapper.readValue(message.getBody(), RedisMessage.class);
+        eventPublisher.publishEvent(redisMessage);
     }
 }

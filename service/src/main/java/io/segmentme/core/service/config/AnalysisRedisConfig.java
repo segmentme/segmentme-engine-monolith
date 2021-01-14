@@ -1,4 +1,4 @@
-package io.segmentme.channelservice.config;
+package io.segmentme.core.service.config;
 
 import io.segmentme.redis.config.MessagePublisher;
 import io.segmentme.redis.config.RedisConfig;
@@ -13,28 +13,28 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 
 @Configuration
 @RequiredArgsConstructor
-public class ChannelRedisConfig extends RedisConfig {
+public class AnalysisRedisConfig extends RedisConfig {
 
     @Bean
-    protected RedisMessageListenerContainer redisContainer(RedisMessageSubscriber messageSubscriber) {
+    protected RedisMessageListenerContainer redisContainer(AnalysisMessageSubscriber messageSubscriber) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(jedisConnectionFactory());
-        container.addMessageListener(messageListener(messageSubscriber), segmentChangeQueue());
+        container.addMessageListener(messageListener(messageSubscriber), analysisTopic());
         return container;
     }
 
     @Bean
-    public MessageListenerAdapter messageListener(RedisMessageSubscriber messageSubscriber) {
+    public MessageListenerAdapter messageListener(AnalysisMessageSubscriber messageSubscriber) {
         return new MessageListenerAdapter(messageSubscriber);
     }
 
     @Bean
-    public MessagePublisher segmentChangePublisher(JedisConnectionFactory jedisConnectionFactory) {
-        return new RedisMessagePublisher(segmentChangeQueue(), redisTemplate(jedisConnectionFactory));
+    public MessagePublisher analysisTopicPublisher(JedisConnectionFactory jedisConnectionFactory) {
+        return new RedisMessagePublisher(analysisTopic(), redisTemplate(jedisConnectionFactory));
     }
 
     @Bean
-    public ChannelTopic segmentChangeQueue() {
-        return new ChannelTopic("segmentChangeQueue");
+    public ChannelTopic analysisTopic() {
+        return new ChannelTopic("analysisChannelTopic");
     }
 }

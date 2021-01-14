@@ -2,20 +2,15 @@ package io.segmentme.channelservice.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.segmentme.channelservice.rsocket.RSocketConnectionHandler;
-import io.segmentme.redist.config.MessagePublisher;
-import io.segmentme.redist.dto.RedisMessage;
+import io.segmentme.redis.config.MessagePublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.*;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.rsocket.RSocketRequester;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Mono;
-
-import java.util.Map;
-import java.util.stream.IntStream;
-
-import static java.util.UUID.randomUUID;
 
 @Slf4j
 @Controller
@@ -36,12 +31,12 @@ public class ChannelController {
         return Mono.never();
     }
 
-    @Scheduled(fixedRate = 6000)
-    public void reportCurrentTime() {
-        IntStream.range(0, 10)
-                .mapToObj(it -> new RedisMessage<Map<?, ?>>().setIntegrationPointKey("ca79e73c-1dca-4b00-8b2b-1f14dbee9012")
-                        .setClientId("ca79e73c-1dca-4b00-8b2b-1f14dbee900c")
-                        .setBody(Map.of("name", randomUUID().toString())))
-                .forEach(messagePublisher::publish);
-    }
+//    @Scheduled(fixedRate = 6000)
+//    public void reportCurrentTime() {
+//        IntStream.range(0, 10)
+//                .mapToObj(it -> new RedisMessage<Map<?, ?>>().setIntegrationPointKey("ca79e73c-1dca-4b00-8b2b-1f14dbee9012")
+//                        .setClientId("ca79e73c-1dca-4b00-8b2b-1f14dbee900c")
+//                        .setBody(Map.of("name", randomUUID().toString())))
+//                .forEach(messagePublisher::publish);
+//    }
 }

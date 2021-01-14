@@ -1,5 +1,6 @@
 dependencies {
     compile project(':database')
+    compile project(':dependencies:redis-dependency')
     testCompile project(path: ':database', configuration: 'tests')
 }
 

@@ -14,6 +14,8 @@ import io.segmentme.core.service.dto.SegmentImportResult;
 import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import io.segmentme.core.service.exception.SegmentManagerException;
 import io.segmentme.core.service.exception.error.SegmentMangerErrors;
+import io.segmentme.redis.config.MessagePublisher;
+import io.segmentme.redis.dto.ReanalysisMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,8 @@ public class SegmentManager {
 
     private final ObjectMapper objectMapper;
 
+    private final MessagePublisher analysisTopicPublisher;
+
     public SegmentDto save(SegmentDto rule, String contextId, String integrationPointKey) {
         Segment existedSegment = segmentService.findByIntegrationPointKeyAndKey(integrationPointKey, rule.getName());
         if (existedSegment != null && !Objects.equals(existedSegment.getId(), rule.getId())) {
@@ -45,8 +49,12 @@ public class SegmentManager {
         }
 
         Segment analysisRule = SegmentConverter.of(rule, contextId, integrationPointKey);
+        SegmentDto segment = SegmentConverter.of(segmentService.create(analysisRule));
 
-        return SegmentConverter.of(segmentService.create(analysisRule));
+        if(analysisRule.getId()!=null){
+            analysisTopicPublisher.publish(new ReanalysisMessage().setSegmentId(rule.getId()).setIntegrationPointKey(integrationPointKey));
+        }
+        return segment;
     }
 
     public void activate(String segmentId, boolean isActive) {

@@ -1,6 +1,6 @@
-package io.segmentme.redist.config;
+package io.segmentme.redis.config;
 
-import io.segmentme.redist.dto.RedisMessage;
+import io.segmentme.redis.dto.RedisMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -17,8 +17,8 @@ public abstract class RedisConfig {
     private RedisProperties redisProperties;
 
     @Bean
-    protected RedisTemplate<String, RedisMessage<?>> redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
-        var template = new RedisTemplate<String, RedisMessage<?>>();
+    protected RedisTemplate<String, RedisMessage> redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
+        var template = new RedisTemplate<String, RedisMessage>();
         template.setConnectionFactory(jedisConnectionFactory);
         var jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         template.setKeySerializer(jsonRedisSerializer);
