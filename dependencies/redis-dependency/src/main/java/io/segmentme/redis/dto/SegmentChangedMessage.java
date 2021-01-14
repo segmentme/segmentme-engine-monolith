@@ -8,16 +8,15 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class SegmentChangedMessage extends RedisMessage {
+
+    private final RedisMessageType type = RedisMessageType.SEGMENT_CHANGED;
+
     private String clientId;
 
     private String integrationPointKey;
 
     private SdkAnalysisResponse body;
 
-    @Override
-    public RedisMessageType type() {
-        return RedisMessageType.SEGMENT_CHANGED;
-    }
 
     @Data
     public static class SdkAnalysisResponse {
