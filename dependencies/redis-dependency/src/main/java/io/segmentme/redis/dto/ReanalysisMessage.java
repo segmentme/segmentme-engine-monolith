@@ -11,6 +11,8 @@ public class ReanalysisMessage extends RedisMessage {
 
     private String segmentId;
 
+    private String contextId;
+
     private String integrationPointKey;
 
 }

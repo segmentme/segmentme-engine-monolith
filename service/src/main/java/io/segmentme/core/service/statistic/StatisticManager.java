@@ -37,12 +37,7 @@ public class StatisticManager {
     @Async
     @EventListener
     public void saveStatistic(StatisticLogEntry collectedStatistic) {
-        AnalyzedData analyzedData = new AnalyzedData();
-        analyzedData.setWorkspaceId(collectedStatistic.getWorkspaceId());
-        analyzedData.setPayload(collectedStatistic.getRawPayload().toString());
-        analyzedData.setNodeValues(prepareNodeValues(collectedStatistic.getContextValueHolder().getValues()));
-        analyzedData.setClientId(collectedStatistic.getClientId());
-        analyzedDataService.insertIfNotExists(analyzedData);
+        AnalyzedData analyzedData = aggregateAnalyzedData(collectedStatistic);
 
         StatisticLog statisticLog = new StatisticLog();
         statisticLog.setWorkspaceId(collectedStatistic.getWorkspaceId());
@@ -57,6 +52,19 @@ public class StatisticManager {
         statisticLog.setConditionStatistics(getConditionsBreakdown(collectedStatistic));
 
         statisticService.create(statisticLog);
+    }
+
+    private AnalyzedData aggregateAnalyzedData(StatisticLogEntry collectedStatistic) {
+        AnalyzedData analyzedData = new AnalyzedData();
+        analyzedData.setWorkspaceId(collectedStatistic.getWorkspaceId());
+        analyzedData.setPayload(collectedStatistic.getRawPayload().toString());
+        analyzedData.setNodeValues(prepareNodeValues(collectedStatistic.getContextValueHolder().getValues()));
+        analyzedData.setClientId(collectedStatistic.getClientId());
+        analyzedData.setIntegrationPointKey(collectedStatistic.getIntegrationPointKey());
+        analyzedData.setAnalyzedSegments(collectedStatistic.getAnalyzedSegments().stream().map(Segment::getId).collect(Collectors.toList()));
+
+        analyzedDataService.insertIfNotExists(analyzedData);
+        return analyzedData;
     }
 
     private Map<String, List<Object>> prepareNodeValues(Map<String, Object> values) {

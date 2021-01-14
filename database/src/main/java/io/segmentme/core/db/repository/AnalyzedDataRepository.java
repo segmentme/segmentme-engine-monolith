@@ -7,4 +7,5 @@ public interface AnalyzedDataRepository extends MongoRepository<AnalyzedData, St
 
     AnalyzedData findByHash(String hash);
 
+
 }

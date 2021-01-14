@@ -34,6 +34,16 @@ public class AnalysisRedisConfig extends RedisConfig {
     }
 
     @Bean
+    public MessagePublisher clientAnalysisStateChangedPublisher(JedisConnectionFactory jedisConnectionFactory) {
+        return new RedisMessagePublisher(clientAnalysisStateChanged(), redisTemplate(jedisConnectionFactory));
+    }
+
+    @Bean
+    public ChannelTopic clientAnalysisStateChanged() {
+        return new ChannelTopic("clientAnalysisStateChangedQueue");
+    }
+
+    @Bean
     public ChannelTopic analysisTopic() {
         return new ChannelTopic("analysisChannelTopic");
     }

@@ -51,8 +51,8 @@ public class SegmentManager {
         Segment analysisRule = SegmentConverter.of(rule, contextId, integrationPointKey);
         SegmentDto segment = SegmentConverter.of(segmentService.create(analysisRule));
 
-        if(analysisRule.getId()!=null){
-            analysisTopicPublisher.publish(new ReanalysisMessage().setSegmentId(rule.getId()).setIntegrationPointKey(integrationPointKey));
+        if (analysisRule.getId() != null) {
+            analysisTopicPublisher.publish(new ReanalysisMessage().setSegmentId(rule.getId()).setContextId(analysisRule.getContextId()).setIntegrationPointKey(integrationPointKey));
         }
         return segment;
     }

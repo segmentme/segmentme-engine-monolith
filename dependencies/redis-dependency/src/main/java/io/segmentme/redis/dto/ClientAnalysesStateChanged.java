@@ -7,7 +7,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SegmentChangedMessage extends RedisMessage {
+public class ClientAnalysesStateChanged extends RedisMessage {
 
     private final RedisMessageType type = RedisMessageType.SEGMENT_CHANGED;
 
@@ -15,11 +15,11 @@ public class SegmentChangedMessage extends RedisMessage {
 
     private String integrationPointKey;
 
-    private SdkAnalysisResponse body;
+    private ChangedAnalysis body;
 
 
     @Data
-    public static class SdkAnalysisResponse {
+    public static class ChangedAnalysis {
         private List<SegmentAnalysisResult> analyzedSegments;
     }
 

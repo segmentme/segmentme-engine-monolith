@@ -18,6 +18,11 @@ public class AnalyzedData extends DbObject {
     @Indexed
     private String workspaceId;
 
+    @Indexed
+    private String integrationPointKey;
+
+    private List<String> analyzedSegments;
+
     @Indexed(unique = true)
     private String hash;
 
@@ -26,8 +31,7 @@ public class AnalyzedData extends DbObject {
     @Indexed
     private String clientId;
 
-    public void setPayload(String payload) {
-        this.payload = payload;
-        this.hash = String.valueOf(payload.hashCode());
+    public String buildHash() {
+        return String.valueOf((clientId + ":" + integrationPointKey + ":" + payload.hashCode()).hashCode());
     }
 }

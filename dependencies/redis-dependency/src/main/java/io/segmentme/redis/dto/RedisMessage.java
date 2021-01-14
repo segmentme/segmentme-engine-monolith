@@ -1,6 +1,9 @@
 package io.segmentme.redis.dto;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -14,7 +17,7 @@ import java.time.LocalDateTime;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ReanalysisMessage.class, name = "REANALYIS"),
-        @JsonSubTypes.Type(value = SegmentChangedMessage.class, name = "SEGMENT_CHANGED")
+        @JsonSubTypes.Type(value = ClientAnalysesStateChanged.class, name = "SEGMENT_CHANGED")
 })
 public abstract class RedisMessage implements Serializable {
 

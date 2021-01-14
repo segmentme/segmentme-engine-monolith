@@ -19,7 +19,7 @@ public class ChannelRedisConfig extends RedisConfig {
     protected RedisMessageListenerContainer redisContainer(RedisMessageSubscriber messageSubscriber) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(jedisConnectionFactory());
-        container.addMessageListener(messageListener(messageSubscriber), segmentChangeQueue());
+        container.addMessageListener(messageListener(messageSubscriber), clientAnalysisStateChanged());
         return container;
     }
 
@@ -30,11 +30,11 @@ public class ChannelRedisConfig extends RedisConfig {
 
     @Bean
     public MessagePublisher segmentChangePublisher(JedisConnectionFactory jedisConnectionFactory) {
-        return new RedisMessagePublisher(segmentChangeQueue(), redisTemplate(jedisConnectionFactory));
+        return new RedisMessagePublisher(clientAnalysisStateChanged(), redisTemplate(jedisConnectionFactory));
     }
 
     @Bean
-    public ChannelTopic segmentChangeQueue() {
-        return new ChannelTopic("segmentChangeQueue");
+    public ChannelTopic clientAnalysisStateChanged() {
+        return new ChannelTopic("clientAnalysisStateChangedQueue");
     }
 }

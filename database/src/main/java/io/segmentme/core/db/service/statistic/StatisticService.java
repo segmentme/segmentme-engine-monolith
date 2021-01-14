@@ -34,28 +34,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 public class StatisticService extends AbstractDatabaseService<StatisticLog, StatisticRepository> {
 
 
-    public static final String PROP_WORKSPACE_ID = "workspaceId";
-    public static final String PROP_SEGMENT_STATISTICS = "segmentStatistics";
-    public static final String CREATED_DATE = "createdDate";
-    public static final String SEGMENT_STATISTICS_SEGMENT_ID = "segmentStatistics.segmentId";
-    public static final String SEGMENT_ID = "segmentId";
-    public static final String SEGMENT_STATISTICS_RESULT = "segmentStatistics.result";
-    public static final String SEGMENT_RESULT = "segmentResult";
-    public static final String COUNT = "count";
-    public static final String ID = "_id";
-    public static final String ANALYSIS_TIME = "analysisTime";
-    public static final String INTEGRATION_POINT_KEY = "integrationPointKey";
-    public static final String DATE_FORMATTER = "%Y-%m-%dT%H:00:00";
-    public static final String DATE_HOUR = "dateHour";
-    public static final String TOTAL_ANALYSIS_TIME = "totalAnalysisTime";
-    public static final String ID_DATE_HOUR = "_id.dateHour";
-    public static final String DATE_TIME = "dateTime";
-    public static final String ID_INTEGRATION_POINT_KEY = "_id.integrationPointKey";
-    public static final String NODE_VALUES = "nodeValues.";
-    public static final String LAST_MODIFIED_DATE = "lastModifiedDate";
-    public static final String HASH = "hash";
-    public static final String ANALYZED_DATA_KEY = "analyzedDataKey";
-    public static final String SEGMENTS_COUNT = "segmentsCount";
+
     private final MongoTemplate mongoTemplate;
 
     private final AnalyzedDataRepository analyzedDataRepository;

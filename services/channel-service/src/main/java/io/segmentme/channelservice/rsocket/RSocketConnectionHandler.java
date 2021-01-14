@@ -1,7 +1,7 @@
 package io.segmentme.channelservice.rsocket;
 
 import io.segmentme.channelservice.dto.RSocketSessionHolder;
-import io.segmentme.redis.dto.SegmentChangedMessage;
+import io.segmentme.redis.dto.ClientAnalysesStateChanged;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -22,8 +22,8 @@ public class RSocketConnectionHandler {
 
     private final RSocketSessionManager socketSessionManager;
 
-    @EventListener(SegmentChangedMessage.class)
-    public void handleMessage(SegmentChangedMessage redisMessage) {
+    @EventListener(ClientAnalysesStateChanged.class)
+    public void handleMessage(ClientAnalysesStateChanged redisMessage) {
         socketSessionManager.findClient(redisMessage.getClientId(), redisMessage.getIntegrationPointKey())
             .stream()
             .flatMap(Collection::stream)
@@ -47,7 +47,7 @@ public class RSocketConnectionHandler {
             .subscribe();
     }
 
-    private void sendMessage(RSocketRequester requester, SegmentChangedMessage.SdkAnalysisResponse body) {
+    private void sendMessage(RSocketRequester requester, ClientAnalysesStateChanged.ChangedAnalysis body) {
         requester.route(CALL_BACK_ROUTE)
             .data(body)
             .retrieveMono(String.class)
