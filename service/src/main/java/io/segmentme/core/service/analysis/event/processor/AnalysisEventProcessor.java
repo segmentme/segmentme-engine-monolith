@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,10 +38,10 @@ public class AnalysisEventProcessor {
 
     @EventListener(ReanalysisMessage.class)
     public void handleMessage(ReanalysisMessage redisMessage) {
-        log.info("got it! {}", redisMessage);
-
         List<String> connectedClients = getConnectedClientIds(redisMessage.getIntegrationPointKey());
         List<AnalyzedData> lastAnalyzedData = getLastAnalyzedData(redisMessage.getIntegrationPointKey(), redisMessage.getSegmentId(), connectedClients);
+
+        log.info("Found {} connected clients which require reanalysis because of segment state changed:{}", lastAnalyzedData.size(), redisMessage);
         lastAnalyzedData.forEach(it -> this.reanalyze(redisMessage.getContextId(), it));
     }
 
@@ -67,8 +67,7 @@ public class AnalysisEventProcessor {
     }
 
     private List<AnalyzedData> getLastAnalyzedData(String integrationPointKey, String segmentId, List<String> connectedClients) {
-        List<AnalyzedData> latestClientsAnalyzedData = analyzedDataService.findLatestClientsAnalyzedData(integrationPointKey, segmentId, connectedClients);
-        return latestClientsAnalyzedData;
+        return analyzedDataService.findLatestClientsAnalyzedData(integrationPointKey, segmentId, connectedClients);
     }
 
 
