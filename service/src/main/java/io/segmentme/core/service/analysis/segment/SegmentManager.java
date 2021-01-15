@@ -60,6 +60,7 @@ public class SegmentManager {
     public void activate(String segmentId, boolean isActive) {
         Segment segment = segmentService.findById(segmentId).orElseThrow(() -> new SegmentManagerException(SegmentMangerErrors.SEGMENT_NOT_FOUND));
         segmentService.save(segment.setActive(isActive));
+        analysisTopicPublisher.publish(new ReanalysisMessage().setSegmentId(segment.getId()).setContextId(segment.getContextId()).setIntegrationPointKey(segment.getIntegrationPointKey()));
     }
 
     public List<SegmentDto> save(List<SegmentDto> rules, String contextId, String integrationPointKey) {

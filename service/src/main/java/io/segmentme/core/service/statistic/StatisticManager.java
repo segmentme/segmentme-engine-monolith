@@ -62,7 +62,7 @@ public class StatisticManager {
         analyzedData.setClientId(collectedStatistic.getClientId());
         analyzedData.setIntegrationPointKey(collectedStatistic.getIntegrationPointKey());
         analyzedData.setAnalyzedSegments(collectedStatistic.getAnalyzedSegments().stream().map(Segment::getId).collect(Collectors.toList()));
-
+        analyzedData.setHash(analyzedData.buildHash());
         analyzedDataService.insertIfNotExists(analyzedData);
         return analyzedData;
     }
