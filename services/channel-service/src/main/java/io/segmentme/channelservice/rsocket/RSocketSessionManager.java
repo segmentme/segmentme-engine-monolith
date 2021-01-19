@@ -1,8 +1,6 @@
 package io.segmentme.channelservice.rsocket;
 
 import io.segmentme.channelservice.dto.RSocketSessionHolder;
-import io.segmentme.redis.domain.ConnectedClient;
-import io.segmentme.redis.repository.ConnectedClientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -11,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 
@@ -19,8 +18,6 @@ import static java.util.Optional.ofNullable;
 @RequiredArgsConstructor
 class RSocketSessionManager {
 
-    private final ConnectedClientRepository clientRepository;
-
     private final static Map<String, Map<String, List<RSocketSessionHolder>>> socketClient = new ConcurrentHashMap<>();
 
     public void addClient(String clientId, String integrationPointKey, String sessionId, RSocketRequester requester) {
@@ -28,10 +25,6 @@ class RSocketSessionManager {
                 .computeIfAbsent(clientId, key -> new ConcurrentHashMap<>())
                 .computeIfAbsent(integrationPointKey, key -> Collections.synchronizedList(new ArrayList<>()))
                 .add(RSocketSessionHolder.of(sessionId, requester));
-
-        if (clientRepository.findByIntegrationPointKeyAndClientIdAndSessionId(integrationPointKey, clientId, sessionId).isEmpty()) {
-            clientRepository.save(createConnectedClient(clientId, integrationPointKey, sessionId));
-        }
     }
 
     public void delete(String clientId, String integrationPointKey, String sessionId) {
@@ -44,28 +37,19 @@ class RSocketSessionManager {
                         it.remove(integrationPointKey);
                         socketClient.remove(clientId);
                     }
-
-                    deleteClientFromHash(clientId, integrationPointKey, sessionId);
                 });
     }
 
-    public Optional<List<RSocketSessionHolder>> findClient(String clientId, String integrationPointKey) {
-        return ofNullable(socketClient.get(clientId)).map(it -> it.get(integrationPointKey));
+    public List<RSocketSessionHolder> findClients(String integrationPointKey) {
+        return socketClient.values()
+                .stream()
+                .map(stringListMap -> Optional.ofNullable(stringListMap.get(integrationPointKey)).orElse(null))
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     public void deleteAll() {
-        socketClient.forEach((key1, value1) -> value1.forEach((key, value) -> value.forEach(holder -> deleteClientFromHash(key, key1, holder.getId()))));
         socketClient.clear();
-    }
-
-    private void deleteClientFromHash(String clientId, String integrationPointKey, String sessionId) {
-        clientRepository.findByIntegrationPointKeyAndClientIdAndSessionId(integrationPointKey, clientId, sessionId).ifPresent(clientRepository::delete);
-    }
-
-    private ConnectedClient createConnectedClient(String clientId, String integrationPointKey, String sessionId) {
-        return new ConnectedClient()
-                .setIntegrationPointKey(integrationPointKey)
-                .setClientId(clientId)
-                .setSessionId(sessionId);
     }
 }

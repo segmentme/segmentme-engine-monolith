@@ -1,12 +1,9 @@
 package io.segmentme.channelservice.config;
 
-import io.segmentme.redis.config.MessagePublisher;
 import io.segmentme.redis.config.RedisConfig;
-import io.segmentme.redis.config.RedisMessagePublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
@@ -19,7 +16,7 @@ public class ChannelRedisConfig extends RedisConfig {
     protected RedisMessageListenerContainer redisContainer(RedisMessageSubscriber messageSubscriber) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(jedisConnectionFactory());
-        container.addMessageListener(messageListener(messageSubscriber), clientAnalysisStateChanged());
+        container.addMessageListener(messageListener(messageSubscriber), analysisChannelTopic());
         return container;
     }
 
@@ -29,12 +26,7 @@ public class ChannelRedisConfig extends RedisConfig {
     }
 
     @Bean
-    public MessagePublisher segmentChangePublisher(JedisConnectionFactory jedisConnectionFactory) {
-        return new RedisMessagePublisher(clientAnalysisStateChanged(), redisTemplate(jedisConnectionFactory));
-    }
-
-    @Bean
-    public ChannelTopic clientAnalysisStateChanged() {
-        return new ChannelTopic("clientAnalysisStateChangedQueue");
+    public ChannelTopic analysisChannelTopic() {
+        return new ChannelTopic("analysisChannelTopic");
     }
 }

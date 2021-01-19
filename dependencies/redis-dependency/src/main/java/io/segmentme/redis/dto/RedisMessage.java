@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ReanalysisMessage.class, name = "REANALYIS"),
-        @JsonSubTypes.Type(value = ClientAnalysesStateChanged.class, name = "SEGMENT_CHANGED")
 })
 public abstract class RedisMessage implements Serializable {
 
