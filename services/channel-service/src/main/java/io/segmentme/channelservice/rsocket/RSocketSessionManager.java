@@ -21,10 +21,13 @@ class RSocketSessionManager {
     private final static Map<String, Map<String, List<RSocketSessionHolder>>> socketClient = new ConcurrentHashMap<>();
 
     public void addClient(String clientId, String integrationPointKey, String sessionId, RSocketRequester requester) {
-        socketClient
+        List<RSocketSessionHolder> holders = socketClient
                 .computeIfAbsent(clientId, key -> new ConcurrentHashMap<>())
-                .computeIfAbsent(integrationPointKey, key -> Collections.synchronizedList(new ArrayList<>()))
-                .add(RSocketSessionHolder.of(sessionId, requester));
+                .computeIfAbsent(integrationPointKey, key -> Collections.synchronizedList(new ArrayList<>()));
+
+        if (holders.stream().noneMatch(it -> sessionId.equals(it.getId()))) {
+            holders.add(RSocketSessionHolder.of(sessionId, requester));
+        }
     }
 
     public void delete(String clientId, String integrationPointKey, String sessionId) {
