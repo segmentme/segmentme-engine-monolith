@@ -33,8 +33,7 @@ public class RSocketConnectionHandler {
                 .forEach(it -> sendMessage(it, redisMessage));
     }
 
-    public void handleSession(RSocketRequester requester, String clientId, String integrationPointKey) {
-        var sessionId = randomUUID().toString();
+    public void handleSession(RSocketRequester requester, String clientId, String integrationPointKey, String sessionId) {
         requester.rsocket()
                 .onClose()
                 .doFirst(() -> {

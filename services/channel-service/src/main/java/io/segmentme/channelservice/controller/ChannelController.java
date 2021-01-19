@@ -9,7 +9,6 @@ import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -29,12 +28,14 @@ public class ChannelController {
 
     private final RSocketConnectionHandler rSocketConnectionHandler;
 
-    @MessageMapping("/subscribe/{integrationPointKey}")
+
+    @MessageMapping("/subscribe/{sessionId}/{integrationPointKey}")
     Mono<?> channel(RSocketRequester requester,
+                    @DestinationVariable("sessionId") String sessionId,
                     @DestinationVariable("integrationPointKey") String integrationPointKey,
                     @Payload @Valid SdkAnalysisRequest request) {
         log.info("Received subscription request integrationPointKey {}  {}", integrationPointKey, request);
-        rSocketConnectionHandler.handleSession(requester, request.getAnalysisData().getClientId(), integrationPointKey);
+        rSocketConnectionHandler.handleSession(requester, request.getAnalysisData().getClientId(), integrationPointKey, sessionId);
 
         return webClient.post()
                 .uri(SDK_ANALYSIS_PATH)
