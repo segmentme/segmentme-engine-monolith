@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,27 +39,31 @@ public class AnalysisEventProcessor {
 
     @EventListener(ReanalysisMessage.class)
     public void handleMessage(ReanalysisMessage redisMessage) {
+
         List<String> connectedClients = getConnectedClientIds(redisMessage.getIntegrationPointKey());
         List<AnalyzedData> lastAnalyzedData = getLastAnalyzedData(redisMessage.getIntegrationPointKey(), redisMessage.getSegmentId(), connectedClients);
 
+        Instant now = Instant.now();
+
         log.info("Found {} connected clients which require reanalysis because of segment state changed:{}", lastAnalyzedData.size(), redisMessage);
-        lastAnalyzedData.forEach(it -> this.reanalyze(redisMessage.getContextId(), it));
+        lastAnalyzedData.stream().parallel().forEach(it -> this.reanalyze(redisMessage.getContextId(), it, now));
     }
 
-    private void reanalyze(String contextId, AnalyzedData analyzedData) {
+    private void reanalyze(String contextId, AnalyzedData analyzedData, Instant now) {
         try {
             AnalysisData analysisData = new AnalysisData()
-                    .setClientId(analyzedData.getClientId())
-                    .setPayload(objectMapper.readValue(analyzedData.getPayload(), JsonNode.class));
+                .setClientId(analyzedData.getClientId())
+                .setPayload(objectMapper.readValue(analyzedData.getPayload(), JsonNode.class));
 
             List<SegmentAnalysisResult> analysisResults = this.analysisService.analyze(analyzedData.getIntegrationPointKey(), contextId, analysisData);
 
             ClientAnalysesStateChanged message = new ClientAnalysesStateChanged()
-                    .setClientId(analyzedData.getClientId())
-                    .setIntegrationPointKey(analyzedData.getIntegrationPointKey())
-                    .setBody(new ClientAnalysesStateChanged.ChangedAnalysis()
-                            .setAnalyzedSegments(objectMapper.readValue(objectMapper.writeValueAsString(analysisResults), new TypeReference<>() {
-                            })));
+                .setClientId(analyzedData.getClientId())
+                .setIntegrationPointKey(analyzedData.getIntegrationPointKey())
+                .setBody(new ClientAnalysesStateChanged.ChangedAnalysis()
+                    .setReanalysisTime(now)
+                    .setAnalyzedSegments(objectMapper.readValue(objectMapper.writeValueAsString(analysisResults), new TypeReference<>() {
+                    })));
 
             clientAnalysisStateChangedPublisher.publish(message);
         } catch (JsonProcessingException e) {
@@ -73,9 +78,9 @@ public class AnalysisEventProcessor {
 
     private List<String> getConnectedClientIds(String integrationPointKey) {
         return clientRepository.findByIntegrationPointKey(integrationPointKey)
-                .stream()
-                .map(ConnectedClient::getClientId)
-                .distinct()
-                .collect(Collectors.toList());
+            .stream()
+            .map(ConnectedClient::getClientId)
+            .distinct()
+            .collect(Collectors.toList());
     }
 }

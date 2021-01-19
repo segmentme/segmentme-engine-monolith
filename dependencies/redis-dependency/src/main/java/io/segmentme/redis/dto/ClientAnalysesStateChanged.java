@@ -3,6 +3,7 @@ package io.segmentme.redis.dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.Instant;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -21,6 +22,10 @@ public class ClientAnalysesStateChanged extends RedisMessage {
     @Data
     public static class ChangedAnalysis {
         private List<SegmentAnalysisResult> analyzedSegments;
+
+        private Instant eventTime;
+
+        private Instant reanalysisTime;
     }
 
     @Data
@@ -30,11 +35,7 @@ public class ClientAnalysesStateChanged extends RedisMessage {
 
         private String segmentId;
 
-        private String hash;
-
         private boolean value;
-
-        private long analysisTime;
     }
 
 }

@@ -1,5 +1,8 @@
 package io.segmentme.redis.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.segmentme.redis.dto.RedisMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,9 +23,15 @@ public abstract class RedisConfig {
 
     @Bean
     protected RedisTemplate<String, RedisMessage> redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JavaTimeModule module = new JavaTimeModule();
+        objectMapper.registerModule(module);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
         var template = new RedisTemplate<String, RedisMessage>();
         template.setConnectionFactory(jedisConnectionFactory);
         var jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        jsonRedisSerializer.setObjectMapper(objectMapper);
         template.setKeySerializer(jsonRedisSerializer);
         template.setValueSerializer(jsonRedisSerializer);
         template.setHashKeySerializer(jsonRedisSerializer);

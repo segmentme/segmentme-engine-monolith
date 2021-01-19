@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
+import java.time.Instant;
 import java.util.Collection;
 
 import static java.util.UUID.randomUUID;
@@ -23,10 +25,12 @@ public class RSocketConnectionHandler {
     private final RSocketSessionManager socketSessionManager;
 
     @EventListener(ClientAnalysesStateChanged.class)
+    @Async
     public void handleMessage(ClientAnalysesStateChanged redisMessage) {
         socketSessionManager.findClient(redisMessage.getClientId(), redisMessage.getIntegrationPointKey())
             .stream()
             .flatMap(Collection::stream)
+            .parallel()
             .map(RSocketSessionHolder::getRequester)
             .forEach(it -> sendMessage(it, redisMessage.getBody()));
     }
@@ -49,7 +53,7 @@ public class RSocketConnectionHandler {
 
     private void sendMessage(RSocketRequester requester, ClientAnalysesStateChanged.ChangedAnalysis body) {
         requester.route(CALL_BACK_ROUTE)
-            .data(body)
+            .data(body.setEventTime(Instant.now()))
             .retrieveMono(String.class)
             .subscribe();
     }
