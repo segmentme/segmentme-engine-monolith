@@ -6,7 +6,6 @@ import io.segmentme.channelservice.dto.SdkAnalysisResponse;
 import io.segmentme.channelservice.dto.channel.*;
 import io.segmentme.redis.dto.SegmentStateChangedMessage;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.ReactiveSubscription;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -41,7 +40,7 @@ public class ChannelController {
 
     @MessageMapping("/subscribe/{integrationPointKey}")
     Flux<MessageOut<?>> channel(@DestinationVariable("integrationPointKey") String integrationPointKey,
-                             @Valid Flux<MessageIn> request) {
+                                @Valid Flux<MessageIn> request) {
         log.info("Received subscription request integrationPointKey {}  {}", integrationPointKey, request);
 
         return request
@@ -50,7 +49,6 @@ public class ChannelController {
                 .switchMap(message -> Flux.concat(analyse(message, integrationPointKey), handleRedisMessage(integrationPointKey)));
     }
 
-    @SneakyThrows
     private Flux<MessageOut<?>> handleRedisMessage(String integrationPointKey) {
         return reactiveMsgListenerContainer
                 .receive(topic)
