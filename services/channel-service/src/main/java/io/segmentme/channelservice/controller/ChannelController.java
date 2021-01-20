@@ -10,14 +10,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.ReactiveSubscription;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.ReactiveRedisMessageListenerContainer;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
 @Slf4j
@@ -37,6 +39,20 @@ public class ChannelController {
     private final ChannelTopic topic;
 
     private final ObjectMapper objectMapper;
+
+    private RSocketRequester requester;
+
+    private final RSocketRequester.Builder builder;
+
+    @PostConstruct
+    private void init() {
+        this.requester = builder
+                .dataMimeType(MediaType.APPLICATION_CBOR)
+                .connectTcp("localhost", 7171)
+                .retry(3)
+                .block();
+    }
+
 
     @MessageMapping("/subscribe/{integrationPointKey}")
     Flux<MessageOut<?>> channel(@DestinationVariable("integrationPointKey") String integrationPointKey,
@@ -59,14 +75,20 @@ public class ChannelController {
                 .map(SegmentStateChangedMessageOut::new);
     }
 
-    private Mono<MessageOut<?>> analyse(MessageIn request, String integrationPointKey) {
-        return webClient.post()
-                .uri(SDK_ANALYSIS_PATH)
-                .header(HEADER_INTEGRATION_POINT_KEY, integrationPointKey)
-                .bodyValue(request)
-                .exchange()
-                .flatMap(it -> it.bodyToMono(SdkAnalysisResponse.class))
+    private Flux<MessageOut<?>> analyse(MessageIn request, String integrationPointKey) {
+        return requester.route("sdk.asynch.analyze.{integrationPointKey}", integrationPointKey)
+                .data(Flux.just(request))
+                .retrieveFlux(SdkAnalysisResponse.class)
                 .map(SdkAnalysisResponseMessageOut::new);
+
+
+//        return webClient.post()
+//                .uri(SDK_ANALYSIS_PATH)
+//                .header(HEADER_INTEGRATION_POINT_KEY, integrationPointKey)
+//                .bodyValue(request)
+//                .exchange()
+//                .flatMap(it -> it.bodyToMono(SdkAnalysisResponse.class))
+//                .map(SdkAnalysisResponseMessageOut::new);
     }
 
     private <T> T readValue(String json, Class<T> target) {

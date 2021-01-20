@@ -5,6 +5,9 @@ auth0:
   audience: https://segmentme.us.auth0.com/api/v2/
   managementApi: https://segmentme.us.auth0.com/api/v2/
 spring:
+  rsocket:
+    server:
+      port: 7171
   data:
     mongodb:
         auto-index-creation: on
