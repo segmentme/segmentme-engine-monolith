@@ -1,7 +1,6 @@
 package io.segmentme.channelservice.dto.channel;
 
 import com.fasterxml.jackson.annotation.*;
-import io.segmentme.channelservice.dto.SdkAnalysisResponse;
 import lombok.Data;
 
 import java.io.Serializable;
