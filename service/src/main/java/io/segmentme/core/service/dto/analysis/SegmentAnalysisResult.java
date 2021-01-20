@@ -1,9 +1,9 @@
 package io.segmentme.core.service.dto.analysis;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor(staticName = "of")
 public class SegmentAnalysisResult {
 

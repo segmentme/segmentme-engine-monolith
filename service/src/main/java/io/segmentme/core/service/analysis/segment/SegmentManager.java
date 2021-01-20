@@ -15,7 +15,7 @@ import io.segmentme.core.service.dto.analysis.segment.SegmentDto;
 import io.segmentme.core.service.exception.SegmentManagerException;
 import io.segmentme.core.service.exception.error.SegmentMangerErrors;
 import io.segmentme.redis.config.MessagePublisher;
-import io.segmentme.redis.dto.ReanalysisMessage;
+import io.segmentme.redis.dto.SegmentStateChangedMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,7 @@ public class SegmentManager {
         SegmentDto segment = SegmentConverter.of(segmentService.create(analysisRule));
 
         if (analysisRule.getId() != null) {
-            analysisTopicPublisher.publish(new ReanalysisMessage().setSegmentId(rule.getId()).setContextId(analysisRule.getContextId()).setIntegrationPointKey(integrationPointKey));
+            analysisTopicPublisher.publish(new SegmentStateChangedMessage().setSegmentId(rule.getId()).setContextId(analysisRule.getContextId()).setIntegrationPointKey(integrationPointKey));
         }
         return segment;
     }
@@ -60,7 +60,7 @@ public class SegmentManager {
     public void activate(String segmentId, boolean isActive) {
         Segment segment = segmentService.findById(segmentId).orElseThrow(() -> new SegmentManagerException(SegmentMangerErrors.SEGMENT_NOT_FOUND));
         segmentService.save(segment.setActive(isActive));
-        analysisTopicPublisher.publish(new ReanalysisMessage().setSegmentId(segment.getId()).setContextId(segment.getContextId()).setIntegrationPointKey(segment.getIntegrationPointKey()));
+        analysisTopicPublisher.publish(new SegmentStateChangedMessage().setSegmentId(segment.getId()).setContextId(segment.getContextId()).setIntegrationPointKey(segment.getIntegrationPointKey()));
     }
 
     public List<SegmentDto> save(List<SegmentDto> rules, String contextId, String integrationPointKey) {

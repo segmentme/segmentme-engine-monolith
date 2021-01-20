@@ -3,11 +3,11 @@ package io.segmentme.redis.dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class ReanalysisMessage extends RedisMessage {
+@EqualsAndHashCode(callSuper = true)
+public class SegmentStateChangedMessage extends RedisMessage {
 
-    private final RedisMessageType type = RedisMessageType.REANALYIS;
+    private final RedisMessageType type = RedisMessageType.SEGMENT_STATE_CHANGED;
 
     private String segmentId;
 

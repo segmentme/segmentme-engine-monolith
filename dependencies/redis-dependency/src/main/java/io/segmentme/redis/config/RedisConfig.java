@@ -1,19 +1,11 @@
 package io.segmentme.redis.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.segmentme.redis.dto.RedisMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-
-import java.time.Duration;
 
 @EnableRedisRepositories(basePackages = "io.segmentme")
 public abstract class RedisConfig {
@@ -22,34 +14,9 @@ public abstract class RedisConfig {
     private RedisProperties redisProperties;
 
     @Bean
-    protected RedisTemplate<String, RedisMessage> redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JavaTimeModule module = new JavaTimeModule();
-        objectMapper.registerModule(module);
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-
-        var template = new RedisTemplate<String, RedisMessage>();
-        template.setConnectionFactory(jedisConnectionFactory);
-        var jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        jsonRedisSerializer.setObjectMapper(objectMapper);
-        template.setKeySerializer(jsonRedisSerializer);
-        template.setValueSerializer(jsonRedisSerializer);
-        template.setHashKeySerializer(jsonRedisSerializer);
-        template.setHashValueSerializer(jsonRedisSerializer);
-        return template;
-    }
-
-    @Bean
-    protected JedisConnectionFactory jedisConnectionFactory() {
+    protected LettuceConnectionFactory redisConnectionFactory() {
         var config = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
-
-        var jedisClientConfiguration = JedisClientConfiguration.builder()
-                .readTimeout(Duration.ofSeconds(redisProperties.getReadTimeOut()))
-                .connectTimeout(Duration.ofSeconds(redisProperties.getConnectionTimeout()))
-                .usePooling()
-                .build();
-
-        var factory = new JedisConnectionFactory(config, jedisClientConfiguration);
+        var factory = new LettuceConnectionFactory(config, LettuceClientConfiguration.builder().build());
         factory.afterPropertiesSet();
         return factory;
     }
