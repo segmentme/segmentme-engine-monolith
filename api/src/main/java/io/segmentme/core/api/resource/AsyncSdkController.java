@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 @Slf4j
 @Controller
@@ -21,8 +22,10 @@ public class AsyncSdkController {
     public Flux<SdkAnalysisResponse> analyze(@DestinationVariable("integrationPointKey") String integrationPointKey,
                                              Flux<SdkAnalysisRequest> sdkAnalysisRequest) {
         return sdkAnalysisRequest
-                .doOnNext(message -> log.info("Received message from client {} ", message))
-                .doOnCancel(() -> log.warn("The client cancelled the channel."))
-                .map(it -> sdkFacade.analyze(integrationPointKey, it));
+            .parallel(4).runOn(Schedulers.newParallel("analysis", 4))
+            .doOnNext(message -> log.info("Received message from client {} ", message))
+            .doOnCancel(() -> log.warn("The client cancelled the channel."))
+            .map(message -> sdkFacade.analyze(integrationPointKey, message))
+            .sequential();
     }
 }

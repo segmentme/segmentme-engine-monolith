@@ -2,6 +2,7 @@ package io.segmentme.core.service.analysis.condition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.core.db.domain.condition.AbstractCondition;
+import io.segmentme.core.db.domain.context.ContextSchema;
 import io.segmentme.core.service.analysis.ContextValueHolder;
 import io.segmentme.core.service.analysis.segment.worm.Worm;
 import io.segmentme.core.service.exception.CriteriaValueLocatorException;
@@ -51,15 +52,13 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
     }
 
 
-
-
     public boolean match(T condition, ContextValueHolder context, Worm<Object> worm) {
         P actualValue = null;
 
         try {
             actualValue = getProperty(condition.getCriteria(), context);
         } catch (CriteriaValueLocatorException ex) {
-            log.warn("Unable to locate property {} in context {}, because {}", condition.getCriteria(), context, ex.getMessage());
+            log.warn("Unable to locate property {} in context {}, because {}", condition.getCriteria(), Optional.ofNullable(context.getSchema()).map(ContextSchema::getHash).orElseGet(() -> "undefined"), ex.getMessage());
             Optional.ofNullable(worm).ifPresent(it -> it.apply(condition, ex));
             return !condition.isMatchResult();
         }
@@ -67,7 +66,7 @@ abstract class AbstractConditionMatcher<T extends AbstractCondition, E, P> imple
         try {
             Optional<Boolean> aBoolean = checkForNullValid(condition, actualValue);
             P finalActualValue = actualValue;
-            return aBoolean.orElseGet(()->match(getExpectedValue(condition, finalActualValue), finalActualValue));
+            return aBoolean.orElseGet(() -> match(getExpectedValue(condition, finalActualValue), finalActualValue));
         } catch (Exception ex) {
             log.warn("Can't match property {} in context {} , because {}", condition.getCriteria(), context, ex.getMessage());
             Optional.ofNullable(worm).ifPresent(it -> it.apply(condition, ex));
