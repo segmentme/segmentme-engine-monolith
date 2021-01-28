@@ -51,7 +51,7 @@ public class WebClientConfiguration {
     public ThreadPoolTaskExecutor channelExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(10);
+        executor.setMaxPoolSize(50);
         executor.setQueueCapacity(10000);
         executor.setThreadNamePrefix("channel-executor-");
         return executor;
