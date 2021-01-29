@@ -22,6 +22,7 @@ import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+import java.time.Duration;
 
 @Slf4j
 @Validated
@@ -50,6 +51,7 @@ public class ChannelController {
         requester
             .route("sdk.asynch.analyze.{integrationPointKey}", "9356674eaa974cb2b8871d8afb1013bd")
             .data(Flux.generate(it -> it.next(new SdkAnalysisMessageIn().setContextKey("channel-user-payload").setAnalysisData(new SdkAnalysisMessageIn.AnalysisData().setClientId("11"))))
+                .delayElements(Duration.ofSeconds(5))
                 .doOnNext(message -> log.info("Send to analysis")))
             .retrieveFlux(SdkAnalysisResponse.class)
             .map(SdkAnalysisResponseMessageOut::new).subscribe(it -> log.info("Result {}", it));
