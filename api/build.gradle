@@ -28,6 +28,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-webflux'
     testCompile project(path: ':service', configuration: 'tests')
     testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'com.netflix.concurrency-limits:concurrency-limits-core:0.3.6'
 
 
 }
