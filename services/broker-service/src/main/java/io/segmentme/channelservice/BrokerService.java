@@ -7,7 +7,6 @@ import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseWaitingRSock
 import io.rsocket.examples.transport.tcp.lease.advanced.common.LimitBasedLeaseSender;
 import io.rsocket.lease.Leases;
 import io.rsocket.plugins.RSocketInterceptor;
-import io.rsocket.routing.broker.acceptor.BrokerSocketAcceptor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
@@ -43,7 +42,7 @@ public class BrokerService {
     public static class BrokerLeasingConfiguration {
 
         @Bean
-        public RSocketServerCustomizer rSocketBrokerServerCustomizer(BrokerSocketAcceptor metadataExtractorBrokerSocketAcceptor) {
+        public RSocketServerCustomizer rSocketBrokerServerCustomizer() {
             BlockingQueue<Runnable> tasksQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 
             ThreadPoolExecutor threadPoolExecutor =
