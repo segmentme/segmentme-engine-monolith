@@ -1,10 +1,7 @@
-package io.segmentme.core.api.config.routing;
+package io.segmentme.channelservice.config;
 
 import com.netflix.concurrency.limits.limit.VegasLimit;
-import io.rsocket.examples.transport.tcp.lease.advanced.common.DefaultDeferringLeaseReceiver;
-import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseManager;
-import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseWaitingRSocket;
-import io.rsocket.examples.transport.tcp.lease.advanced.common.LimitBasedLeaseSender;
+import io.rsocket.examples.transport.tcp.lease.advanced.common.*;
 import io.rsocket.lease.Leases;
 import io.rsocket.plugins.RSocketInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,12 +13,11 @@ import reactor.core.Disposable;
 import reactor.core.Disposables;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.retry.Retry;
 
+import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @Configuration
 public class LeaseConfiguration {
@@ -47,7 +43,9 @@ public class LeaseConfiguration {
 
 
         return rSocketServer ->
-                rSocketServer.acceptor(messageHandler.responder())
+                rSocketServer
+                        .reconnect(Retry.backoff(50, Duration.ofMillis(500)))
+                        .acceptor(messageHandler.responder())
                         .lease(
 
                                 (registry) -> {

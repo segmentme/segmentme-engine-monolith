@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import reactor.core.Disposable;
@@ -35,7 +36,7 @@ public class BrokerService {
     }
 
     public static final int TASK_PROCESSING_TIME = 500;
-    public static final int CONCURRENT_WORKERS_COUNT = 1;
+    public static final int CONCURRENT_WORKERS_COUNT = 5;
     public static final int QUEUE_CAPACITY = 50;
 
     @Configuration
@@ -70,7 +71,10 @@ public class BrokerService {
                                                 new LimitBasedLeaseSender(
                                                         UUID.randomUUID().toString(),
                                                         leaseManager,
-                                                        VegasLimit.newDefault());
+                                                        VegasLimit.newBuilder()
+                                                                .initialLimit(CONCURRENT_WORKERS_COUNT)
+                                                                .maxConcurrency(QUEUE_CAPACITY)
+                                                                .build());
 
                                         registry.forRequestsInResponder(__ -> leaseSender);
 
