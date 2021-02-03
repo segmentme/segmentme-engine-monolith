@@ -12,38 +12,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.RSocketConnectorConfigurer;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
-import reactor.core.Disposable;
-import reactor.core.Disposables;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class LeaseConfiguration {
 
-    public static final int TASK_PROCESSING_TIME = 500;
-    public static final int CONCURRENT_WORKERS_COUNT = 5;
-    public static final int QUEUE_CAPACITY = 50;
+    public static final int TASK_PROCESSING_TIME = 50;
+    public static final int CONCURRENT_WORKERS_COUNT = 50;
+    public static final int QUEUE_CAPACITY = 10000;
 
     @Bean
     @ConditionalOnMissingBean
     public RSocketConnectorConfigurer rSocketConnectorConfigurer(RSocketMessageHandler messageHandler) {
 
-        BlockingQueue<Runnable> tasksQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
-
-        ThreadPoolExecutor threadPoolExecutor =
-                new ThreadPoolExecutor(1, CONCURRENT_WORKERS_COUNT, 1, TimeUnit.MINUTES, tasksQueue);
-
-        Scheduler workScheduler = Schedulers.fromExecutorService(threadPoolExecutor);
 
         LeaseManager leaseManager = new LeaseManager(CONCURRENT_WORKERS_COUNT, TASK_PROCESSING_TIME);
-
-        Disposable.Composite disposable = Disposables.composite();
 
 
         return rSocketServer ->
@@ -70,5 +55,16 @@ public class LeaseConfiguration {
 
                                     return Leases.create().receiver(leaseReceiver).sender(leaseSender);
                                 });
+    }
+
+
+    @Bean
+    public ThreadPoolTaskExecutor channelExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(50);
+        executor.setQueueCapacity(10000);
+        executor.setThreadNamePrefix("channel-executor-");
+        return executor;
     }
 }

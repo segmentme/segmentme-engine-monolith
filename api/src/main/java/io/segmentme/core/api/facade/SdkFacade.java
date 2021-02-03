@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -56,7 +57,7 @@ public class SdkFacade {
         ContextSchemaHolder existedSchema = contextSchemaManager.findByHash(integrationPointKey, hash);
         ContextSchemaHolder actualizedContext;
         String payloadAsString = payload.getAnalysisData().getPayloadAsString();
-        
+
         if (existedSchema == null) {
             actualizedContext = contextSchemaManager.create(integrationPointKey, resolvedSchema.getRootNode(), payload.getContextKey(), payloadAsString, hash);
         } else {
@@ -74,7 +75,9 @@ public class SdkFacade {
     private void resolveUnknownProperties(ContextSchemaHolder resolvedSchema, ContextSchemaHolder existedSchema) {
         Map<String, ContextSchema.InlineType> resolvedUndefinedPaths = resolvedSchema.getInlinePath().entrySet().stream().filter(it -> it.getValue().getRootType() == SchemaNodeType.UNDEFINED || it.getValue().getSubType() == SchemaNodeType.UNDEFINED)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
+        if (existedSchema.getInlinePath() == null) {
+            existedSchema.setInlinePath(new HashMap<>());
+        }
         resolvedUndefinedPaths.entrySet().stream().filter(it -> wasResolvedBefore(it.getKey(), existedSchema.getInlinePath())).forEach(it -> updateType(it.getKey(), resolvedSchema, existedSchema));
     }
 
@@ -106,7 +109,7 @@ public class SdkFacade {
 
     private boolean wasResolvedBefore(String key, Map<String, ContextSchema.InlineType> inlinePath) {
         ContextSchema.InlineType inlineType = inlinePath.get(key);
-        return inlineType.getRootType() != SchemaNodeType.UNDEFINED || inlineType.getSubType() != SchemaNodeType.UNDEFINED;
+        return inlineType!=null && (inlineType.getRootType() != SchemaNodeType.UNDEFINED || inlineType.getSubType() != SchemaNodeType.UNDEFINED);
     }
 
 
