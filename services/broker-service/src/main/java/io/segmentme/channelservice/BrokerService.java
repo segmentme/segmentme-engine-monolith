@@ -1,11 +1,13 @@
 package io.segmentme.channelservice;
 
 import com.netflix.concurrency.limits.limit.VegasLimit;
-import io.rsocket.SocketAcceptor;
-import io.rsocket.examples.transport.tcp.lease.advanced.common.*;
-import io.rsocket.examples.transport.tcp.lease.advanced.controller.TasksHandlingRSocket;
+import io.rsocket.examples.transport.tcp.lease.advanced.common.DefaultDeferringLeaseReceiver;
+import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseManager;
+import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseWaitingRSocket;
+import io.rsocket.examples.transport.tcp.lease.advanced.common.LimitBasedLeaseSender;
 import io.rsocket.lease.Leases;
 import io.rsocket.plugins.RSocketInterceptor;
+import io.rsocket.routing.broker.acceptor.BrokerSocketAcceptor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
@@ -19,7 +21,10 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = "io.segmentme")
@@ -38,7 +43,7 @@ public class BrokerService {
     public static class BrokerLeasingConfiguration {
 
         @Bean
-        public RSocketServerCustomizer rSocketBrokerServerCustomizer() {
+        public RSocketServerCustomizer rSocketBrokerServerCustomizer(BrokerSocketAcceptor metadataExtractorBrokerSocketAcceptor) {
             BlockingQueue<Runnable> tasksQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 
             ThreadPoolExecutor threadPoolExecutor =
@@ -52,7 +57,7 @@ public class BrokerService {
 
 
             return rSocketServer ->
-                    rSocketServer.acceptor(SocketAcceptor.with(new TasksHandlingRSocket(disposable, workScheduler, TASK_PROCESSING_TIME)))
+                    rSocketServer
                             .lease(
 
                                     (registry) -> {
@@ -74,4 +79,5 @@ public class BrokerService {
                                     });
         }
     }
+
 }

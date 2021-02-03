@@ -1,22 +1,27 @@
 package io.segmentme.core.api.config.routing;
 
 import com.netflix.concurrency.limits.limit.VegasLimit;
-import io.rsocket.SocketAcceptor;
-import io.rsocket.examples.transport.tcp.lease.advanced.common.*;
-import io.rsocket.examples.transport.tcp.lease.advanced.controller.TasksHandlingRSocket;
+import io.rsocket.examples.transport.tcp.lease.advanced.common.DefaultDeferringLeaseReceiver;
+import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseManager;
+import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseWaitingRSocket;
+import io.rsocket.examples.transport.tcp.lease.advanced.common.LimitBasedLeaseSender;
 import io.rsocket.lease.Leases;
 import io.rsocket.plugins.RSocketInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.RSocketConnectorConfigurer;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import reactor.core.Disposable;
 import reactor.core.Disposables;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class LeaseConfiguration {
@@ -27,7 +32,7 @@ public class LeaseConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RSocketConnectorConfigurer rSocketConnectorConfigurer() {
+    public RSocketConnectorConfigurer rSocketConnectorConfigurer(RSocketMessageHandler messageHandler) {
 
         BlockingQueue<Runnable> tasksQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 
@@ -42,7 +47,7 @@ public class LeaseConfiguration {
 
 
         return rSocketServer ->
-                rSocketServer.acceptor(SocketAcceptor.with(new TasksHandlingRSocket(disposable, workScheduler, TASK_PROCESSING_TIME)))
+                rSocketServer.acceptor(messageHandler.responder())
                         .lease(
 
                                 (registry) -> {
