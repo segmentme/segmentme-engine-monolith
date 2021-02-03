@@ -1,29 +1,15 @@
-io:
-    rsocket:
-        routing:
-            client:
-#                route-id: 00000000-0000-0000-0000-000000000011
-                service-name: chanel-service
-                address:
-                    "[sdk.asynch.analyze.{integrationPointKey}]":
-                        service_name: analysis-service
-                tags:
-                    INSTANCE_NAME: channel-service-1
-                brokers:
-                    - tcp:
-                        host: localhost
-                        port: 8002
-
-
 spring:
-    application:
-        order: 1
-        name: channel-service
-    cloud:
-        consul:
-            discovery:
-                instance-group: channel-service
-                service-name: channel-service
+  rsocket:
+    server:
+      port: 7777
+  application:
+    order: 1
+    name: channel-service
+  cloud:
+    consul:
+      discovery:
+        instance-group: channel-service
+        service-name: channel-service
 segmentme:
     application:
         redis:

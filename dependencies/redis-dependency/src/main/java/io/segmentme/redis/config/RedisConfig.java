@@ -17,7 +17,7 @@ public abstract class RedisConfig {
     protected LettuceConnectionFactory redisConnectionFactory() {
         var config = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
         var factory = new LettuceConnectionFactory(config, LettuceClientConfiguration.builder().build());
-        factory.afterPropertiesSet();
         return factory;
+
     }
 }

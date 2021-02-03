@@ -2,8 +2,6 @@ package io.segmentme.channelservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.rsocket.routing.client.spring.RoutingRSocketRequester;
-import io.segmentme.channelservice.dto.SdkAnalysisResponse;
 import io.segmentme.channelservice.dto.channel.*;
 import io.segmentme.redis.dto.SegmentStateChangedMessage;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
-
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-import java.time.Duration;
 
 @Slf4j
 @Validated
@@ -42,52 +36,28 @@ public class ChannelController {
 
     private final ObjectMapper objectMapper;
 
-    private final RoutingRSocketRequester requester;
-
     private final ThreadPoolTaskExecutor channelExecutor;
 
-    @PostConstruct
-    private void init() {
-        requester
-            .route("sdk.asynch.analyze.{integrationPointKey}", "9356674eaa974cb2b8871d8afb1013bd")
-            .data(Flux.generate(it -> it.next(new SdkAnalysisMessageIn().setContextKey("channel-user-payload").setAnalysisData(new SdkAnalysisMessageIn.AnalysisData().setClientId("11"))))
-                .delayElements(Duration.ofSeconds(5))
-                .doOnNext(message -> log.info("Send to analysis")))
-            .retrieveFlux(SdkAnalysisResponse.class)
-            .map(SdkAnalysisResponseMessageOut::new).subscribe(it -> log.info("Result {}", it));
+
+    @MessageMapping("subscribe.{integrationPointKey}")
+    Flux<SegmentStateChangedMessageOut> channel(@DestinationVariable("integrationPointKey") String integrationPointKey) {
+        log.info("Received subscription request integrationPointKey {}", integrationPointKey);
+        return this.handleRedisMessage(integrationPointKey);
     }
 
-
-    @MessageMapping("/subscribe/{integrationPointKey}/{clientId}")
-    Flux<MessageOut<?>> channel(@DestinationVariable("integrationPointKey") String integrationPointKey, @DestinationVariable("clientId") String clientId,
-                                @Valid Flux<MessageIn> request) {
-        log.info("Received subscription request integrationPointKey {}  {}", integrationPointKey, request);
-
-        return request
-            .parallel(4)
-            .runOn(Schedulers.fromExecutor(channelExecutor))
-            .doOnNext(message -> log.info("Received message from client {} ", message))
-            .doOnCancel(() -> log.warn("The client cancelled the channel."))
-            .map(message -> Flux.concat(analyse(message, integrationPointKey), handleRedisMessage(integrationPointKey)))
-            .sequential()
-            .switchMap(Flux::merge);
-    }
-
-    private Flux<MessageOut<?>> handleRedisMessage(String integrationPointKey) {
+    private Flux<SegmentStateChangedMessageOut> handleRedisMessage(String integrationPointKey) {
         return reactiveMsgListenerContainer
-            .receive(topic)
-            .doOnNext(message -> log.info("Received message from redis {} ", message))
-            .map(ReactiveSubscription.Message::getMessage)
-            .map(it -> readValue(it, SegmentStateChangedMessage.class))
-            .filter(it -> integrationPointKey.equals(it.getIntegrationPointKey()))
-            .map(SegmentStateChangedMessageOut::new);
+                .receive(topic)
+                .parallel(4)
+                .runOn(Schedulers.fromExecutor(channelExecutor))
+                .doOnNext(message -> log.info("Received message from redis {} ", message))
+                .map(ReactiveSubscription.Message::getMessage)
+                .map(it -> readValue(it, SegmentStateChangedMessage.class))
+                .filter(it -> integrationPointKey.equals(it.getIntegrationPointKey()))
+                .map(SegmentStateChangedMessageOut::new)
+                .sequential();
     }
 
-    private Flux<MessageOut<?>> analyse(MessageIn request, String integrationPointKey) {
-        return requester.route("sdk.asynch.analyze.{integrationPointKey}", integrationPointKey)
-            .data(Flux.just(request).doOnNext(message -> log.info("Send to analysis")))
-            .retrieveFlux(SdkAnalysisResponse.class)
-            .map(SdkAnalysisResponseMessageOut::new);
 
 
 //        return webClient.post()
@@ -97,7 +67,6 @@ public class ChannelController {
 //                .exchange()
 //                .flatMap(it -> it.bodyToMono(SdkAnalysisResponse.class))
 //                .map(SdkAnalysisResponseMessageOut::new);
-    }
 
     private <T> T readValue(String json, Class<T> target) {
         try {

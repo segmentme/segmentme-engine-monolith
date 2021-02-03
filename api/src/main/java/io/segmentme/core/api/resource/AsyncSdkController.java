@@ -9,8 +9,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
-import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Schedulers;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Controller
@@ -21,16 +20,10 @@ public class AsyncSdkController {
 
     private final ThreadPoolTaskExecutor channelExecutor;
 
-
     @MessageMapping("sdk.asynch.analyze.{integrationPointKey}")
-    public Flux<SdkAnalysisResponse> analyze(@DestinationVariable("integrationPointKey") String integrationPointKey,
-                                             Flux<SdkAnalysisRequest> sdkAnalysisRequest) {
+    public Mono<SdkAnalysisResponse> analyze(@DestinationVariable("integrationPointKey") String integrationPointKey,
+                                             Mono<SdkAnalysisRequest> sdkAnalysisRequest) {
         return sdkAnalysisRequest
-                .parallel(4)
-                .runOn(Schedulers.fromExecutor(channelExecutor))
-                .doOnNext(message -> log.info("Received message from client {} ", message))
-                .doOnCancel(() -> log.warn("The client cancelled the channel."))
-                .map(message -> sdkFacade.analyze(integrationPointKey, message))
-                .sequential();
+                .map(it -> sdkFacade.analyze(integrationPointKey, it));
     }
 }

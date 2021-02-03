@@ -21,9 +21,10 @@ dependencies {
     compile "org.roaringbitmap:RoaringBitmap:0.9.3"
     compile group: 'io.rsocket.routing', name: 'rsocket-routing-common-spring', version: '0.2.0'
 
-    compile fileTree(dir: '/Users/vladislavkondratenko/projects/rsocket-routing-broker/rsocket-routing-broker-spring/build/libs', include: ['*.jar'])
-    compile fileTree(dir: '/Users/vladislavkondratenko/projects/rsocket-routing-broker/rsocket-routing-broker/build/libs', include: ['*.jar'])
+    compile fileTree(dir: 'd:\\Projects\\production-projects\\segmentme\\segmentme-engine-monolith\\services\\broker-service\\libs\\', include: ['*.jar'])
+    compile fileTree(dir: 'd:\\Projects\\production-projects\\segmentme\\segmentme-engine-monolith\\services\\broker-service\\libs\\', include: ['*.jar'])
 
+    compile fileTree(dir: 'D:\\Projects\\production-projects\\segmentme\\segmentme-engine-monolith\\libs', include: ['*.jar'])
 
 }
 

@@ -1,54 +1,69 @@
 package io.segmentme.core.api.config.routing;
 
 import com.netflix.concurrency.limits.limit.VegasLimit;
+import io.rsocket.SocketAcceptor;
+import io.rsocket.examples.transport.tcp.lease.advanced.common.*;
+import io.rsocket.examples.transport.tcp.lease.advanced.controller.TasksHandlingRSocket;
 import io.rsocket.lease.Leases;
 import io.rsocket.plugins.RSocketInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.RSocketConnectorConfigurer;
-import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
+import reactor.core.Disposable;
+import reactor.core.Disposables;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.UUID;
+import java.util.concurrent.*;
 
 @Configuration
 public class LeaseConfiguration {
-    static final ThreadLocal<LeaseReceiver> LEASE_RECEIVER = new ThreadLocal<>();
+
+    public static final int TASK_PROCESSING_TIME = 500;
+    public static final int CONCURRENT_WORKERS_COUNT = 1;
+    public static final int QUEUE_CAPACITY = 50;
 
     @Bean
     @ConditionalOnMissingBean
-    public RSocketConnectorConfigurer rSocketConnectorConfigurer(RSocketMessageHandler messageHandler, VegaLimitLeaseSender leaseSender) {
-        return connector -> connector //.addRequesterPlugin(interceptor)
-            .interceptors(ir -> ir.forRequester((RSocketInterceptor) r -> new LeaseWaitingRSocket(r, LEASE_RECEIVER.get())))
-            .lease(() -> {
-                UUID uuid = UUID.randomUUID();
-                DefaultLeaseReceiver leaseReceiver =
-                    new DefaultLeaseReceiver(uuid);
-                LEASE_RECEIVER.set(leaseReceiver);
-                return Leases
-                    .create()
-                    .stats(new VegaLimitLeaseStats(
-                        uuid,
-                        leaseSender,
-                        VegasLimit.newBuilder()
-                            .maxConcurrency(4)
-                            .initialLimit(1)
-                            .build()
-                    ))
-                    .sender(leaseSender)
-                    .receiver(leaseReceiver);
-            })
-            .acceptor(messageHandler.responder());
-    }
+    public RSocketConnectorConfigurer rSocketConnectorConfigurer() {
+
+        BlockingQueue<Runnable> tasksQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+
+        ThreadPoolExecutor threadPoolExecutor =
+                new ThreadPoolExecutor(1, CONCURRENT_WORKERS_COUNT, 1, TimeUnit.MINUTES, tasksQueue);
+
+        Scheduler workScheduler = Schedulers.fromExecutorService(threadPoolExecutor);
+
+        LeaseManager leaseManager = new LeaseManager(CONCURRENT_WORKERS_COUNT, TASK_PROCESSING_TIME);
+
+        Disposable.Composite disposable = Disposables.composite();
 
 
-    @Bean
-    public VegaLimitLeaseSender vegaLeaseSender() {
-        return new VegaLimitLeaseSender(
-            4,
-            1000,
-            Schedulers.newSingle("lease-sender").createWorker()
-        );
+        return rSocketServer ->
+                rSocketServer.acceptor(SocketAcceptor.with(new TasksHandlingRSocket(disposable, workScheduler, TASK_PROCESSING_TIME)))
+                        .lease(
+
+                                (registry) -> {
+                                    DefaultDeferringLeaseReceiver leaseReceiver =
+                                            new DefaultDeferringLeaseReceiver(UUID.randomUUID().toString());
+
+                                    registry.forRequester(
+                                            (RSocketInterceptor) r -> new LeaseWaitingRSocket(r, leaseReceiver));
+
+                                    final LimitBasedLeaseSender leaseSender =
+                                            new LimitBasedLeaseSender(
+                                                    UUID.randomUUID().toString(),
+                                                    leaseManager,
+                                                    VegasLimit.newBuilder()
+                                                            .initialLimit(CONCURRENT_WORKERS_COUNT)
+                                                            .maxConcurrency(QUEUE_CAPACITY)
+                                                            .build());
+
+                                    registry.forRequestsInResponder(__ -> leaseSender);
+
+                                    return Leases.create().receiver(leaseReceiver).sender(leaseSender);
+                                });
     }
 }
