@@ -26,40 +26,34 @@ public class BrokerService {
         SpringApplication.run(BrokerService.class, args);
     }
 
-    public static final int TASK_PROCESSING_TIME = 50;
-    public static final int CONCURRENT_WORKERS_COUNT = 50;
-    public static final int QUEUE_CAPACITY = 10000;
+    public static final int TIME_TO_LIVE = 500;
+    public static final int CAPACITY = 500;
 
     @Configuration
     public static class BrokerLeasingConfiguration {
 
         @Bean
         public RSocketServerCustomizer rSocketBrokerServerCustomizer() {
-            LeaseManager leaseManager = new LeaseManager(CONCURRENT_WORKERS_COUNT, TASK_PROCESSING_TIME);
+            LeaseManager leaseManager = new LeaseManager(CAPACITY, TIME_TO_LIVE);
             return rSocketServer ->
-                    rSocketServer
-                            .lease(
+                rSocketServer
+                    .lease((registry) -> {
+                        DefaultDeferringLeaseReceiver leaseReceiver =
+                            new DefaultDeferringLeaseReceiver(UUID.randomUUID().toString());
 
-                                    (registry) -> {
-                                        DefaultDeferringLeaseReceiver leaseReceiver =
-                                                new DefaultDeferringLeaseReceiver(UUID.randomUUID().toString());
+                        registry.forRequester(
+                            (RSocketInterceptor) r -> new LeaseWaitingRSocket(r, leaseReceiver));
 
-                                        registry.forRequester(
-                                                (RSocketInterceptor) r -> new LeaseWaitingRSocket(r, leaseReceiver));
+                        final LimitBasedLeaseSender leaseSender =
+                            new LimitBasedLeaseSender(
+                                UUID.randomUUID().toString(),
+                                leaseManager,
+                                VegasLimit.newBuilder().initialLimit(CAPACITY).maxConcurrency(10).build());
 
-                                        final LimitBasedLeaseSender leaseSender =
-                                                new LimitBasedLeaseSender(
-                                                        UUID.randomUUID().toString(),
-                                                        leaseManager,
-                                                        VegasLimit.newBuilder()
-                                                                .initialLimit(CONCURRENT_WORKERS_COUNT)
-                                                                .maxConcurrency(QUEUE_CAPACITY)
-                                                                .build());
+                        registry.forRequestsInResponder(__ -> leaseSender);
 
-                                        registry.forRequestsInResponder(__ -> leaseSender);
-
-                                        return Leases.create().receiver(leaseReceiver).sender(leaseSender);
-                                    });
+                        return Leases.create().receiver(leaseReceiver).sender(leaseSender);
+                    });
         }
     }
 
