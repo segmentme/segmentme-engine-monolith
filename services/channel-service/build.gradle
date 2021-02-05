@@ -15,7 +15,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-rsocket'
 //    implementation 'com.netflix.concurrency-limits:concurrency-limits-core:0.3.6'
-    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+    //implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
 //    compile group: 'io.rsocket', name: 'rsocket-load-balancer', version: '1.1.0'
 //    compile group: 'io.rsocket', name: 'rsocket-core', version: '1.1.0'
 //    compile group: 'io.rsocket.routing', name: 'rsocket-routing-client-spring', version: '0.2.0'
@@ -23,7 +23,7 @@ dependencies {
     implementation 'com.netflix.concurrency-limits:concurrency-limits-core:0.3.6'
   // compile group: 'io.rsocket.routing', name: 'rsocket-routing-client-spring', version: '0.2.0'
 
-    compile fileTree(dir: 'D:\\Projects\\production-projects\\segmentme\\segmentme-engine-monolith\\libs', include: ['*.jar'])
+    compile fileTree(dir: '/Users/vladislavkondratenko/projects/segmentme/segmentme-engine-monolith/libs/core', include: ['*.jar'])
 
 }
 

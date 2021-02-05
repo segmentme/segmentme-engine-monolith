@@ -1,41 +1,20 @@
-spring:
-  rsocket:
-    server:
-      port: 7777
-  application:
-    order: 1
-    name: channel-service
-  cloud:
-    consul:
-      discovery:
-        instance-group: channel-service
-        service-name: channel-service
-segmentme:
-  application:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      connectionTimeout: ${REDIS_CONNECTION_TIMEOUT:25}
-      readTimeOut: ${REDIS_READ_TIMEOUT:15}
-    analysis-service:
-      url: ${ANALYSIS_SERVICE_URL:http://localhost:8080}
-server:
-  port: 9090
-
 logging:
-  level:
-    root: INFO
-#    io.rsocket.FrameLogger: DEBUG
-    io.rsocket: DEBUG
-#io:
-#  rsocket:
-#    routing:
-#      client:
-#        #                route-id: 00000000-0000-0000-0000-000000000011
-#        service-name: chanel-service
-#        tags:
-#          INSTANCE_NAME: chanel-service-1
-#        brokers:
-#          - tcp:
-#              host: localhost
-#              port: 8002
+    level:
+        root: INFO
+        io.rsocket: DEBUG
+spring:
+    rsocket:
+        server:
+            port: ${RS_CHANEL_SERVICE_PORT:7777}
+    application:
+        order: 1
+        name: channel-service
+segmentme:
+    application:
+        redis:
+            host: ${REDIS_HOST:localhost}
+            port: ${REDIS_PORT:6379}
+            connectionTimeout: ${REDIS_CONNECTION_TIMEOUT:25}
+            readTimeOut: ${REDIS_READ_TIMEOUT:15}
+        analysis-service:
+            url: ${ANALYSIS_SERVICE_URL:http://localhost:8080}

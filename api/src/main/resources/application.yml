@@ -12,11 +12,6 @@ spring:
     application:
         order: 2
         name: analysis-service
-    cloud:
-        consul:
-            discovery:
-                instance-group: analysis-service
-                service-name: analysis-service
     data:
         mongodb:
             auto-index-creation: on
@@ -52,5 +47,5 @@ io:
                     INSTANCE_NAME: analysis-service-1
                 brokers:
                     - tcp:
-                          host: localhost
-                          port: 8002
+                          host: ${BROKER_HOST:localhost}
+                          port: ${BROKER_PORT:8002}

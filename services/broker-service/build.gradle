@@ -14,18 +14,14 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-bootstrap")
 //    implementation 'org.springframework.boot:spring-boot-starter-rsocket'
     implementation 'com.netflix.concurrency-limits:concurrency-limits-core:0.3.6'
-    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+    //implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
     compile group: 'io.rsocket', name: 'rsocket-load-balancer', version: '1.1.0'
-    compile group: 'io.rsocket', name: 'rsocket-core', version: '1.1.0'
     compile "org.agrona:agrona:1.9.0"
     compile "org.roaringbitmap:RoaringBitmap:0.9.3"
     compile group: 'io.rsocket.routing', name: 'rsocket-routing-common-spring', version: '0.2.0'
 
-    compile fileTree(dir: 'd:\\Projects\\production-projects\\segmentme\\segmentme-engine-monolith\\services\\broker-service\\libs\\', include: ['*.jar'])
-    compile fileTree(dir: 'd:\\Projects\\production-projects\\segmentme\\segmentme-engine-monolith\\services\\broker-service\\libs\\', include: ['*.jar'])
-
-    compile fileTree(dir: 'D:\\Projects\\production-projects\\segmentme\\segmentme-engine-monolith\\libs', include: ['*.jar'])
-
+    compile fileTree(dir: '/Users/vladislavkondratenko/projects/segmentme/segmentme-engine-monolith/libs/broker', include: ['*.jar'])
+    compile fileTree(dir: '/Users/vladislavkondratenko/projects/segmentme/segmentme-engine-monolith/libs/core', include: ['*.jar'])
 }
 
 

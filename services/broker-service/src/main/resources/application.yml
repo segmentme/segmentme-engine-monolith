@@ -6,20 +6,14 @@ logging:
 
 
 io.rsocket.routing.broker:
-  broker-id: 00000000-0000-0000-0000-000000000011
-  tcp.port: 8002
-  cluster.tcp.port: 7002
+    broker-id: 00000000-0000-0000-0000-000000000011
+    tcp.port: ${BROKER_PORT:8002}
+    cluster.tcp.port: ${BROKER_CLUSTER_PORT:7002}
 
 
 spring:
-  application:
-    order: 0
-    name: broker-service
-  cloud:
-    consul:
-      discovery:
-        instance-group: broker-service
-        service-name: broker-service
-
+    application:
+        order: 0
+        name: broker-service
 
 server.port: 8033
