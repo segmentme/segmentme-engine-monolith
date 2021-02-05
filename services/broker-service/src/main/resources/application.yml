@@ -1,3 +1,10 @@
+logging:
+    level:
+        root: ERROR
+        io.rsocket.FrameLogger: ERROR
+        io.rsocket: DEBUG
+
+
 io.rsocket.routing.broker:
   broker-id: 00000000-0000-0000-0000-000000000011
   tcp.port: 8002
@@ -14,11 +21,5 @@ spring:
         instance-group: broker-service
         service-name: broker-service
 
-
-logging:
-  level:
-    root: INFO
-    io.rsocket.FrameLogger: ERROR
-    io.rsocket: DEBUG
 
 server.port: 8033
