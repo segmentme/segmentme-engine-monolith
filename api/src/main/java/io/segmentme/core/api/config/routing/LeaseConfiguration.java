@@ -4,63 +4,62 @@ import com.netflix.concurrency.limits.limit.VegasLimit;
 import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseManager;
 import io.rsocket.examples.transport.tcp.lease.advanced.common.LimitBasedLeaseSender;
 import io.rsocket.lease.Leases;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.RSocketConnectorConfigurer;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.UUID;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
+@RequiredArgsConstructor
+@Slf4j
 public class LeaseConfiguration {
 
-    public static final int TIME_TO_LIVE = 100;
-    public static final int SUPPOSED_TASK_PROCESSING = 50;
+    private final SegmentMeRsocketConfiguration rsocketConfiguration;
 
     @Bean
-    @ConditionalOnMissingBean
-    public RSocketConnectorConfigurer rSocketConnectorConfigurer(RSocketMessageHandler messageHandler, ThreadPoolTaskExecutor channelExecutor) {
+    public RSocketConnectorConfigurer rSocketConnectorConfigurer(RSocketMessageHandler messageHandler) {
+        log.info("Configure routing client with settings: {}", rsocketConfiguration);
+        var leaseSettings = rsocketConfiguration.getLease();
 
-
-        LeaseManager leaseManager = new LeaseManager(20, TIME_TO_LIVE);
-
-
+        LeaseManager leaseManager = new LeaseManager(leaseSettings.getCapacity(), leaseSettings.getTtl());
         return rSocketServer ->
             rSocketServer.acceptor(messageHandler.responder())
                 .lease((registry) -> {
-
                     final LimitBasedLeaseSender leaseSender =
                         new LimitBasedLeaseSender(
                             UUID.randomUUID().toString(),
                             leaseManager,
                             VegasLimit.newBuilder()
-                                .initialLimit(15)
-                                .maxConcurrency(10)
+                                .initialLimit(leaseSettings.getVegasLimit().getInitialLimit())
+                                .maxConcurrency(leaseSettings.getVegasLimit().getMaxConcurrency())
                                 .build());
-
                     registry.forRequestsInResponder(__ -> leaseSender);
-
                     return Leases.create().sender(leaseSender);
                 });
     }
 
 
     @Bean
-    public ThreadPoolTaskExecutor channelExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(20);
-        executor.setThreadNamePrefix("channel-executor-");
+    public ThreadPoolExecutor channelExecutor() {
+        SegmentMeRsocketConfiguration.AnalysisThreadPoolSettings analysisThreadPool = rsocketConfiguration.getAnalysisThreadPool();
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(analysisThreadPool.getCorePoolSize(), analysisThreadPool.getMaxPoolSize(),
+            analysisThreadPool.getKeepAliveMs(), TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>());
+//        executor.setThreadNamePrefix("channel-executor-");
         return executor;
     }
 
     @Bean
-    public Scheduler analyseScheduler(ThreadPoolTaskExecutor channelExecutor){
+    public Scheduler analyseScheduler(ThreadPoolExecutor channelExecutor) {
         return Schedulers.fromExecutor(channelExecutor);
     }
 }

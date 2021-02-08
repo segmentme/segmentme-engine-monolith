@@ -1,19 +1,30 @@
 logging:
-    level:
-        root: ERROR
-        io.rsocket.FrameLogger: ERROR
-        io.rsocket: DEBUG
+  level:
+    root: ERROR
+    io.segmentme: INFO
+    io.rsocket.FrameLogger: ERROR
+    io.rsocket: DEBUG
 
 
 io.rsocket.routing.broker:
-    broker-id: 00000000-0000-0000-0000-000000000011
-    tcp.port: ${BROKER_PORT:8002}
-    cluster.tcp.port: ${BROKER_CLUSTER_PORT:7002}
+  broker-id: 00000000-0000-0000-0000-000000000011
+  tcp.port: ${BROKER_PORT:8002}
+  cluster.tcp.port: ${BROKER_CLUSTER_PORT:7002}
 
 
 spring:
-    application:
-        order: 0
-        name: broker-service
+  application:
+    order: 0
+    name: broker-service
+
+
+segmentme:
+  rsocket:
+    lease:
+      capacity: ${LEASE_CAPACITY:500}
+      ttl: ${LEASE_TTL_CAPACITY:5000}
+      vegasLimit:
+        initialLimit: ${LEASE_VEGAS_INIT_LIMIT:${segmentme.rsocket.lease.capacity}}
+        maxConcurrency: ${LEASE_VEGAS_MAX_CONCURENCY:1000}
 
 server.port: 8033

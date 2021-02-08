@@ -2,6 +2,7 @@ logging:
     level:
         root: ERROR
         io.segmentme.core.api.resource: INFO
+        io.segmentme.core.api.config.routing: INFO
         io.rsocket.FrameLogger: ERROR
         io.rsocket: DEBUG
 
@@ -31,6 +32,17 @@ spring:
                 jwt:
                     issuer-uri: https://segmentme.us.auth0.com/
 segmentme:
+    rsocket:
+        analysisThreadPool:
+            corePoolSize: ${ANALYSIS_CORE_POOL_SIZE:10}
+            maxPoolSize: ${ANALYSIS_MAX_POOL_SIZE:${segmentme.rsocket.analysisThreadPool.corePoolSize}}
+            keepAliveMs: ${ANALYSIS_THREAD_KEEP_ALIVE_MS:0}
+        lease:
+            capacity: ${LEASE_CAPACITY:100}
+            ttl: ${LEASE_TTL_CAPACITY:1000}
+            vegasLimit:
+                initialLimit: ${LEASE_VEGAS_INIT_LIMIT:${segmentme.rsocket.lease.capacity}}
+                maxConcurrency: ${LEASE_VEGAS_MAX_CONCURENCY:5}
     application:
         redis:
             host: ${REDIS_HOST:localhost}
@@ -41,11 +53,11 @@ io:
     rsocket:
         routing:
             client:
-#                route-id: 00000000-0000-0000-0000-000000000011
+                #                route-id: 00000000-0000-0000-0000-000000000011
                 service-name: analysis-service
                 tags:
                     INSTANCE_NAME: analysis-service-1
                 brokers:
-                    - tcp:
-                          host: ${BROKER_HOST:localhost}
-                          port: ${BROKER_PORT:8002}
+                    -   tcp:
+                            host: ${BROKER_HOST:localhost}
+                            port: ${BROKER_PORT:8002}

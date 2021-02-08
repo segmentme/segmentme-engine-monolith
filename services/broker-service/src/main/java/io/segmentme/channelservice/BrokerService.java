@@ -7,6 +7,8 @@ import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseWaitingRSock
 import io.rsocket.examples.transport.tcp.lease.advanced.common.LimitBasedLeaseSender;
 import io.rsocket.lease.Leases;
 import io.rsocket.plugins.RSocketInterceptor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
@@ -20,35 +22,38 @@ import java.util.UUID;
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = "io.segmentme")
 @EnableAsync
+@RequiredArgsConstructor
+@Slf4j
 public class BrokerService {
 
     public static void main(String[] args) {
         SpringApplication.run(BrokerService.class, args);
     }
 
-    public static final int TIME_TO_LIVE = 500;
-    public static final int CAPACITY = 500;
 
     @Configuration
+    @RequiredArgsConstructor
     public static class BrokerLeasingConfiguration {
+
+        private final SegmentMeRsocketConfiguration rsocketConfiguration;
 
         @Bean
         public RSocketServerCustomizer rSocketBrokerServerCustomizer() {
-            LeaseManager leaseManager = new LeaseManager(CAPACITY, TIME_TO_LIVE);
+            log.info("Configure broker with settings: {}", rsocketConfiguration);
+            var leaseSettings = rsocketConfiguration.getLease();
+            LeaseManager leaseManager = new LeaseManager(leaseSettings.getCapacity(), leaseSettings.getTtl());
             return rSocketServer ->
                 rSocketServer
                     .lease((registry) -> {
                         DefaultDeferringLeaseReceiver leaseReceiver =
                             new DefaultDeferringLeaseReceiver(UUID.randomUUID().toString());
-
-                        registry.forRequester(
-                            (RSocketInterceptor) r -> new LeaseWaitingRSocket(r, leaseReceiver));
+                        registry.forRequester((RSocketInterceptor) r -> new LeaseWaitingRSocket(r, leaseReceiver));
 
                         final LimitBasedLeaseSender leaseSender =
                             new LimitBasedLeaseSender(
                                 UUID.randomUUID().toString(),
                                 leaseManager,
-                                VegasLimit.newBuilder().initialLimit(CAPACITY).maxConcurrency(10).build());
+                                VegasLimit.newBuilder().initialLimit(leaseSettings.getVegasLimit().getInitialLimit()).maxConcurrency(leaseSettings.getVegasLimit().getMaxConcurrency()).build());
 
                         registry.forRequestsInResponder(__ -> leaseSender);
 
