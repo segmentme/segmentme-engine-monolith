@@ -4,6 +4,7 @@ logging:
     io.segmentme: INFO
     io.rsocket.FrameLogger: ERROR
     io.rsocket: DEBUG
+    com.netflix.concurrency: DEBUG
 
 
 io.rsocket.routing.broker:
@@ -25,6 +26,7 @@ segmentme:
       ttl: ${LEASE_TTL_CAPACITY:5000}
       vegasLimit:
         initialLimit: ${LEASE_VEGAS_INIT_LIMIT:${segmentme.rsocket.lease.capacity}}
-        maxConcurrency: ${LEASE_VEGAS_MAX_CONCURENCY:1000}
+        maxConcurrency: ${LEASE_VEGAS_MAX_CONCURENCY:5}
 
 server.port: 8033
+

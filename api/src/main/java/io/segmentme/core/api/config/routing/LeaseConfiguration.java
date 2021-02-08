@@ -1,6 +1,6 @@
 package io.segmentme.core.api.config.routing;
 
-import com.netflix.concurrency.limits.limit.VegasLimit;
+import com.netflix.concurrency.limits.limit.Gradient2Limit;
 import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseManager;
 import io.rsocket.examples.transport.tcp.lease.advanced.common.LimitBasedLeaseSender;
 import io.rsocket.lease.Leases;
@@ -38,7 +38,7 @@ public class LeaseConfiguration {
                         new LimitBasedLeaseSender(
                             UUID.randomUUID().toString(),
                             leaseManager,
-                            VegasLimit.newBuilder()
+                            Gradient2Limit.newBuilder()
                                 .initialLimit(leaseSettings.getVegasLimit().getInitialLimit())
                                 .maxConcurrency(leaseSettings.getVegasLimit().getMaxConcurrency())
                                 .build());
@@ -53,10 +53,11 @@ public class LeaseConfiguration {
         SegmentMeRsocketConfiguration.AnalysisThreadPoolSettings analysisThreadPool = rsocketConfiguration.getAnalysisThreadPool();
         ThreadPoolExecutor executor = new ThreadPoolExecutor(analysisThreadPool.getCorePoolSize(), analysisThreadPool.getMaxPoolSize(),
             analysisThreadPool.getKeepAliveMs(), TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>());
+            new LinkedBlockingQueue<>(300));
 //        executor.setThreadNamePrefix("channel-executor-");
         return executor;
     }
+
 
     @Bean
     public Scheduler analyseScheduler(ThreadPoolExecutor channelExecutor) {

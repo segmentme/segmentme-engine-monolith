@@ -38,11 +38,14 @@ public class SdkFacade {
     private final AnalysisService analysisService;
 
     public SdkAnalysisResponse analyze(String integrationPointKey, SdkAnalysisRequest sdkAnalysisRequest) {
+        log.info("Start facade analysis");
         SdkAnalysisResponse response = new SdkAnalysisResponse();
         if (StringUtils.isEmpty(sdkAnalysisRequest.getContextId())) {
             response.setContextId(this.actualizeSchema(integrationPointKey, sdkAnalysisRequest).getId());
         }
-        return response.setAnalyzedSegments(this.analysisService.analyze(integrationPointKey, response.getContextId(), sdkAnalysisRequest.getAnalysisData()));
+        SdkAnalysisResponse sdkAnalysisResponse = response.setAnalyzedSegments(this.analysisService.analyze(integrationPointKey, response.getContextId(), sdkAnalysisRequest.getAnalysisData()));
+        log.info("End facade analysis");
+        return sdkAnalysisResponse;
     }
 
     private ContextSchemaShortInfo actualizeSchema(String integrationPointKey, SdkAnalysisRequest payload) {

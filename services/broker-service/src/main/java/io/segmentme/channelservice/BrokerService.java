@@ -1,6 +1,6 @@
 package io.segmentme.channelservice;
 
-import com.netflix.concurrency.limits.limit.VegasLimit;
+import com.netflix.concurrency.limits.limit.Gradient2Limit;
 import io.rsocket.examples.transport.tcp.lease.advanced.common.DefaultDeferringLeaseReceiver;
 import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseManager;
 import io.rsocket.examples.transport.tcp.lease.advanced.common.LeaseWaitingRSocket;
@@ -53,7 +53,7 @@ public class BrokerService {
                             new LimitBasedLeaseSender(
                                 UUID.randomUUID().toString(),
                                 leaseManager,
-                                VegasLimit.newBuilder().initialLimit(leaseSettings.getVegasLimit().getInitialLimit()).maxConcurrency(leaseSettings.getVegasLimit().getMaxConcurrency()).build());
+                                Gradient2Limit.newBuilder().initialLimit(leaseSettings.getVegasLimit().getInitialLimit()).maxConcurrency(leaseSettings.getVegasLimit().getMaxConcurrency()).build());
 
                         registry.forRequestsInResponder(__ -> leaseSender);
 
