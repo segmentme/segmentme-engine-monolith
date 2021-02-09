@@ -30,12 +30,12 @@ subprojects {
         }
 
         if (moduleSettings.isBoot) {
-            bootProjectConfiguration(it)
+            bootProjectConfiguration(it, moduleSettings)
         }
     }
 }
 
-def bootProjectConfiguration(Project project) {
+def bootProjectConfiguration(Project project,moduleSettings) {
 
     configure(project) {
         apply plugin: 'org.springframework.boot'
@@ -61,7 +61,8 @@ def bootProjectConfiguration(Project project) {
             label(['maintainer': 'SegmentMe Team'])
             copyFile("/${project.name}.jar", '/app/app.jar')
             entryPoint('sh', '-c', 'java \$JAVA_OPTS \$EXTRA_PROPS -Dspring.profiles.active=cloud -jar \'/app/app.jar\'')
-            exposePort(80)
+            moduleSettings.dockerSettings.exposedPorts.each{port->  exposePort(port)}
+
         }
 
         task buildDocker(type: DockerBuildImage) {
