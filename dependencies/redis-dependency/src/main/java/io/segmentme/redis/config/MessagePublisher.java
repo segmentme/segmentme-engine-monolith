@@ -4,5 +4,5 @@ import io.segmentme.redis.dto.RedisMessage;
 
 public interface MessagePublisher {
 
-    void publish(final RedisMessage message);
+    void publish(final RedisMessage message, final String topic);
 }

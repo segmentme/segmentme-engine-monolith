@@ -1,28 +1,28 @@
 package io.segmentme.channelservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.segmentme.channelservice.dto.SdkAnalysisResponse;
-import io.segmentme.channelservice.dto.channel.*;
-import io.segmentme.redis.dto.SegmentStateChangedMessage;
+import io.segmentme.redis.config.MessagePublisher;
+import io.segmentme.redis.config.RedisTopicsBuilder;
+import io.segmentme.redis.dto.AnalysisRequest;
+import io.segmentme.redis.dto.in.SdkAnalysisMessageIn;
+import io.segmentme.redis.dto.out.RedisMessageOut;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.ReactiveSubscription;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.ReactiveRedisMessageListenerContainer;
-import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
-import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+
+import static java.util.UUID.randomUUID;
 
 @Slf4j
 @Validated
@@ -30,73 +30,47 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class ChannelController {
 
-    private final static String SDK_ANALYSIS_PATH = "/sdk/synch/analysis/analyze";
-
-    private final static String HEADER_INTEGRATION_POINT_KEY = "integration-point-key";
-
-    private final WebClient webClient;
-
     private final ReactiveRedisMessageListenerContainer reactiveMsgListenerContainer;
-
-    private final ChannelTopic topic;
 
     private final ObjectMapper objectMapper;
 
-    private RSocketRequester requester;
-
-    private final RSocketRequester.Builder builder;
+    private final MessagePublisher messageInPublisher;
 
     private final ThreadPoolTaskExecutor channelExecutor;
 
-    @PostConstruct
-    private void init() {
-        this.requester = builder
-                .dataMimeType(MediaType.APPLICATION_CBOR)
-                .connectTcp("localhost", 7171)
-                .retry(3)
-                .block();
-    }
+    @MessageMapping("/subscribe/{integrationPointKey}/{contextKey}")
+    Flux<RedisMessageOut> channel(@DestinationVariable("integrationPointKey") String integrationPointKey, @DestinationVariable("contextKey") String contextKey,
+                         @Valid Flux<AnalysisRequest> request) {
 
-
-    @MessageMapping("/subscribe/{integrationPointKey}/{clientId}")
-    Flux<MessageOut<?>> channel(@DestinationVariable("integrationPointKey") String integrationPointKey, @DestinationVariable("clientId") String clientId,
-                                @Valid Flux<MessageIn> request) {
         log.info("Received subscription request integrationPointKey {}  {}", integrationPointKey, request);
+        final String requesterId = randomUUID().toString();
 
         return request
                 .parallel(4)
                 .runOn(Schedulers.fromExecutor(channelExecutor))
                 .doOnNext(message -> log.info("Received message from client {} ", message))
                 .doOnCancel(() -> log.warn("The client cancelled the channel."))
-                .map(message -> Flux.concat(analyse(message, integrationPointKey), handleRedisMessage(integrationPointKey)))
+                .map(it -> prepareRequest(integrationPointKey, requesterId, contextKey, it))
+                .doOnNext(req -> messageInPublisher.publish(req, RedisTopicsBuilder.ANALYSIS_REQUEST_TOPIC.getTopic()))
                 .sequential()
-                .switchMap(Flux::merge);
+                .switchMap(message -> handleSegmentChangeMessage(integrationPointKey, contextKey, requesterId));
     }
 
-    private Flux<MessageOut<?>> handleRedisMessage(String integrationPointKey) {
+    private Flux<RedisMessageOut> handleSegmentChangeMessage(String integrationPointKey, String contextKey, String requesterId) {
         return reactiveMsgListenerContainer
-                .receive(topic)
+                .receive(RedisTopicsBuilder.buildSegmentChangedTopic(integrationPointKey), RedisTopicsBuilder.buildAnalysisResponseTopic(integrationPointKey, contextKey, requesterId))
                 .doOnNext(message -> log.info("Received message from redis {} ", message))
                 .map(ReactiveSubscription.Message::getMessage)
-                .map(it -> readValue(it, SegmentStateChangedMessage.class))
-                .filter(it -> integrationPointKey.equals(it.getIntegrationPointKey()))
-                .map(SegmentStateChangedMessageOut::new);
+                .map(it -> readValue(it, RedisMessageOut.class));
     }
 
-    private Flux<MessageOut<?>> analyse(MessageIn request, String integrationPointKey) {
-        return requester.route("sdk.asynch.analyze.{integrationPointKey}", integrationPointKey)
-                .data(Flux.just(request).doOnNext(message -> log.info("Send to analysis")))
-                .retrieveFlux(SdkAnalysisResponse.class)
-                .map(SdkAnalysisResponseMessageOut::new);
-
-
-//        return webClient.post()
-//                .uri(SDK_ANALYSIS_PATH)
-//                .header(HEADER_INTEGRATION_POINT_KEY, integrationPointKey)
-//                .bodyValue(request)
-//                .exchange()
-//                .flatMap(it -> it.bodyToMono(SdkAnalysisResponse.class))
-//                .map(SdkAnalysisResponseMessageOut::new);
+    private SdkAnalysisMessageIn prepareRequest(String integrationPointKey, String requesterId,
+                                                String contextKey, AnalysisRequest body) {
+        SdkAnalysisMessageIn request = new SdkAnalysisMessageIn();
+        request.setIntegrationPointKey(integrationPointKey);
+        request.setRequesterId(requesterId);
+        request.setBody(body.setContextKey(contextKey));
+        return request;
     }
 
     private <T> T readValue(String json, Class<T> target) {

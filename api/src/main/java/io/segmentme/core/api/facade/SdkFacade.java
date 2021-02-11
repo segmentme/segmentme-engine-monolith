@@ -1,40 +1,55 @@
 package io.segmentme.core.api.facade;
 
 import io.segmentme.core.api.dto.context.ContextSchemaShortInfo;
-import io.segmentme.core.db.domain.context.ContextSchema;
-import io.segmentme.core.db.domain.context.SchemaNode;
-import io.segmentme.core.db.domain.context.SchemaNodeType;
+import io.segmentme.core.db.domain.context.*;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.Workspace;
 import io.segmentme.core.db.service.workspace.WorkspaceService;
 import io.segmentme.core.service.analysis.segment.AnalysisService;
 import io.segmentme.core.service.context.ContextSchemaManager;
+import io.segmentme.core.service.converter.RedisMessageOutConverter;
 import io.segmentme.core.service.dto.analysis.SdkAnalysisRequest;
 import io.segmentme.core.service.dto.analysis.SdkAnalysisResponse;
 import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import io.segmentme.core.service.exception.ContextSchemaManagerException;
+import io.segmentme.core.service.redis.message.SdkAnalysisMessage;
+import io.segmentme.redis.config.MessagePublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.segmentme.core.service.exception.error.ContextMangerErrors.INTEGRATION_POINT_NOT_FOUND;
+import static io.segmentme.redis.config.RedisTopicsBuilder.buildAnalysisResponseTopic;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class SdkFacade {
+
     private final ContextSchemaManager contextSchemaManager;
 
     private final WorkspaceService workspaceService;
 
     private final AnalysisService analysisService;
+
+    private final MessagePublisher messagePublisher;
+
+    @Async
+    @EventListener
+    public void analyseMessage(SdkAnalysisMessage request) {
+        SdkAnalysisRequest sdkAnalysisRequest = request.getBody();
+        ChannelTopic analysisResultTopic = buildAnalysisResponseTopic(request.getIntegrationPointKey(), sdkAnalysisRequest.getContextKey(), request.getRequesterId());
+        SdkAnalysisResponse response = this.analyze(request.getIntegrationPointKey(), sdkAnalysisRequest);
+        messagePublisher.publish(RedisMessageOutConverter.of(response), analysisResultTopic.getTopic());
+    }
 
     public SdkAnalysisResponse analyze(String integrationPointKey, SdkAnalysisRequest sdkAnalysisRequest) {
         SdkAnalysisResponse response = new SdkAnalysisResponse();
@@ -56,7 +71,7 @@ public class SdkFacade {
         ContextSchemaHolder existedSchema = contextSchemaManager.findByHash(integrationPointKey, hash);
         ContextSchemaHolder actualizedContext;
         String payloadAsString = payload.getAnalysisData().getPayloadAsString();
-        
+
         if (existedSchema == null) {
             actualizedContext = contextSchemaManager.create(integrationPointKey, resolvedSchema.getRootNode(), payload.getContextKey(), payloadAsString, hash);
         } else {
@@ -73,7 +88,7 @@ public class SdkFacade {
 
     private void resolveUnknownProperties(ContextSchemaHolder resolvedSchema, ContextSchemaHolder existedSchema) {
         Map<String, ContextSchema.InlineType> resolvedUndefinedPaths = resolvedSchema.getInlinePath().entrySet().stream().filter(it -> it.getValue().getRootType() == SchemaNodeType.UNDEFINED || it.getValue().getSubType() == SchemaNodeType.UNDEFINED)
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         resolvedUndefinedPaths.entrySet().stream().filter(it -> wasResolvedBefore(it.getKey(), existedSchema.getInlinePath())).forEach(it -> updateType(it.getKey(), resolvedSchema, existedSchema));
     }
@@ -93,7 +108,7 @@ public class SdkFacade {
 
     private SchemaNode getNode(SchemaNode rootNode, String key) {
         if (StringUtils.isBlank(rootNode.getPath()) ||
-            (!rootNode.getPath().equalsIgnoreCase(key)) && CollectionUtils.isNotEmpty(rootNode.getSubNodes())) {
+                (!rootNode.getPath().equalsIgnoreCase(key)) && CollectionUtils.isNotEmpty(rootNode.getSubNodes())) {
             return rootNode.getSubNodes().stream().map(it -> getNode(it, key)).filter(Objects::nonNull).findFirst().orElse(null);
         }
 
@@ -112,10 +127,10 @@ public class SdkFacade {
 
     public IntegrationPoint connect(String integrationPointKey) {
         return workspaceService.findByIntegrationPointKey(integrationPointKey)
-            .map(Workspace::getIntegrationPoints).stream()
-            .flatMap(Collection::stream)
-            .filter(it -> it.getKey().equalsIgnoreCase(integrationPointKey))
-            .findFirst().orElseThrow(() -> new RuntimeException("Not found"));
+                .map(Workspace::getIntegrationPoints).stream()
+                .flatMap(Collection::stream)
+                .filter(it -> it.getKey().equalsIgnoreCase(integrationPointKey))
+                .findFirst().orElseThrow(() -> new RuntimeException("Not found"));
 
     }
 
