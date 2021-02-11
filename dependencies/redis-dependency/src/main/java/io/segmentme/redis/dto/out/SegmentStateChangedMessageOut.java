@@ -1,9 +1,10 @@
 package io.segmentme.redis.dto.out;
 
 import io.segmentme.redis.dto.RedisMessageType;
-import io.segmentme.redis.dto.in.RedisMessageIn;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.time.Instant;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -19,5 +20,7 @@ public class SegmentStateChangedMessageOut extends RedisMessageOut<SegmentStateC
         private String contextId;
 
         private String integrationPointKey;
+
+        private Instant eventDate = Instant.now();
     }
 }

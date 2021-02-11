@@ -1,7 +1,6 @@
 package io.segmentme.channelservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.segmentme.redis.config.MessagePublisher;
 import io.segmentme.redis.config.RedisTopicsBuilder;
@@ -24,6 +23,9 @@ import javax.validation.Valid;
 
 import static java.util.UUID.randomUUID;
 
+import static io.segmentme.redis.config.RedisTopicsBuilder.buildSegmentChangedTopic;
+import static io.segmentme.redis.config.RedisTopicsBuilder.buildAnalysisResponseTopic;
+
 @Slf4j
 @Validated
 @Controller
@@ -40,7 +42,7 @@ public class ChannelController {
 
     @MessageMapping("/subscribe/{integrationPointKey}/{contextKey}")
     Flux<RedisMessageOut> channel(@DestinationVariable("integrationPointKey") String integrationPointKey, @DestinationVariable("contextKey") String contextKey,
-                         @Valid Flux<AnalysisRequest> request) {
+                                  @Valid Flux<AnalysisRequest> request) {
 
         log.info("Received subscription request integrationPointKey {}  {}", integrationPointKey, request);
         final String requesterId = randomUUID().toString();
@@ -58,7 +60,7 @@ public class ChannelController {
 
     private Flux<RedisMessageOut> handleSegmentChangeMessage(String integrationPointKey, String contextKey, String requesterId) {
         return reactiveMsgListenerContainer
-                .receive(RedisTopicsBuilder.buildSegmentChangedTopic(integrationPointKey), RedisTopicsBuilder.buildAnalysisResponseTopic(integrationPointKey, contextKey, requesterId))
+                .receive(buildSegmentChangedTopic(integrationPointKey), buildAnalysisResponseTopic(integrationPointKey, contextKey, requesterId))
                 .doOnNext(message -> log.info("Received message from redis {} ", message))
                 .map(ReactiveSubscription.Message::getMessage)
                 .map(it -> readValue(it, RedisMessageOut.class));
