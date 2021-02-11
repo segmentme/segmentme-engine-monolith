@@ -48,13 +48,11 @@ public class ChannelController {
         final String requesterId = randomUUID().toString();
 
         return request
-                .parallel(4)
-                .runOn(Schedulers.fromExecutor(channelExecutor))
                 .doOnNext(message -> log.info("Received message from client {} ", message))
-                .doOnCancel(() -> log.warn("The client cancelled the channel."))
+                .doOnSubscribe(it -> log.info("Subscribed client integrationPointKey={} contextKey={} requesterId={}", integrationPointKey, contextKey, requesterId))
+                .doOnCancel(() -> log.warn("The client integrationPointKey={} contextKey={} requesterId={} cancelled the channel.", integrationPointKey, contextKey, requesterId))
                 .map(it -> prepareRequest(integrationPointKey, requesterId, contextKey, it))
                 .doOnNext(req -> messageInPublisher.publish(req, RedisTopicsBuilder.ANALYSIS_REQUEST_TOPIC.getTopic()))
-                .sequential()
                 .switchMap(message -> handleSegmentChangeMessage(integrationPointKey, contextKey, requesterId));
     }
 
