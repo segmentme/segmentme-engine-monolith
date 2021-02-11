@@ -21,10 +21,9 @@ import reactor.core.scheduler.Schedulers;
 
 import javax.validation.Valid;
 
-import static java.util.UUID.randomUUID;
-
-import static io.segmentme.redis.config.RedisTopicsBuilder.buildSegmentChangedTopic;
 import static io.segmentme.redis.config.RedisTopicsBuilder.buildAnalysisResponseTopic;
+import static io.segmentme.redis.config.RedisTopicsBuilder.buildSegmentChangedTopic;
+import static java.util.UUID.randomUUID;
 
 @Slf4j
 @Validated
@@ -43,20 +42,23 @@ public class ChannelController {
     @MessageMapping("/subscribe/{integrationPointKey}/{contextKey}")
     Flux<RedisMessageOut> channel(@DestinationVariable("integrationPointKey") String integrationPointKey, @DestinationVariable("contextKey") String contextKey,
                                   @Valid Flux<AnalysisRequest> request) {
-
-        log.info("Received subscription request integrationPointKey {}  {}", integrationPointKey, request);
         final String requesterId = randomUUID().toString();
+        log.info("Received subscription request integrationPointKey={} contextKey={} requesterId={}", integrationPointKey, contextKey, requesterId);
 
         return request
-                .doOnNext(message -> log.info("Received message from client {} ", message))
+                .doOnNext(message -> log.debug("Received message from client {} ", message))
                 .doOnSubscribe(it -> log.info("Subscribed client integrationPointKey={} contextKey={} requesterId={}", integrationPointKey, contextKey, requesterId))
+                .doOnError(er -> log.error("Client subscription integrationPointKey={} contextKey={} requesterId={} error", integrationPointKey, contextKey, requesterId, er))
                 .doOnCancel(() -> log.warn("The client integrationPointKey={} contextKey={} requesterId={} cancelled the channel.", integrationPointKey, contextKey, requesterId))
+                .parallel()
+                .runOn(Schedulers.fromExecutor(channelExecutor))
                 .map(it -> prepareRequest(integrationPointKey, requesterId, contextKey, it))
-                .doOnNext(req -> messageInPublisher.publish(req, RedisTopicsBuilder.ANALYSIS_REQUEST_TOPIC.getTopic()))
-                .switchMap(message -> handleSegmentChangeMessage(integrationPointKey, contextKey, requesterId));
+                .sequential()
+                .switchMap(message -> handleMessages(integrationPointKey, contextKey, requesterId)
+                        .doOnSubscribe(it -> messageInPublisher.publish(message, RedisTopicsBuilder.ANALYSIS_REQUEST_TOPIC.getTopic())));
     }
 
-    private Flux<RedisMessageOut> handleSegmentChangeMessage(String integrationPointKey, String contextKey, String requesterId) {
+    private Flux<RedisMessageOut> handleMessages(String integrationPointKey, String contextKey, String requesterId) {
         return reactiveMsgListenerContainer
                 .receive(buildSegmentChangedTopic(integrationPointKey), buildAnalysisResponseTopic(integrationPointKey, contextKey, requesterId))
                 .doOnNext(message -> log.info("Received message from redis {} ", message))
