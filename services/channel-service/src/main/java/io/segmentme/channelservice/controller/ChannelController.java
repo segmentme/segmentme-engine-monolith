@@ -38,38 +38,40 @@ public class ChannelController {
 
     private final ThreadPoolTaskExecutor channelExecutor;
 
-    @MessageMapping("/subscribe/{integrationPointKey}/{contextKey}")
+    @MessageMapping("/subscribe/{integrationPointKey}/{contextKey}/{clientId}")
     Flux<RedisMessageOut> channel(@DestinationVariable("integrationPointKey") String integrationPointKey,
                                   @DestinationVariable("contextKey") String contextKey,
+                                  @DestinationVariable("clientId") String clientId,
                                   @Valid Flux<AnalysisRequest> request) {
-        log.info("Received subscription request integrationPointKey={} contextKey={}", integrationPointKey, contextKey);
+        log.info("Received subscription request integrationPointKey={} contextKey={} clientId={}", integrationPointKey, contextKey, clientId);
 
         return request
-                .doOnNext(message -> log.debug("Received message from client {} ", message.getAnalysisData().getClientId()))
-                .doOnSubscribe(it -> log.info("Subscribed client integrationPointKey={} contextKey={}", integrationPointKey, contextKey))
-                .doOnError(er -> log.error("Client subscription integrationPointKey={} contextKey={} error", integrationPointKey, contextKey, er))
-                .doOnCancel(() -> log.warn("The client integrationPointKey={} contextKey={} cancelled the channel.", integrationPointKey, contextKey))
+                .doOnNext(message -> log.debug("Received message from client {} ", message))
+                .doOnSubscribe(it -> log.info("Subscribed client integrationPointKey={} contextKey={} clientId={}", integrationPointKey, contextKey, clientId))
+                .doOnError(er -> log.error("Client subscription integrationPointKey={} contextKey={} clientId={} error", integrationPointKey, contextKey, clientId, er))
+                .doOnCancel(() -> log.warn("The client integrationPointKey={} contextKey={} clientId={} cancelled the channel.", integrationPointKey, contextKey, clientId))
                 .parallel()
                 .runOn(Schedulers.fromExecutor(channelExecutor))
-                .map(it -> prepareRequest(integrationPointKey, it.getAnalysisData().getClientId(), contextKey, it))
+                .map(it -> prepareRequest(integrationPointKey, contextKey, it))
                 .sequential()
-                .switchMap(message -> handleMessages(integrationPointKey, contextKey, message.getBody().getAnalysisData().getClientId())
+                .switchMap(message -> handleMessages(integrationPointKey, contextKey, clientId)
                         .doOnSubscribe(it -> messageInPublisher.publish(message, RedisTopicsBuilder.ANALYSIS_REQUEST_TOPIC.getTopic())));
     }
 
-    private Flux<RedisMessageOut> handleMessages(String integrationPointKey, String contextKey, String requesterId) {
+    private Flux<RedisMessageOut> handleMessages(String integrationPointKey, String contextKey, String clientId) {
         return reactiveMsgListenerContainer
-                .receive(buildSegmentChangedTopic(integrationPointKey), buildAnalysisResponseTopic(integrationPointKey, contextKey, requesterId))
+                .receive(buildSegmentChangedTopic(integrationPointKey), buildAnalysisResponseTopic(integrationPointKey, contextKey, clientId))
+                .parallel(5)
+                .runOn(Schedulers.fromExecutor(channelExecutor))
                 .doOnNext(message -> log.info("Received message from redis {} ", message))
                 .map(ReactiveSubscription.Message::getMessage)
-                .map(it -> readValue(it, RedisMessageOut.class));
+                .map(it -> readValue(it, RedisMessageOut.class))
+                .sequential();
     }
 
-    private SdkAnalysisMessageIn prepareRequest(String integrationPointKey, String requesterId,
-                                                String contextKey, AnalysisRequest body) {
+    private SdkAnalysisMessageIn prepareRequest(String integrationPointKey, String contextKey, AnalysisRequest body) {
         SdkAnalysisMessageIn request = new SdkAnalysisMessageIn();
         request.setIntegrationPointKey(integrationPointKey);
-        request.setRequesterId(requesterId);
         request.setBody(body.setContextKey(contextKey));
         return request;
     }

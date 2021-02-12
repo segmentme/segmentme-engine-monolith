@@ -1,6 +1,7 @@
 package io.segmentme.core.api.facade;
 
 import io.segmentme.core.api.dto.context.ContextSchemaShortInfo;
+import io.segmentme.core.api.redis.message.SdkAnalysisMessage;
 import io.segmentme.core.db.domain.context.*;
 import io.segmentme.core.db.domain.workpsace.IntegrationPoint;
 import io.segmentme.core.db.domain.workpsace.Workspace;
@@ -12,15 +13,12 @@ import io.segmentme.core.service.dto.analysis.SdkAnalysisRequest;
 import io.segmentme.core.service.dto.analysis.SdkAnalysisResponse;
 import io.segmentme.core.service.dto.context.ContextSchemaHolder;
 import io.segmentme.core.service.exception.ContextSchemaManagerException;
-import io.segmentme.core.service.redis.message.SdkAnalysisMessage;
 import io.segmentme.redis.config.MessagePublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -42,8 +40,6 @@ public class SdkFacade {
 
     private final MessagePublisher messagePublisher;
 
-    @Async
-    @EventListener
     public void analyseMessage(SdkAnalysisMessage request) {
         SdkAnalysisRequest sdkAnalysisRequest = request.getBody();
         ChannelTopic analysisResultTopic = buildAnalysisResponseTopic(request.getIntegrationPointKey(), sdkAnalysisRequest.getContextKey(), request.getBody().getAnalysisData().getClientId());

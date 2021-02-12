@@ -43,17 +43,15 @@ public class WebClientConfiguration {
                 .baseUrl(managementApi)
                 .apply(oauth2.oauth2Configuration())
                 .build();
-
     }
-
 
     @Bean
     public ThreadPoolTaskExecutor channelExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
+        executor.setCorePoolSize(20);
         executor.setMaxPoolSize(50);
-        executor.setQueueCapacity(10000);
-        executor.setThreadNamePrefix("channel-executor-");
+        executor.setQueueCapacity(30);
+        executor.setThreadNamePrefix("anal-executor-");
         return executor;
     }
 

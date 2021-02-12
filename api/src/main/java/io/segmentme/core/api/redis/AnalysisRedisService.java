@@ -1,16 +1,17 @@
-package io.segmentme.core.service.redis;
+package io.segmentme.core.api.redis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.segmentme.core.service.redis.message.SdkAnalysisMessage;
+import io.segmentme.core.api.facade.SdkFacade;
+import io.segmentme.core.api.redis.message.SdkAnalysisMessage;
 import io.segmentme.redis.config.RedisTopicsBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.connection.ReactiveSubscription;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.ReactiveRedisMessageListenerContainer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.PostConstruct;
 
@@ -23,8 +24,9 @@ public class AnalysisRedisService {
 
     private final ReactiveRedisMessageListenerContainer reactiveMsgListenerContainer;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final SdkFacade sdkFacade;
 
+    private final ThreadPoolTaskExecutor channelExecutor;
 
     @PostConstruct
     private void init() {
@@ -35,9 +37,11 @@ public class AnalysisRedisService {
         reactiveMsgListenerContainer
                 .receive(RedisTopicsBuilder.ANALYSIS_REQUEST_TOPIC)
                 .doOnNext(message -> log.info("Received message from redis {} ", message))
+                .parallel(10)
+                .runOn(Schedulers.fromExecutor(channelExecutor))
                 .map(ReactiveSubscription.Message::getMessage)
                 .map(it -> readValue(it, SdkAnalysisMessage.class))
-                .doOnNext(applicationEventPublisher::publishEvent)
+                .doOnNext(sdkFacade::analyseMessage)
                 .subscribe();
     }
 

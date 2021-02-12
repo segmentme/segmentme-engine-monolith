@@ -15,7 +15,4 @@ public class SdkAnalysisMessageIn extends RedisMessageIn<AnalysisRequest> {
     @NotEmpty
     private String integrationPointKey;
 
-    @NotEmpty
-    private String requesterId;
-
 }

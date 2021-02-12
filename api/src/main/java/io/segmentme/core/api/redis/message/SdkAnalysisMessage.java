@@ -1,4 +1,4 @@
-package io.segmentme.core.service.redis.message;
+package io.segmentme.core.api.redis.message;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.segmentme.core.service.dto.analysis.SdkAnalysisRequest;
