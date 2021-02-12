@@ -50,10 +50,7 @@ public class ChannelController {
                 .doOnSubscribe(it -> log.info("Subscribed client integrationPointKey={} contextKey={} clientId={}", integrationPointKey, contextKey, clientId))
                 .doOnError(er -> log.error("Client subscription integrationPointKey={} contextKey={} clientId={} error", integrationPointKey, contextKey, clientId, er))
                 .doOnCancel(() -> log.warn("The client integrationPointKey={} contextKey={} clientId={} cancelled the channel.", integrationPointKey, contextKey, clientId))
-                .parallel()
-                .runOn(Schedulers.fromExecutor(channelExecutor))
                 .map(it -> prepareRequest(integrationPointKey, contextKey, it))
-                .sequential()
                 .switchMap(message -> handleMessages(integrationPointKey, contextKey, clientId)
                         .doOnSubscribe(it -> messageInPublisher.publish(message, RedisTopicsBuilder.ANALYSIS_REQUEST_TOPIC.getTopic())));
     }
