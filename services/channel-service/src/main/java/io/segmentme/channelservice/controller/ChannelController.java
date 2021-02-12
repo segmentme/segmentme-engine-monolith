@@ -23,7 +23,6 @@ import javax.validation.Valid;
 
 import static io.segmentme.redis.config.RedisTopicsBuilder.buildAnalysisResponseTopic;
 import static io.segmentme.redis.config.RedisTopicsBuilder.buildSegmentChangedTopic;
-import static java.util.UUID.randomUUID;
 
 @Slf4j
 @Validated
@@ -40,21 +39,21 @@ public class ChannelController {
     private final ThreadPoolTaskExecutor channelExecutor;
 
     @MessageMapping("/subscribe/{integrationPointKey}/{contextKey}")
-    Flux<RedisMessageOut> channel(@DestinationVariable("integrationPointKey") String integrationPointKey, @DestinationVariable("contextKey") String contextKey,
+    Flux<RedisMessageOut> channel(@DestinationVariable("integrationPointKey") String integrationPointKey,
+                                  @DestinationVariable("contextKey") String contextKey,
                                   @Valid Flux<AnalysisRequest> request) {
-        final String requesterId = randomUUID().toString();
-        log.info("Received subscription request integrationPointKey={} contextKey={} requesterId={}", integrationPointKey, contextKey, requesterId);
+        log.info("Received subscription request integrationPointKey={} contextKey={}", integrationPointKey, contextKey);
 
         return request
-                .doOnNext(message -> log.debug("Received message from client {} ", message))
-                .doOnSubscribe(it -> log.info("Subscribed client integrationPointKey={} contextKey={} requesterId={}", integrationPointKey, contextKey, requesterId))
-                .doOnError(er -> log.error("Client subscription integrationPointKey={} contextKey={} requesterId={} error", integrationPointKey, contextKey, requesterId, er))
-                .doOnCancel(() -> log.warn("The client integrationPointKey={} contextKey={} requesterId={} cancelled the channel.", integrationPointKey, contextKey, requesterId))
+                .doOnNext(message -> log.debug("Received message from client {} ", message.getAnalysisData().getClientId()))
+                .doOnSubscribe(it -> log.info("Subscribed client integrationPointKey={} contextKey={}", integrationPointKey, contextKey))
+                .doOnError(er -> log.error("Client subscription integrationPointKey={} contextKey={} error", integrationPointKey, contextKey, er))
+                .doOnCancel(() -> log.warn("The client integrationPointKey={} contextKey={} cancelled the channel.", integrationPointKey, contextKey))
                 .parallel()
                 .runOn(Schedulers.fromExecutor(channelExecutor))
-                .map(it -> prepareRequest(integrationPointKey, requesterId, contextKey, it))
+                .map(it -> prepareRequest(integrationPointKey, it.getAnalysisData().getClientId(), contextKey, it))
                 .sequential()
-                .switchMap(message -> handleMessages(integrationPointKey, contextKey, requesterId)
+                .switchMap(message -> handleMessages(integrationPointKey, contextKey, message.getBody().getAnalysisData().getClientId())
                         .doOnSubscribe(it -> messageInPublisher.publish(message, RedisTopicsBuilder.ANALYSIS_REQUEST_TOPIC.getTopic())));
     }
 

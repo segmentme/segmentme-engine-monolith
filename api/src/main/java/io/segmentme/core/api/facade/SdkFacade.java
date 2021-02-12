@@ -46,7 +46,7 @@ public class SdkFacade {
     @EventListener
     public void analyseMessage(SdkAnalysisMessage request) {
         SdkAnalysisRequest sdkAnalysisRequest = request.getBody();
-        ChannelTopic analysisResultTopic = buildAnalysisResponseTopic(request.getIntegrationPointKey(), sdkAnalysisRequest.getContextKey(), request.getRequesterId());
+        ChannelTopic analysisResultTopic = buildAnalysisResponseTopic(request.getIntegrationPointKey(), sdkAnalysisRequest.getContextKey(), request.getBody().getAnalysisData().getClientId());
         SdkAnalysisResponse response = this.analyze(request.getIntegrationPointKey(), sdkAnalysisRequest);
         messagePublisher.publish(RedisMessageOutConverter.of(response), analysisResultTopic.getTopic());
     }

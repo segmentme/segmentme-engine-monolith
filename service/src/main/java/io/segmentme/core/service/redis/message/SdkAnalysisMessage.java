@@ -10,8 +10,6 @@ public class SdkAnalysisMessage {
 
     private String integrationPointKey;
 
-    private String requesterId;
-
     private SdkAnalysisRequest body;
 
 }
