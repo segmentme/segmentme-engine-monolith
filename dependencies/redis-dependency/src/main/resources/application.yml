@@ -1,7 +1,4 @@
 spring:
-  rsocket:
-    server:
-      port: 7000
   redis:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}

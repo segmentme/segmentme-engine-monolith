@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 @RequiredArgsConstructor
 public class RedisMessagePublisher implements MessagePublisher {
 
-    private final RedisTemplate<String, RedisMessage> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public void publish(RedisMessage message, String topic) {

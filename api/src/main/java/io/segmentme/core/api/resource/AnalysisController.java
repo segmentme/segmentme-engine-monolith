@@ -35,6 +35,6 @@ public class AnalysisController {
 
     @PostMapping("/state/analyze/{integrationPointKey}")
     public List<StateAnalysisResult> analyze(@PathVariable String integrationPointKey, @RequestBody AnalysisData analysisData) {
-        return stateAnalysisService.analyse(integrationPointKey,analysisData);
+        return stateAnalysisService.analyse(integrationPointKey, analysisData);
     }
 }

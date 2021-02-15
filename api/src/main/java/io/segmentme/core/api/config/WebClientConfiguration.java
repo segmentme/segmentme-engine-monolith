@@ -51,7 +51,7 @@ public class WebClientConfiguration {
         executor.setCorePoolSize(20);
         executor.setMaxPoolSize(50);
         executor.setQueueCapacity(30);
-        executor.setThreadNamePrefix("anal-executor-");
+        executor.setThreadNamePrefix("analysis-executor-");
         return executor;
     }
 

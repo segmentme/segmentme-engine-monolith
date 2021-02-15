@@ -7,7 +7,7 @@ auth0:
 spring:
   data:
     mongodb:
-        auto-index-creation: on
+      auto-index-creation: on
   security:
     oauth2:
       client:
@@ -24,9 +24,13 @@ spring:
         jwt:
           issuer-uri: https://segmentme.us.auth0.com/
 segmentme:
-    application:
-        redis:
-            host: ${REDIS_HOST:localhost}
-            port: ${REDIS_PORT:6379}
-            connectionTimeout: ${REDIS_CONNECTION_TIMEOUT:25}
-            readTimeOut: ${REDIS_READ_TIMEOUT:15}
+  application:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      connectionTimeout: ${REDIS_CONNECTION_TIMEOUT:25}
+      readTimeOut: ${REDIS_READ_TIMEOUT:15}
+      stream:
+        eventKey: analysis-request-event
+        groupName: analysis-request-event-group
+        streamPollTimeout: 1000 #milliseconds

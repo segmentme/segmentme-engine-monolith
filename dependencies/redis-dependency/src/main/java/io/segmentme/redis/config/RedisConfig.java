@@ -3,7 +3,6 @@ package io.segmentme.redis.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.segmentme.redis.dto.RedisMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
@@ -13,8 +12,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.listener.ReactiveRedisMessageListenerContainer;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.*;
 
 @EnableRedisRepositories(basePackages = "io.segmentme")
 public abstract class RedisConfig {
@@ -39,26 +37,35 @@ public abstract class RedisConfig {
     }
 
     @Bean
-    public MessagePublisher analysisTopicPublisher(RedisTemplate<String, RedisMessage> redisTemplate) {
+    public MessagePublisher analysisTopicPublisher(RedisTemplate<String, Object> redisTemplate) {
         return new RedisMessagePublisher(redisTemplate);
     }
 
     @Bean
-    protected RedisTemplate<String, RedisMessage> redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JavaTimeModule module = new JavaTimeModule();
-        objectMapper.registerModule(module);
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    protected RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
+        var template = new RedisTemplate<String, Object>();
 
-        var template = new RedisTemplate<String, RedisMessage>();
+        var jsonRedisSerializer = prepareJackson2JsonRedisSerializer();
+        var stringSerializer = new StringRedisSerializer();
+
         template.setConnectionFactory(redisConnectionFactory);
-        var jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        jsonRedisSerializer.setObjectMapper(objectMapper);
-        template.setKeySerializer(jsonRedisSerializer);
+        template.setKeySerializer(stringSerializer);
         template.setValueSerializer(jsonRedisSerializer);
         template.setHashKeySerializer(jsonRedisSerializer);
         template.setHashValueSerializer(jsonRedisSerializer);
+        template.afterPropertiesSet();
+
         return template;
+    }
+
+    protected Jackson2JsonRedisSerializer<Object> prepareJackson2JsonRedisSerializer(){
+        var objectMapper = new ObjectMapper();
+        var module = new JavaTimeModule();
+        objectMapper.registerModule(module);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        var jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        jsonRedisSerializer.setObjectMapper(objectMapper);
+        return jsonRedisSerializer;
     }
 
     @Bean
