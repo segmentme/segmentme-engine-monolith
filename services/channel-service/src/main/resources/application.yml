@@ -1,7 +1,7 @@
 spring:
   rsocket:
     server:
-      port: 7000
+      port: ${CHANNEL_SERVICE_PORT:7777}
 segmentme:
   application:
     redis:
