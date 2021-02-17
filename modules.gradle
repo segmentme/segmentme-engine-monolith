@@ -1,16 +1,22 @@
-def springVersion = '2.3.3.RELEASE'
+def springVersion = '2.4.1'
+def springCloudVersion = '2020.0.0'
 
 def settings = [
         [name: 'database', isJava: true],
         [name: 'service', isJava: true],
-        [name: 'api', isJava: true, isBoot: true],
-        [name: 'services:channel-service', isJava: true, isBoot: true],
-        [name: 'dependencies:redis-dependency', isJava: true, isBoot: false]
+        [name: 'api', isJava: true, isBoot: true, dockerSettings: new DockerSettings(exposedPorts: [80])],
+        [name: 'services:channel-service', isJava: true, isBoot: true, dockerSettings: new DockerSettings(exposedPorts: [80])],
+        [name: 'dependencies:redis-dependency', isJava: true, isBoot: false],
 ]
 
-value = new Settings(settings: settings, springVersion: springVersion)
+value = new Settings(settings: settings, springVersion: springVersion, springCloudVersion: springCloudVersion)
 
 class Settings {
     def settings
     def springVersion
+    def springCloudVersion
+}
+
+class DockerSettings {
+    def exposedPorts
 }

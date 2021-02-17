@@ -23,7 +23,7 @@ public class AnalysisRedisService {
 
     private final SdkFacade sdkFacade;
 
-    private final ThreadPoolTaskExecutor channelExecutor;
+    private final ThreadPoolTaskExecutor analysisThreadPool;
 
     private final RedisStreamBuilder redisStreamBuilder;
 
@@ -40,7 +40,7 @@ public class AnalysisRedisService {
                 .doOnCancel(() -> log.info("Redis stream was cancelled"))
                 .doOnTerminate(() -> log.info("Redis stream terminated"))
                 .parallel(10)
-                .runOn(Schedulers.fromExecutor(channelExecutor))
+                .runOn(Schedulers.fromExecutor(analysisThreadPool))
                 .map(Record::getValue)
                 .map(it -> objectMapper.convertValue(it, SdkAnalysisMessage.class))
                 .subscribe(sdkFacade::analyseMessage, err -> log.error("Analysis error", err));

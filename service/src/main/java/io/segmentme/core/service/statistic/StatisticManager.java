@@ -34,7 +34,7 @@ public class StatisticManager {
 
     private final AnalyzedDataService analyzedDataService;
 
-    @Async
+    @Async(value = "asyncExecutor")
     @EventListener
     public void saveStatistic(StatisticLogEntry collectedStatistic) {
         AnalyzedData analyzedData = aggregateAnalyzedData(collectedStatistic);
@@ -88,40 +88,40 @@ public class StatisticManager {
 
     private List<StatisticLog.SegmentStatistic> getSegmentStatistics(StatisticLogEntry collectedStatistic) {
         return collectedStatistic.getAnalyzedSegments().stream()
-            .map(it -> {
-                SegmentAnalysisResult segmentAnalysisResult = collectedStatistic.getSegmentAnalysisResults()
-                    .stream()
-                    .filter(result -> result.getHash().equalsIgnoreCase(it.getHash()))
-                    .findFirst()
-                    .get();
-                return new StatisticLog.SegmentStatistic().setSegmentId(it.getId())
-                    .setResult(segmentAnalysisResult.isValue())
-                    .setAnalysisTime(segmentAnalysisResult.getAnalysisTime())
-                    .setConditionsHash(getSegmentConditions(it, new HashMap<>()));
-            })
-            .collect(Collectors.toList());
+                .map(it -> {
+                    SegmentAnalysisResult segmentAnalysisResult = collectedStatistic.getSegmentAnalysisResults()
+                            .stream()
+                            .filter(result -> result.getHash().equalsIgnoreCase(it.getHash()))
+                            .findFirst()
+                            .get();
+                    return new StatisticLog.SegmentStatistic().setSegmentId(it.getId())
+                            .setResult(segmentAnalysisResult.isValue())
+                            .setAnalysisTime(segmentAnalysisResult.getAnalysisTime())
+                            .setConditionsHash(getSegmentConditions(it, new HashMap<>()));
+                })
+                .collect(Collectors.toList());
     }
 
     private List<StatisticLog.ConditionStatistic> getConditionsBreakdown(StatisticLogEntry collectedStatistic) {
         return collectedStatistic.getConditionResults().entrySet().stream()
-            .map(it -> new StatisticLog.ConditionStatistic()
-                .setHash(String.valueOf(it.getKey()))
-                .setCriteria(it.getValue().getCriteria())
-                .setErrors(it.getValue().getErrors()))
-            .collect(Collectors.toList());
+                .map(it -> new StatisticLog.ConditionStatistic()
+                        .setHash(String.valueOf(it.getKey()))
+                        .setCriteria(it.getValue().getCriteria())
+                        .setErrors(it.getValue().getErrors()))
+                .collect(Collectors.toList());
     }
 
 
     private Map<String, Integer> getSegmentConditions(Segment segment, Map<String, Integer> conditions) {
 
         segment.getConditions().stream()
-            .peek(it -> {
-                if (it.getType() == AbstractCondition.ConditionType.SEGMENT) {
-                    getSegmentConditions(((SegmentCondition) it).getValue(), conditions);
-                }
-            })
-            .peek(it -> conditions.putIfAbsent(String.valueOf(it.hashCode()), 0))
-            .forEach(it -> conditions.computeIfPresent(String.valueOf(it.hashCode()), (s, integer) -> ++integer));
+                .peek(it -> {
+                    if (it.getType() == AbstractCondition.ConditionType.SEGMENT) {
+                        getSegmentConditions(((SegmentCondition) it).getValue(), conditions);
+                    }
+                })
+                .peek(it -> conditions.putIfAbsent(String.valueOf(it.hashCode()), 0))
+                .forEach(it -> conditions.computeIfPresent(String.valueOf(it.hashCode()), (s, integer) -> ++integer));
 
         return conditions;
     }
