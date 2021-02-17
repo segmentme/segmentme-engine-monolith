@@ -5,3 +5,7 @@ logging:
 server:
     port: 80
 
+spring:
+    data:
+        mongodb:
+            uri: ${SEGMENTME_DB_CONNECTOR_URI:mongodb://localhost:27017/test?readPreference=primary&appname=MongoDB%20Compass&ssl=false}

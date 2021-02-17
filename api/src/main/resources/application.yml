@@ -1,11 +1,6 @@
 logging:
     level:
-        root: ERROR
-        io.segmentme.core.api.resource: INFO
-        io.segmentme.core.api.facade.SdkFacade: INFO
-        io.segmentme.core.api.config.routing: INFO
-        io.rsocket.FrameLogger: ERROR
-        io.rsocket: DEBUG
+        root: INFO
 
 auth0:
     audience: https://segmentme.us.auth0.com/api/v2/
