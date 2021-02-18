@@ -9,6 +9,7 @@ import io.segmentme.redis.dto.out.RedisMessageOut;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.connection.ReactiveSubscription;
 import org.springframework.data.redis.connection.stream.StreamRecords;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,6 +21,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Hooks;
 import reactor.core.scheduler.Schedulers;
 
 import javax.validation.Valid;
@@ -35,14 +37,13 @@ import static io.segmentme.redis.config.RedisTopicsBuilder.buildSegmentChangedTo
 @RequiredArgsConstructor
 public class ChannelController {
 
-    private final ReactiveRedisMessageListenerContainer reactiveMsgListenerContainer;
-
     private final ObjectMapper objectMapper;
 
     private final ThreadPoolTaskExecutor channelExecutor;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private final ReactiveRedisConnectionFactory factory;
 
     @Value("${segmentme.application.redis.stream.analysisStreamKey}")
     private final String analysisStreamKey;
@@ -52,24 +53,30 @@ public class ChannelController {
                                   @DestinationVariable("contextKey") String contextKey,
                                   @DestinationVariable("clientId") String clientId,
                                   @Valid Flux<AnalysisRequest> request) {
-        log.info("Received subscription request integrationPointKey={} contextKey={} clientId={}", integrationPointKey, contextKey, clientId);
 
-        return request
-                .doOnNext(message -> log.debug("Received message from client {} ", message))
+        Hooks.onErrorDropped(ignoreError -> {
+        });
+
+        return redisMessagesHandler(integrationPointKey, contextKey, clientId)
+                .doOnSubscribe(it -> this.producerMessageHandler(request, integrationPointKey, contextKey, clientId))
                 .doOnSubscribe(it -> log.info("Subscribed client integrationPointKey={} contextKey={} clientId={}", integrationPointKey, contextKey, clientId))
                 .doOnError(er -> log.error("Client subscription integrationPointKey={} contextKey={} clientId={} error", integrationPointKey, contextKey, clientId, er))
-                .doOnCancel(() -> log.warn("The client integrationPointKey={} contextKey={} clientId={} cancelled the channel.", integrationPointKey, contextKey, clientId))
-                .map(it -> prepareRequest(integrationPointKey, contextKey, it))
-                .switchMap(message -> handleMessages(integrationPointKey, contextKey, clientId)
-                        .doOnSubscribe(it -> publishAnalysisMessageStream(message)));
+                .doOnCancel(() -> log.warn("Client integrationPointKey={} contextKey={} clientId={} cancelled the channel.", integrationPointKey, contextKey, clientId));
     }
 
-    private Flux<RedisMessageOut> handleMessages(String integrationPointKey, String contextKey, String clientId) {
-        return reactiveMsgListenerContainer
+    private void producerMessageHandler(Flux<AnalysisRequest> producerRequest, String integrationPointKey, String contextKey, String clientId) {
+        producerRequest
+                .map(it -> prepareRequest(integrationPointKey, contextKey, it))
+                .doOnNext(this::publishAnalysisMessageStream).subscribe();
+    }
+
+    private Flux<RedisMessageOut> redisMessagesHandler(String integrationPointKey, String contextKey, String clientId) {
+        return new ReactiveRedisMessageListenerContainer(factory)
                 .receive(buildSegmentChangedTopic(integrationPointKey), buildAnalysisResponseTopic(integrationPointKey, contextKey, clientId))
-                .parallel(5)
-                .runOn(Schedulers.fromExecutor(channelExecutor))
                 .doOnNext(message -> log.info("Received message from redis {} ", message))
+                .doFinally(ignore -> log.info("Redis subscription terminated for integrationPointKey={} contextKey={} clientId={} cancelled the channel.", integrationPointKey, contextKey, clientId))
+                .parallel(2)
+                .runOn(Schedulers.fromExecutor(channelExecutor))
                 .map(ReactiveSubscription.Message::getMessage)
                 .map(it -> readValue(it, RedisMessageOut.class))
                 .sequential();

@@ -1,5 +1,6 @@
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter-data-redis'
+    compile 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+
     compile 'redis.clients:jedis'
     compile 'org.springframework.boot:spring-boot-starter-validation'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.1'

@@ -20,15 +20,10 @@ public abstract class RedisConfig {
     @Autowired
     protected RedisProperties redisProperties;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Bean
     protected LettuceConnectionFactory redisConnectionFactory() {
         var config = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
-        var factory = new LettuceConnectionFactory(config, LettuceClientConfiguration.builder().build());
-        factory.afterPropertiesSet();
-        return factory;
+        return new LettuceConnectionFactory(config, LettuceClientConfiguration.builder().build());
     }
 
     @Bean
@@ -69,17 +64,19 @@ public abstract class RedisConfig {
     }
 
     @Bean
-    public ReactiveRedisOperations<String, Object> redisOperations(ReactiveRedisConnectionFactory factory) {
-
-        var serializer = new Jackson2JsonRedisSerializer<>(Object.class);
-
-        var jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        jsonRedisSerializer.setObjectMapper(objectMapper);
+    public ReactiveRedisTemplate<String, Object> reactiveRedisTemplate(ReactiveRedisConnectionFactory factory) {
+        var stringSerializer = new StringRedisSerializer();
+        var jsonRedisSerializer = prepareJackson2JsonRedisSerializer();
 
         RedisSerializationContext.RedisSerializationContextBuilder<String, Object> builder =
-                RedisSerializationContext.newSerializationContext(jsonRedisSerializer);
+                RedisSerializationContext.newSerializationContext(stringSerializer);
 
-        var context = builder.value(serializer).build();
+        RedisSerializationContext<String, Object> context = builder
+                .key(stringSerializer)
+                .value(jsonRedisSerializer)
+                .hashKey(jsonRedisSerializer)
+                .hashValue(jsonRedisSerializer)
+                .build();
 
         return new ReactiveRedisTemplate<>(factory, context);
     }
