@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.connection.ReactiveSubscription;
 import org.springframework.data.redis.connection.stream.StreamRecords;
-import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ReactiveRedisMessageListenerContainer;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -44,7 +43,7 @@ public class ChannelController {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final ReactiveRedisTemplate<String, Object> reactiveRedisTemplate;
+    private final ReactiveRedisConnectionFactory factory;
 
     @Value("${segmentme.application.redis.stream.analysisStreamKey}")
     private final String analysisStreamKey;
@@ -71,17 +70,14 @@ public class ChannelController {
     }
 
     private Flux<RedisMessageOut> redisMessagesHandler(String integrationPointKey, String contextKey, String clientId) {
-        return reactiveRedisTemplate
-                .listenToChannel(
-                        buildSegmentChangedTopic(integrationPointKey).getTopic(),
-                        buildAnalysisResponseTopic(integrationPointKey, contextKey, clientId).getTopic()
-                )
+        return new ReactiveRedisMessageListenerContainer(factory)
+                .receive(buildSegmentChangedTopic(integrationPointKey), buildAnalysisResponseTopic(integrationPointKey, contextKey, clientId))
                 .doOnNext(message -> log.info("Received message from redis {} ", message))
                 .doFinally(ignore -> log.info("Redis subscription terminated for integrationPointKey={} contextKey={} clientId={} cancelled the channel.", integrationPointKey, contextKey, clientId))
                 .parallel(2)
                 .runOn(Schedulers.fromExecutor(channelExecutor))
                 .map(ReactiveSubscription.Message::getMessage)
-                .map(it -> objectMapper.convertValue(it, RedisMessageOut.class))
+                .map(it -> readValue(it, RedisMessageOut.class))
                 .sequential();
     }
 
@@ -100,5 +96,15 @@ public class ChannelController {
                 .withStreamKey(analysisStreamKey);
 
         redisTemplate.opsForStream().add(streamMessage);
+    }
+
+
+    private <T> T readValue(String json, Class<T> target) {
+        try {
+            return objectMapper.readValue(json, target);
+        } catch (JsonProcessingException ex) {
+            log.error("Error json parsing", ex);
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 }
