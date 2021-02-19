@@ -16,3 +16,5 @@ segmentme:
         analysisStreamKey: analysis-request-event
     analysis-service:
       url: ${ANALYSIS_SERVICE_URL:http://localhost:8080}
+server:
+  port: 9090
